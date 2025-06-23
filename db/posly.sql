@@ -2096,7 +2096,7 @@ CREATE TABLE `provider_ledgers` (
   `provider_id` int(11) NOT NULL,
   `type` varchar(191) NOT NULL,
   `reference` varchar(191) DEFAULT NULL,
-  `date` date NOT NULL DEFAULT curdate(),
+  `date` date NOT NULL,
   `debit` decimal(15,2) NOT NULL DEFAULT 0.00,
   `credit` decimal(15,2) NOT NULL DEFAULT 0.00,
   `balance` decimal(15,2) NOT NULL DEFAULT 0.00,
