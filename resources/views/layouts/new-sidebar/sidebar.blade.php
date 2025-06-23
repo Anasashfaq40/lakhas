@@ -39,7 +39,7 @@
             </li>            
 
             {{-- User Management --}}
-            @if (auth()->user()->can('user_view') || auth()->user()->can('group_permission'))
+            {{-- @if (auth()->user()->can('user_view') || auth()->user()->can('group_permission'))
                 <li>
                     <div 
                         @click="selectCollapse('user-management')"
@@ -76,7 +76,7 @@
                         </ul>
                     </div>
                 </li>
-            @endif
+            @endif --}}
 
             {{-- People --}}
             @if (auth()->user()->can('client_view_all') || auth()->user()->can('client_view_own') || auth()->user()->can('suppliers_view_all') || auth()->user()->can('suppliers_view_own'))
