@@ -119,7 +119,6 @@
                                 :reduce="(option) => option.value" :options="
                                                 [
                                                 {label: 'Standard Product', value: 'is_single'},
-                                                {label: 'Variable Product', value: 'is_variant'},
                                                 {label: 'Service Product', value: 'is_service'}
                                                 ]">
                             </v-select>
