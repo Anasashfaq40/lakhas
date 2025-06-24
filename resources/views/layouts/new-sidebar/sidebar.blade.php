@@ -12,7 +12,7 @@
 >
     <div class="sidebar-header mb-5 d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center">
-            <img class="app-logo me-2" width="100" src="{{asset('images/'.$setting->logo)}}" alt="">
+            <!-- <img class="app-logo me-2" width="100" src="{{asset('images/'.$setting->logo)}}" alt=""> -->
         </div>
         <button 
             @click="isCompact = !isCompact"

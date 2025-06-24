@@ -52,7 +52,7 @@
     pointer-events: none;
     z-index: 0;
   ">
-    Dhaga Button
+    The Lakhas
     
   </div>
   <!-- INFO SECTION -->
