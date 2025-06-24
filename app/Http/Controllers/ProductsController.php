@@ -149,7 +149,11 @@ class ProductsController extends Controller
                 $data = array();
 
                 foreach ($products as $product) {
-                    $item['id'] = $product->id;                   
+                    $item['id'] = $product->id;   
+                    $item['visibility'] = '<div class="form-check form-switch">
+    <input class="form-check-input toggle-visibility" type="checkbox" id="visibility_'.$product->id.'" 
+    '.($product->is_visible ? 'checked' : '').' data-id="'.$product->id.'">
+    </div>';                
                     $item['category'] = $product['category']->name;
                     $item['brand'] = $product['brand'] ? $product['brand']->name : 'N/D';
 
@@ -1773,5 +1777,16 @@ class ProductsController extends Controller
         }
     }
 
+   public function toggleVisibility(Request $request)
+{
+    $user_auth = auth()->user();
+    if ($user_auth->can('products_edit')){
+        $product = Product::findOrFail($request->product_id);
+        $product->is_visible = $request->is_visible;
+        $product->save();
 
+        return response()->json(['success' => true, 'message' => __(key: 'Visibility Updated Successfully')]);
+    }
+    return abort('403', __('You are not authorized'));
+}
 }

@@ -4,6 +4,14 @@
 @section('page-css')
 <link rel="stylesheet" href="{{asset('assets/styles/vendor/datatables.min.css')}}">
 <link rel="stylesheet" href="{{asset('assets/styles/vendor/nprogress.css')}}">
+<style>
+  .form-switch .form-check-input {
+    width: 3em;
+    height: 1.5em;
+    margin-left: 0;
+    cursor: pointer;
+}
+</style>
 @endsection
 
 <div class="breadcrumb">
@@ -30,6 +38,7 @@
             <thead>
               <tr>
                 <th>ID</th>
+                <th>Visibility</th>
                 <th>{{ __('translate.Image') }}</th>
                 <th>{{ __('translate.type') }}</th>
                 <th>{{ __('translate.Name') }}</th>
@@ -175,6 +184,7 @@
 
                 columns: [
                     {data: 'id' , className: "d-none"},
+                    {data: 'visibility'},
                     {data: 'image'},
                     {data: 'type'},
                     {data: 'name'},
@@ -299,6 +309,26 @@
         });
 
     });
+
+
+$(document).on('change', '.toggle-visibility', function () {
+    var product_id = $(this).data('id');
+    var is_visible = $(this).is(':checked') ? 1 : 0;
+    
+    axios.post('/products/toggle-visibility', {
+        product_id: product_id,
+        is_visible: is_visible,
+        _token: '{{ csrf_token() }}'
+    })
+    .then(response => {
+        toastr.success(response.data.message);
+    })
+    .catch(error => {
+        toastr.error('{{ __('translate.There_was_something_wronge') }}');
+        // Revert the toggle if there's an error
+        $(this).prop('checked', !is_visible);
+    });
+});
 </script>
 
 <script>

@@ -6,8 +6,9 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ProductLedgerController;
 use App\Http\Controllers\ProviderLedgerController;
-use App\Http\Controllers\AccountLedgerController;
 // use App\Http\Controllers\SubCategoriesController;
+use App\Http\Controllers\AccountLedgerController;
+use App\Http\Controllers\ProductsController;
  
 Route::get('/fix-laravel', function () {
     Artisan::call('config:clear');
@@ -69,6 +70,7 @@ if ($installed === true) {
             // Route::prefix('inventory')->group(function() {
 
                 Route::resource('products/sub_categories', SubCategoriesController::class);
+                Route::post('/products/toggle-visibility', [ProductsController::class, 'toggleVisibility'])->name('products.toggle.visibility');
                 Route::get('dashboard_filter/{start_date}/{end_date}', "DashboardController@dashboard_filter");
 
                 //-------------------------------  Reports ------------------------\\
