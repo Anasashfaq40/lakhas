@@ -7,7 +7,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ProductLedgerController;
 use App\Http\Controllers\ProviderLedgerController;
 use App\Http\Controllers\AccountLedgerController;
-
+// use App\Http\Controllers\SubCategoriesController;
+ 
 Route::get('/fix-laravel', function () {
     Artisan::call('config:clear');
     Artisan::call('view:clear');
@@ -67,7 +68,7 @@ if ($installed === true) {
 
             // Route::prefix('inventory')->group(function() {
 
-
+                Route::resource('products/sub_categories', SubCategoriesController::class);
                 Route::get('dashboard_filter/{start_date}/{end_date}', "DashboardController@dashboard_filter");
 
                 //-------------------------------  Reports ------------------------\\

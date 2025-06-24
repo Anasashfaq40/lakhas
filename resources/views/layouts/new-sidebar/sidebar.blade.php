@@ -13,6 +13,7 @@
     <div class="sidebar-header mb-5 d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center">
             <!-- <img class="app-logo me-2" width="100" src="{{asset('images/'.$setting->logo)}}" alt=""> -->
+            <h1 class="font-light mt-5 ml-2">Lakhas</h1>
         </div>
         <button 
             @click="isCompact = !isCompact"
@@ -154,6 +155,12 @@
                                     ])
                                 </li>
                             @endcan
+                            <li>
+                                    @include('components.sidebar.child-navitem', [
+                                        'href'=>'/products/sub_categories', 
+                                        'title'=> __('SubCategories')
+                                    ])
+                                </li>
                             @can('print_labels')
 
                             @endcan
