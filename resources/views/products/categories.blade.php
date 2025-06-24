@@ -11,7 +11,6 @@
 
 <div class="separator-breadcrumb border-top"></div>
 
-
 <div class="row" id="section_Category_list">
   <div class="col-md-12">
     <div class="card">
@@ -28,18 +27,19 @@
                 <th>ID</th>
                 <th>{{ __('translate.Code') }}</th>
                 <th>{{ __('translate.Name') }}</th>
+                <th>{{ __('Image') }}</th>
+                <th>{{ __('Subcategory') }}</th>
                 <th class="not_show">{{ __('translate.Action') }}</th>
               </tr>
             </thead>
             <tbody>
             </tbody>
-
           </table>
         </div>
-
       </div>
     </div>
   </div>
+  
   <!-- Modal Add & Edit category -->
   <div class="modal fade" id="modal_Category" tabindex="-1" role="dialog" aria-labelledby="modal_Category"
     aria-hidden="true">
@@ -51,10 +51,8 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-  
           <form @submit.prevent="editmode?Update_Category():Create_Category()" enctype="multipart/form-data">
             <div class="row">
-  
               <div class="form-group col-md-12">
                 <label for="code">{{ __('translate.Code_of_category') }}<span class="field_required">*</span></label>
                 <input type="text" v-model="category.code" class="form-control" name="code" id="code"
@@ -63,7 +61,7 @@
                   @{{ errors.code[0] }}
                 </span>
               </div>
-  
+
               <div class="form-group col-md-12">
                 <label for="name">{{ __('translate.Name_of_category') }}<span class="field_required">*</span></label>
                 <input type="text" v-model="category.name" class="form-control" name="name" id="name"
@@ -72,10 +70,33 @@
                   @{{ errors.name[0] }}
                 </span>
               </div>
-  
+
+              <div class="form-group col-md-12">
+                <label for="sub_category_id">{{ __('Subcategory') }}</label>
+                <select v-model="category.sub_category_id" class="form-control" name="sub_category_id" id="sub_category_id">
+                  <option value="">-- {{ __('Select_Subcategory') }} --</option>
+                  <option v-for="subcategory in subcategories" :value="subcategory.id" :key="subcategory.id">
+                    @{{ subcategory.name }}
+                  </option>
+                </select>
+                <span class="error" v-if="errors && errors.sub_category_id">
+                  @{{ errors.sub_category_id[0] }}
+                </span>
+              </div>
+
+              <div class="form-group col-md-12">
+                <label for="image">{{ __('Image') }}</label>
+                <input type="file" class="form-control" name="image" id="image" @change="handleImageUpload">
+                <span class="error" v-if="errors && errors.image">
+                  @{{ errors.image[0] }}
+                </span>
+                <div v-if="category.image" class="mt-2">
+                  <img :src="getImageUrl(category.image)" width="100" class="img-thumbnail">
+                </div>
+              </div>
             </div>
+
             <div class="row mt-3">
-  
               <div class="col-md-6">
                 <button type="submit" class="btn btn-primary" :disabled="SubmitProcessing">
                   <span v-if="SubmitProcessing" class="spinner-border spinner-border-sm" role="status"
@@ -83,17 +104,12 @@
                 </button>
               </div>
             </div>
-  
-  
           </form>
-  
         </div>
-  
       </div>
     </div>
   </div>
 </div>
-
 
 @endsection
 
@@ -126,11 +142,12 @@
                 ],
                 ajax: "{{ route('categories.index') }}",
                 columns: [
-                    {data: 'id' , name: 'id',className: "d-none"},
+                    {data: 'id', name: 'id', className: "d-none"},
                     {data: 'code', name: 'code'},
                     {data: 'name', name: 'name'},
+                    {data: 'image', name: 'image', orderable: false, searchable: false},
+                    {data: 'subcategory', name: 'subcategory'},
                     {data: 'action', name: 'action', orderable: false, searchable: false},
-                
                 ],
             
                 lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
@@ -206,9 +223,8 @@
             Category_datatable();
         });
 
-
-         //Create Category
-         $(document).on('click', '.new_category', function () {
+        //Create Category
+        $(document).on('click', '.new_category', function () {
             app.editmode = false;
             app.reset_Form();
             $('#modal_Category').modal('show');
@@ -242,63 +258,77 @@
         el: '#section_Category_list',
         data: {
             editmode: false,
-            SubmitProcessing:false,
-            errors:[],
-            categories: [], 
+            SubmitProcessing: false,
+            errors: [],
+            categories: [],
+            subcategories: @json($subcategories ?? []),
             category: {
                 id: "",
                 name: "",
-                code: ""
+                code: "",
+                image: "",
+                sub_category_id: null
             }
         },
        
         methods: {
-
-            
-
-            //------------------------------ Modal  (create category) -------------------------------\\
-            New_category() {
-                this.reset_Form();
-                this.editmode = false;
-                $('#modal_Category').modal('show');
+            // Handle image upload
+            handleImageUpload(e) {
+                this.category.image = e.target.files[0];
             },
-
-            //--------------------------- reset Form ----------------\\
+            
+            // Get image URL for preview
+            getImageUrl(image) {
+                if (typeof image === 'string') {
+                    return image.startsWith('http') ? image : '/storage/images/categories/' + image;
+                }
+                return URL.createObjectURL(image);
+            },
+            
             reset_Form() {
                 this.category = {
                     id: "",
                     name: "",
-                    code: ""
+                    code: "",
+                    image: "",
+                    sub_category_id: null
                 };
-              this.errors = {};
+                this.errors = {};
             },
           
-            //---------------------- Get_Data_Edit  ------------------------------\\
             Get_Data_Edit(id) {
-                axios
-                .get("/products/categories/"+id+"/edit")
-                .then(response => {
-                    this.category   = response.data.category;
-                })
-                .catch(error => {
-                    
-                });
+                axios.get("/products/categories/"+id+"/edit")
+                    .then(response => {
+                        this.category = response.data.category;
+                        this.subcategories = response.data.subcategories;
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
             },
-
-            //------------------------ Create_Category---------------------------\\
+            
             Create_Category() {
                 var self = this;
                 self.SubmitProcessing = true;
-                axios
-                    .post("/products/categories", {
-                    name: this.category.name,
-                    code: this.category.code
-                    })
-                    .then(response => {
-                        self.SubmitProcessing = false;
-                        $.event.trigger('event_category');
-                        toastr.success('{{ __('translate.Created_in_successfully') }}');
-                        self.errors = {};
+                
+                let formData = new FormData();
+                formData.append('name', this.category.name);
+                formData.append('code', this.category.code);
+                formData.append('sub_category_id', this.category.sub_category_id);
+                if (this.category.image instanceof File) {
+                    formData.append('image', this.category.image);
+                }
+                
+                axios.post("/products/categories", formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                })
+                .then(response => {
+                    self.SubmitProcessing = false;
+                    $.event.trigger('event_category');
+                    toastr.success('{{ __('translate.Created_in_successfully') }}');
+                    self.errors = {};
                 })
                 .catch(error => {
                     self.SubmitProcessing = false;
@@ -308,34 +338,41 @@
                     toastr.error('{{ __('translate.There_was_something_wronge') }}');
                 });
             },
-
-           //----------------------- Update_Category ---------------------------\\
-           Update_Category() {
+            
+            Update_Category() {
                 var self = this;
                 self.SubmitProcessing = true;
-                axios
-                    .put("/products/categories/" + this.category.id, {
-                    name: this.category.name,
-                    code: this.category.code
-                    })
-                    .then(response => {
-                        self.SubmitProcessing = false;
-                        $.event.trigger('event_category');
-                        toastr.success('{{ __('translate.Updated_in_successfully') }}');
-                        self.errors = {};
-                    })
-                    .catch(error => {
-                        self.SubmitProcessing = false;
-                        if (error.response.status == 422) {
-                            self.errors = error.response.data.errors;
-                        }
-                        toastr.error('{{ __('translate.There_was_something_wronge') }}');
-                    });
+                
+                let formData = new FormData();
+                formData.append('name', this.category.name);
+                formData.append('code', this.category.code);
+                formData.append('sub_category_id', this.category.sub_category_id);
+                formData.append('_method', 'PUT');
+                if (this.category.image instanceof File) {
+                    formData.append('image', this.category.image);
+                }
+                
+                axios.post("/products/categories/" + this.category.id, formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                })
+                .then(response => {
+                    self.SubmitProcessing = false;
+                    $.event.trigger('event_category');
+                    toastr.success('{{ __('translate.Updated_in_successfully') }}');
+                    self.errors = {};
+                })
+                .catch(error => {
+                    self.SubmitProcessing = false;
+                    if (error.response.status == 422) {
+                        self.errors = error.response.data.errors;
+                    }
+                    toastr.error('{{ __('translate.There_was_something_wronge') }}');
+                });
             },
-
-             //--------------------------------- Remove_Category ---------------------------\\
-             Remove_Category(id) {
-
+            
+            Remove_Category(id) {
                 swal({
                     title: '{{ __('translate.Are_you_sure') }}',
                     text: '{{ __('translate.You_wont_be_able_to_revert_this') }}',
@@ -354,25 +391,16 @@
                             .then(() => {
                                 $.event.trigger('event_category');
                                 toastr.success('{{ __('translate.Deleted_in_successfully') }}');
-
                             })
                             .catch(() => {
                                 toastr.error('{{ __('translate.There_was_something_wronge') }}');
                             });
                     });
-                },
-
-         
-
+            },
         },
-        //-----------------------------Autoload function-------------------
         created() {
         }
-
     })
-
 </script>
-
-
 
 @endsection

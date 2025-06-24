@@ -158,7 +158,7 @@
                             <li>
                                     @include('components.sidebar.child-navitem', [
                                         'href'=>'/products/sub_categories', 
-                                        'title'=> __('SubCategories')
+                                        'title'=> __('Subcategories')
                                     ])
                                 </li>
                             @can('print_labels')

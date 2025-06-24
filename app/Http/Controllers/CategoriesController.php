@@ -8,63 +8,77 @@ use Illuminate\Contracts\Support\Renderable;
 use DataTables;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Storage;
+
 
 class CategoriesController extends Controller
 {
 
     //-------------- Get All Categories ---------------\\
 
-    public function index(Request $request)
+   public function index(Request $request)
     {
         $user_auth = auth()->user();
-		if ($user_auth->can('category')){
-
+        if ($user_auth->can('category')){
             if ($request->ajax()) {
-                $data = Category::where('deleted_at', '=', null)->orderBy('id', 'desc')->get();
+                $data = Category::with('parent')
+                    ->where('deleted_at', '=', null)
+                    ->orderBy('id', 'desc')
+                    ->get();
 
                 return Datatables::of($data)->addIndexColumn()
-
-                ->addColumn('action', function($row){
-
+                    ->addColumn('image', function($row){
+                        $url = $row->image ? asset('storage/images/categories/'.$row->image) : asset('assets/images/no-image.png');
+                        return '<img src="'.$url.'" width="50px" class="img-thumbnail">';
+                    })
+                    ->addColumn('subcategory', function($row){
+                        return $row->parent ? $row->parent->name : 'N/A';
+                    })
+                    ->addColumn('action', function($row){
                         $btn = '<a id="' .$row->id. '"  class="edit cursor-pointer ul-link-action text-success"
                         data-toggle="tooltip" data-placement="top" title="Edit"><i class="i-Edit"></i></a>';
                         $btn .= '&nbsp;&nbsp;';
-
                         $btn .= '<a id="' .$row->id. '" class="delete cursor-pointer ul-link-action text-danger"
                         data-toggle="tooltip" data-placement="top" title="Remove"><i class="i-Close-Window"></i></a>';
-                        $btn .= '&nbsp;&nbsp;';
-
                         return $btn;
                     })
-                    ->rawColumns(['action'])
+                    ->rawColumns(['action', 'image'])
                     ->make(true);
             }
 
-            return view('products.categories');
-
+            $subcategories = Category::where('deleted_at', null)->get();
+            return view('products.categories', compact('subcategories'));
         }
         return abort('403', __('You are not authorized'));
-     
     }
 
     //-------------- Store New Category ---------------\\
 
-    public function store(Request $request)
+ public function store(Request $request)
     {
         $user_auth = auth()->user();
-		if ($user_auth->can('category')){
-
+        if ($user_auth->can('category')){
             request()->validate([
                 'name' => 'required',
                 'code' => 'required',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
 
-            Category::create([
+            $data = [
                 'code' => $request['code'],
                 'name' => $request['name'],
-            ]);
-            return response()->json(['success' => true]);
+                'sub_category_id' => $request['sub_category_id'],
+            ];
 
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $filename = time().'.'.$image->getClientOriginalExtension();
+                $image->storeAs('public/images/categories', $filename);
+                $data['image'] = $filename;
+            }
+
+            Category::create($data);
+            return response()->json(['success' => true]);
         }
         return abort('403', __('You are not authorized'));
     }
@@ -76,58 +90,76 @@ class CategoriesController extends Controller
     
     }
 
-    public function edit(Request $request, $id)
+      public function edit(Request $request, $id)
     {
         $user_auth = auth()->user();
-		if ($user_auth->can('category')){
-
+        if ($user_auth->can('category')){
             $category = Category::where('deleted_at', '=', null)->findOrFail($id);
+            $subcategories = Category::where('deleted_at', null)
+                ->where('id', '!=', $id)
+                ->get();
                 
             return response()->json([
                 'category' => $category,
+                'subcategories' => $subcategories,
             ]);
-
         }
         return abort('403', __('You are not authorized'));
     }
 
     //-------------- Update Category ---------------\\
 
-    public function update(Request $request, $id)
+   public function update(Request $request, $id)
     {
-
         $user_auth = auth()->user();
-		if ($user_auth->can('category')){
-
+        if ($user_auth->can('category')){
             request()->validate([
                 'name' => 'required',
                 'code' => 'required',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
 
-            Category::whereId($id)->update([
+            $category = Category::findOrFail($id);
+            $data = [
                 'code' => $request['code'],
                 'name' => $request['name'],
-            ]);
+                'sub_category_id' => $request['sub_category_id'],
+            ];
 
+            if ($request->hasFile('image')) {
+                // Delete old image if exists
+                if ($category->image) {
+                    Storage::delete('public/images/categories/'.$category->image);
+                }
+                
+                $image = $request->file('image');
+                $filename = time().'.'.$image->getClientOriginalExtension();
+                $image->storeAs('public/images/categories', $filename);
+                $data['image'] = $filename;
+            }
+
+            $category->update($data);
             return response()->json(['success' => true]);
-
         }
         return abort('403', __('You are not authorized'));
-
     }
-
     //-------------- Remove Category ---------------\\
 
-    public function destroy(Request $request, $id)
+     public function destroy(Request $request, $id)
     {
         $user_auth = auth()->user();
-		if ($user_auth->can('category')){
-
-            Category::whereId($id)->update([
+        if ($user_auth->can('category')){
+            $category = Category::findOrFail($id);
+            
+            // Delete image if exists
+            if ($category->image) {
+                Storage::delete('public/images/categories/'.$category->image);
+            }
+            
+            $category->update([
                 'deleted_at' => Carbon::now(),
             ]);
             return response()->json(['success' => true]);
-
         }
         return abort('403', __('You are not authorized'));
     }
