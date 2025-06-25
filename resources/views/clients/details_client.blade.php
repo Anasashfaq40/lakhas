@@ -112,6 +112,37 @@
             </div>
         </div>
     </div>
+    <div class="card mt-4">
+    <div class="card-header">
+        <h4>{{ __('Sales History') }}</h4>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="sales-history-table">
+                <thead>
+                    <tr>
+                        <th>{{ __('translate.Ref') }}</th>
+                        <th>{{ __('translate.Date') }}</th>
+                        <th>{{ __('Created At') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($sales as $sale)
+                        <tr>
+                            <td>{{ $sale->Ref }}</td>
+                            <td>{{ \Carbon\Carbon::parse($sale->date)->format('d M Y') }}</td>
+                            <td>{{ \Carbon\Carbon::parse($sale->created_at)->format('d M Y h:i A') }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="3" class="text-center">{{ __('translate.No Sales Found') }}</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
 
 </div>

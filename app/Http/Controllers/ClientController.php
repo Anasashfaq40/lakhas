@@ -279,67 +279,70 @@ class ClientController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request , $id)
-    {
-        $user_auth = auth()->user();
-		if ($user_auth->can('client_details')){
-            
-            $helpers = new helpers();
-            $currency = $helpers->Get_Currency();
-          
-            $client = Client::where('deleted_at', '=', null)
+public function show(Request $request, $id)
+{
+    $user_auth = auth()->user();
+
+    if ($user_auth->can('client_details')) {
+        $helpers = new helpers();
+        $currency = $helpers->Get_Currency();
+
+        $client = Client::where('deleted_at', '=', null)
             ->where(function ($query) use ($user_auth) {
                 if (!$user_auth->can('client_view_all')) {
                     return $query->where('user_id', '=', $user_auth->id);
                 }
             })->findOrFail($id);
 
-            $client_data = [];
-        
-            $item['full_name'] = $client->username;
-            $item['code'] = $client->code;
-            $item['phone'] = $client->phone;
-            $item['address'] = $client->address;
+        $client_data = [];
 
+        $item['full_name'] = $client->username;
+        $item['code'] = $client->code;
+        $item['phone'] = $client->phone;
+        $item['address'] = $client->address;
+        $item['status'] = $client->status == 1 ? 1 : 0;
 
-            if($client->status == 1){
-                $item['status'] = 1;
-            }else{
-                $item['status'] = 0;
-            }
-
-            $total_debt = 0;
-
-            $item['total_sales'] = DB::table('sales')
-            ->where('deleted_at', '=', null)
-            ->where('client_id', $id)
-            ->count();
-
-            $total_amount = DB::table('sales')
+        $total_amount = DB::table('sales')
             ->where('deleted_at', '=', null)
             ->where('client_id', $id)
             ->sum('GrandTotal');
 
-            $total_paid = DB::table('sales')
+        $total_paid = DB::table('sales')
             ->where('sales.deleted_at', '=', null)
             ->where('sales.client_id', $id)
             ->sum('paid_amount');
 
-            $total_debt =  $total_amount - $total_paid;
+        $total_debt = $total_amount - $total_paid;
 
-            $item['total_amount'] = $this->render_price_with_symbol_placement(number_format($total_amount, 2, '.', ','));
-            $item['total_paid']   = $this->render_price_with_symbol_placement(number_format($total_paid, 2, '.', ','));
-            $item['total_debt']   = $this->render_price_with_symbol_placement(number_format($total_debt, 2, '.', ','));
+        $item['total_sales'] = DB::table('sales')
+            ->where('deleted_at', '=', null)
+            ->where('client_id', $id)
+            ->count();
 
-            $client_data[] = $item;
+        $item['total_amount'] = $this->render_price_with_symbol_placement(number_format($total_amount, 2, '.', ','));
+        $item['total_paid']   = $this->render_price_with_symbol_placement(number_format($total_paid, 2, '.', ','));
+        $item['total_debt']   = $this->render_price_with_symbol_placement(number_format($total_debt, 2, '.', ','));
 
-            return view('clients.details_client', [
-                'client_id' => $id,
-                'client_data' => $client_data[0],
-            ]);
-        }
-        return abort('403', __('You are not authorized'));
+        $client_data[] = $item;
+
+        // 💡 Fetch sales history
+        $sales = DB::table('sales')
+            ->where('deleted_at', '=', null)
+            ->where('client_id', $id)
+            ->select('Ref', 'date', 'created_at')
+            ->orderBy('date', 'desc')
+            ->get();
+
+        return view('clients.details_client', [
+            'client_id' => $id,
+            'client_data' => $client_data[0],
+            'sales' => $sales,
+        ]);
     }
+
+    return abort('403', __('You are not authorized'));
+}
+
 
     /**
      * Show the form for editing the specified resource.
