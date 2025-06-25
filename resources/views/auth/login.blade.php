@@ -64,7 +64,7 @@
                             <button id="btn_submit" class="btn btn-primary w-100">{{ __('translate.Sign_in') }}</button>
                             </div>
                           <div class="mt-5 text-center">
-  <h5 class="fw-bold text-primary">© Copyright by Birdcoders</h5>
+  <h5 class="fw-bold text-primary">© Copyright by Driestech</h5>
 </div>
 
                         </div>

@@ -3328,7 +3328,7 @@ CREATE TABLE `settings` (
 --
 
 INSERT INTO `settings` (`id`, `currency_id`, `client_id`, `warehouse_id`, `email`, `app_name`, `CompanyName`, `CompanyPhone`, `CompanyAdress`, `logo`, `invoice_footer`, `footer`, `developed_by`, `default_language`, `default_sms_gateway`, `symbol_placement`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 2, 1, 4, 'admin@birdcoders.com', 'Master Material', 'Master Material', '+9203708655901', 'Karachi Pakistan', '1745664460.png', NULL, 'The Lakhas -  Inventory Management', 'Birdcoders', 'en', 'twilio', 'before', NULL, '2025-05-28 13:01:03.000000', NULL);
+(1, 2, 1, 4, 'admin@birdcoders.com', 'Master Material', 'Master Material', '+9203708655901', 'Karachi Pakistan', '1745664460.png', NULL, 'The Lakhas -  Inventory Management', 'Driestech', 'en', 'twilio', 'before', NULL, '2025-05-28 13:01:03.000000', NULL);
 
 -- --------------------------------------------------------
 

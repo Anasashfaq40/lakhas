@@ -268,6 +268,14 @@ if ($user_auth->can('supplier_details')) {
             ->where('provider_id', $id)
             ->sum('GrandTotal');
 
+            $purchases = DB::table('purchases')
+    ->whereNull('deleted_at')
+    ->where('provider_id', $id)
+    ->orderBy('date', 'desc')
+    ->select('Ref', 'date', 'GrandTotal', 'paid_amount', 'statut', 'payment_statut')
+    ->get();
+
+
             $total_paid = DB::table('purchases')
             ->where('purchases.deleted_at', '=', null)
             ->where('purchases.provider_id', $id)
@@ -282,9 +290,11 @@ if ($user_auth->can('supplier_details')) {
             $supplier_data[] = $item;
 
             return view('suppliers.details_supplier', [
-                'provider_id' => $id,
-                'supplier_data' => $supplier_data[0],
-            ]);
+    'provider_id' => $id,
+    'supplier_data' => $item,
+    'purchases' => $purchases,
+]);
+
         }
         return abort('403', __('You are not authorized'));
     }
