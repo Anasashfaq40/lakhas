@@ -45,7 +45,8 @@ if ($installed === true) {
 
         Route::group(['middleware'=>'auth','Is_Admin' , 'Is_Active'],function(){
             Route::get('dashboard/admin', "DashboardController@dashboard_admin")->name('dashboard');
-
+            Route::resource('products/sub_categories', SubCategoriesController::class);
+            Route::post('/products/toggle-visibility', [ProductsController::class, 'toggleVisibility'])->name('products.toggle.visibility');
             //------------------------------------------------------------------\\
 
             Route::get('/update_database', 'UpdateController@viewStep1');
