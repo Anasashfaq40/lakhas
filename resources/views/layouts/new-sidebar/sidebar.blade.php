@@ -188,6 +188,14 @@
                                     ])
                                 </li>
                             @endcan
+                            
+                                <li>
+                                    @include('components.sidebar.child-navitem', [
+                                        'href'=>'/products/warehouses', 
+                                        'title'=> __('Warehouse')
+                                    ])
+                                </li>
+                            
                         </ul>
                     </div>
                 </li>
