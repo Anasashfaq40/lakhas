@@ -43,6 +43,10 @@ class Product extends Model
     {
         return $this->belongsTo('App\Models\PurchaseDetail');
     }
+    public function images()
+    {
+        return $this->hasMany(\App\Models\ProductImage::class);
+    }
 
     public function SaleDetail()
     {
