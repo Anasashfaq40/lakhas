@@ -605,7 +605,7 @@ public function Print_Invoice_POS(Request $request, $id)
 
         $details = array();
 
-        $sale = Sale::with('details.product.unitSale')
+        $sale = Sale::with('details.product.unitSale', 'client')
             ->where('deleted_at', '=', null)
             ->findOrFail($id);
 
@@ -623,38 +623,72 @@ public function Print_Invoice_POS(Request $request, $id)
         $item['shipping']               = $this->render_price_with_symbol_placement(number_format($sale->shipping, 2, '.', ','));
         $item['taxe']                   = $this->render_price_with_symbol_placement(number_format($sale->TaxNet, 2, '.', ','));
         $item['tax_rate']               = $sale->tax_rate;
-        $item['client_name']            = $sale['client']->username;
+        $item['client_name']            = $sale['client']->username ?? 'N/A';
+        
+        // Additional client information
+        $item['client_address']         = $sale['client']->adresse ?? '';
+        $item['client_phone']           = $sale['client']->phone ?? '';
+        
         $item['warehouse_name']         = $sale['warehouse']->name;
         $item['GrandTotal']             = $this->render_price_with_symbol_placement(number_format($sale->GrandTotal, 2, '.', ','));
         $item['paid_amount']            = $this->render_price_with_symbol_placement(number_format($sale->paid_amount, 2, '.', ','));
         $item['due']                    = $this->render_price_with_symbol_placement(number_format($sale->GrandTotal - $sale->paid_amount, 2, '.', ','));
         
+        // Additional dates and notes
+        $item['trial_date']             = $sale->trial_date ? Carbon::parse($sale->trial_date)->format('d-m-Y') : '';
+        $item['delivery_date']          = $sale->delivery_date ? Carbon::parse($sale->delivery_date)->format('d-m-Y') : '';
+        $item['notes']                  = $sale->notes ?? '';
+
         foreach ($sale['details'] as $detail) {
-
             $unit = Unit::where('id', $detail->sale_unit_id)->first();
-            if ($detail->product_variant_id) {
 
+            if ($detail->product_variant_id) {
                 $productsVariants = ProductVariant::where('product_id', $detail->product_id)
                     ->where('id', $detail->product_variant_id)->first();
 
-                    $data['code'] = $productsVariants->code;
-                    $data['name'] = '['.$productsVariants->name . '] ' . $detail['product']['name'];
-                    
-                } else {
-                    $data['code'] = $detail['product']['code'];
-                    $data['name'] = $detail['product']['name'];
-                }
-                
+                $data['code'] = $productsVariants->code ?? '';
+                $data['name'] = '['.$productsVariants->name . '] ' . $detail['product']['name'];
+            } else {
+                $data['code'] = $detail['product']['code'] ?? '';
+                $data['name'] = $detail['product']['name'] ?? '';
+            }
+
             $data['price'] = $this->render_price_with_symbol_placement(number_format($detail->price, 2, '.', ','));
             $data['total'] = $this->render_price_with_symbol_placement(number_format($detail->total, 2, '.', ','));
             $data['quantity'] = $detail->quantity;
-            $data['unit_sale'] = $unit?$unit->ShortName:'';
-
-            $data['is_imei'] = $detail['product']['is_imei'];
-            $data['imei_number'] = $detail->imei_number;
+            $data['unit_sale'] = $unit ? $unit->ShortName : '';
+            $data['is_imei'] = $detail['product']['is_imei'] ?? false;
+            $data['imei_number'] = $detail->imei_number ?? '';
 
             $details[] = $data;
         }
+
+        // Prepare measurements data
+        $measurements = [
+            // Shirt measurements
+            'shirt_length'      => $sale->shirt_length ?? '',
+            'shoulder'          => $sale->shirt_shoulder ?? '',
+            'sleeves'           => $sale->shirt_sleeves ?? '',
+            'chest'             => $sale->shirt_chest ?? '',
+            'upper_waist'       => $sale->shirt_upper_waist ?? '',
+            'lower_waist'       => $sale->shirt_lower_waist ?? '',
+            'hip'               => $sale->shirt_hip ?? '',
+            'neck'              => $sale->shirt_neck ?? '',
+            'arms'              => $sale->shirt_arms ?? '',
+            'cuff'              => $sale->shirt_cuff ?? '',
+            'biceps'            => $sale->shirt_biceps ?? '',
+            'collar_type'       => $sale->shirt_collar_type ?? '',
+            'daman_type'        => $sale->shirt_daman_type ?? '',
+            
+            // Pant measurements
+            'pant_length'       => $sale->pant_length ?? '',
+            'waist'             => $sale->pant_waist ?? '',
+            'pant_hip'          => $sale->pant_hip ?? '',
+            'thigh'             => $sale->pant_thigh ?? '',
+            'knee'              => $sale->pant_knee ?? '',
+            'bottom'            => $sale->pant_bottom ?? '',
+            'fly'               => $sale->pant_fly ?? '',
+        ];
 
         $payments = PaymentSale::with('sale','payment_method')
             ->where('sale_id', $id)
@@ -663,10 +697,8 @@ public function Print_Invoice_POS(Request $request, $id)
 
         $payments_details = [];
         foreach ($payments as $payment) {
-
-            $payment_data['Reglement'] = $payment->payment_method->title;
+            $payment_data['Reglement'] = $payment->payment_method->title ?? '';
             $payment_data['montant']   = $this->render_price_with_symbol_placement(number_format($payment->montant, 2, '.', ','));
-
             $payments_details[] = $payment_data;
         }
 
@@ -696,19 +728,21 @@ public function Print_Invoice_POS(Request $request, $id)
         $pos_settings = PosSetting::where('deleted_at', '=', null)->first();
 
         return view('sales.invoice_pos',
-                [
-                    'payments' => $payments_details,
-                    'setting' => $settings,
-                    'pos_settings' => $pos_settings,
-                    'sale' => $item,
-                    'details' => $details,
-                    'previous_balance' => $previous_balance_formatted,
-                ]
-            );
-
+            [
+                'payments' => $payments_details,
+                'setting' => $settings,
+                'pos_settings' => $pos_settings,
+                'sale' => $item,
+                'details' => $details,
+                'previous_balance' => $previous_balance_formatted,
+                'measurements' => $measurements, // New measurements data
+            ]
+        );
     }
+
     return abort('403', __('You are not authorized'));
 }
+
 
 
     // render_price_with_symbol_placement
