@@ -5,7 +5,8 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Posly - Ultimate Inventory Management System with POS</title>
+    <title>The Lakhas -Inventory & Account Management</title>
+
 
   <!-- Favicon icon -->
   <link rel=icon href={{ asset('images/logo.svg') }}>

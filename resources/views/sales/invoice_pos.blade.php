@@ -190,9 +190,9 @@
     <div id="invoice-POS">
       <!-- Logo Section -->
       <div class="logo-container">
-        <div class="logo-box">Master</div>
-        <div class="logo-box">Gold</div>
-        <div class="logo-box">Prime</div>
+        <div class="logo-box">The </div>
+        <div class="logo-box">Lakhas</div>
+        <div class="logo-box">POS</div>
       </div>
       
       <!-- Company Info -->
