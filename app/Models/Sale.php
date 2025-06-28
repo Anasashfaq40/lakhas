@@ -12,6 +12,11 @@ class Sale extends Model
         'date', 'Ref', 'is_pos', 'client_id', 'GrandTotal', 'qte_retturn', 'TaxNet', 'tax_rate', 'notes',
         'total_retturn', 'warehouse_id', 'user_id', 'statut', 'discount', 'shipping',
         'paid_amount', 'payment_statut', 'created_at', 'updated_at', 'deleted_at','discount_type','discount_percent_total','assigned_driver',
+        'shirt_length', 'shirt_shoulder', 'shirt_sleeves', 'shirt_chest',
+        'shirt_upper_waist', 'shirt_lower_waist', 'shirt_hip', 'shirt_neck',
+        'shirt_arms', 'shirt_cuff', 'shirt_biceps', 'shirt_collar_type', 'shirt_daman_type',
+        'pant_length', 'pant_waist', 'pant_hip', 'pant_thigh',
+        'pant_knee', 'pant_bottom', 'pant_fly',
     ];
 
     protected $casts = [

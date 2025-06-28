@@ -144,6 +144,29 @@ class PosController extends Controller
             $order->statut = 'completed';
             $order->payment_statut = 'unpaid';
             $order->user_id = Auth::user()->id;
+            //Shirt/suit measurements
+            $order->shirt_length = $request->shirt_length;
+            $order->shirt_shoulder = $request->shirt_shoulder;
+            $order->shirt_sleeves = $request->shirt_sleeves;
+            $order->shirt_chest = $request->shirt_chest;
+            $order->shirt_upper_waist = $request->shirt_upper_waist;
+            $order->shirt_lower_waist = $request->shirt_lower_waist;
+            $order->shirt_hip = $request->shirt_hip;
+            $order->shirt_neck = $request->shirt_neck;
+            $order->shirt_arms = $request->shirt_arms;
+            $order->shirt_cuff = $request->shirt_cuff;
+            $order->shirt_biceps = $request->shirt_biceps;
+            $order->shirt_collar_type = $request->shirt_collar_type;
+            $order->shirt_daman_type = $request->shirt_daman_type;
+
+            //Pant/shawar measurements
+            $order->pant_length = $request->pant_length;
+            $order->pant_waist = $request->pant_waist;
+            $order->pant_hip = $request->pant_hip;
+            $order->pant_thigh = $request->pant_thigh;
+            $order->pant_knee = $request->pant_knee;
+            $order->pant_bottom = $request->pant_bottom;
+            $order->pant_fly = $request->pant_fly;
 
             $order->save();
             

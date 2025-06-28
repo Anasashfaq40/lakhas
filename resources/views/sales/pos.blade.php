@@ -164,7 +164,121 @@
                     </div>
 
                     <div class="cart-summery">
-                      
+
+                      <!-- Measurement Section -->
+                    <div class="card mt-3 shadow-sm">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="fw-semibold m-0">Clothing Measurements</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <!-- Shirt/Suit Measurements -->
+                                <div class="col-md-6 border-end">
+                                    <h6 class="text-primary mb-3">Shirt / Suit</h6>
+
+                                    <div class="row">
+                                        <div class="col-sm-6 mb-2">
+                                            <label class="form-label" style="font-size:13px;">Length</label>
+                                            <input v-model="sale.shirt_length" type="text" class="form-control form-control-sm">
+                                        </div>
+                                        <div class="col-sm-6 mb-2">
+                                            <label class="form-label" style="font-size:13px;">Shoulder</label>
+                                            <input v-model="sale.shirt_shoulder" type="text" class="form-control form-control-sm">
+                                        </div>
+                                        <div class="col-sm-6 mb-2">
+                                            <label class="form-label" style="font-size:13px;">Sleeves</label>
+                                            <input v-model="sale.shirt_sleeves" type="text" class="form-control form-control-sm">
+                                        </div>
+                                        <div class="col-sm-6 mb-2">
+                                            <label class="form-label" style="font-size:13px;">Chest</label>
+                                            <input v-model="sale.shirt_chest" type="text" class="form-control form-control-sm">
+                                        </div>
+                                        <div class="col-sm-6 mb-2">
+                                            <label class="form-label" style="font-size:13px;">Upper Waist</label>
+                                            <input v-model="sale.shirt_upper_waist" type="text" class="form-control form-control-sm">
+                                        </div>
+                                        <div class="col-sm-6 mb-2">
+                                            <label class="form-label" style="font-size:13px;">Lower Waist</label>
+                                            <input v-model="sale.shirt_lower_waist" type="text" class="form-control form-control-sm">
+                                        </div>
+                                        <div class="col-sm-6 mb-2">
+                                            <label class="form-label" style="font-size:13px;">Hip</label>
+                                            <input v-model="sale.shirt_hip" type="text" class="form-control form-control-sm">
+                                        </div>
+                                        <div class="col-sm-6 mb-2">
+                                            <label class="form-label" style="font-size:13px;">Neck</label>
+                                            <input v-model="sale.shirt_neck" type="text" class="form-control form-control-sm">
+                                        </div>
+                                        <div class="col-sm-6 mb-2">
+                                            <label class="form-label" style="font-size:13px;">Arms</label>
+                                            <input v-model="sale.shirt_arms" type="text" class="form-control form-control-sm">
+                                        </div>
+                                        <div class="col-sm-6 mb-2">
+                                            <label class="form-label" style="font-size:13px;">Cuff</label>
+                                            <input v-model="sale.shirt_cuff" type="text" class="form-control form-control-sm">
+                                        </div>
+                                        <div class="col-sm-6 mb-2">
+                                            <label class="form-label" style="font-size:13px;">Biceps</label>
+                                            <input v-model="sale.shirt_biceps" type="text" class="form-control form-control-sm">
+                                        </div>
+
+                                        <div class="col-sm-6 mb-2">
+                                            <label class="form-label" style="font-size:13px;">Collar Type</label>
+                                            <select v-model="sale.shirt_collar_type" class="form-control form-control-sm">
+                                                <option value="Shirt">Shirt</option>
+                                                <option value="Sherwani">Sherwani</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-sm-6 mb-2">
+                                            <label class="form-label" style="font-size:13px;">Daman Type</label>
+                                            <select v-model="sale.shirt_daman_type" class="form-control form-control-sm">
+                                                <option value="Round">Round</option>
+                                                <option value="Square">Square</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Pant/Shalwar Measurements -->
+                                <div class="col-md-6">
+                                    <h6 class="text-success mb-3">Pant / Shalwar</h6>
+
+                                    <div class="row">
+                                        <div class="col-sm-6 mb-2">
+                                            <label class="form-label" style="font-size:13px;">Length</label>
+                                            <input v-model="sale.pant_length" type="text" class="form-control form-control-sm">
+                                        </div>
+                                        <div class="col-sm-6 mb-2">
+                                            <label class="form-label" style="font-size:13px;">Waist</label>
+                                            <input v-model="sale.pant_waist" type="text" class="form-control form-control-sm">
+                                        </div>
+                                        <div class="col-sm-6 mb-2">
+                                            <label class="form-label" style="font-size:13px;">Hip</label>
+                                            <input v-model="sale.pant_hip" type="text" class="form-control form-control-sm">
+                                        </div>
+                                        <div class="col-sm-6 mb-2">
+                                            <label class="form-label" style="font-size:13px;">Thigh</label>
+                                            <input v-model="sale.pant_thigh" type="text" class="form-control form-control-sm">
+                                        </div>
+                                        <div class="col-sm-6 mb-2">
+                                            <label class="form-label" style="font-size:13px;">Knee</label>
+                                            <input v-model="sale.pant_knee" type="text" class="form-control form-control-sm">
+                                        </div>
+                                        <div class="col-sm-6 mb-2">
+                                            <label class="form-label" style="font-size:13px;">Bottom</label>
+                                            <input v-model="sale.pant_bottom" type="text" class="form-control form-control-sm">
+                                        </div>
+                                        <div class="col-sm-6 mb-2">
+                                            <label class="form-label" style="font-size:13px;">Fly</label>
+                                            <input v-model="sale.pant_fly" type="text" class="form-control form-control-sm">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div>
                       <div class="summery-item mb-2 row">
                         <span class="title mr-2 col-lg-12 col-sm-12">{{ __('translate.Shipping') }}</span>
@@ -222,7 +336,7 @@
                         </div>
                       </div>
                     </div>
-
+                        
                       <div class="pt-3 border-top border-gray-300 summery-total">
                         <h5 class="summery-item m-0">
                           <span>{{ __('translate.Total') }}</span>
@@ -703,6 +817,14 @@
               discount_percent_total: 0,
               TaxNet: 0,
               notes:'',
+               // Shirt
+    shirt_length: '', shirt_shoulder: '', shirt_sleeves: '', shirt_chest: '',
+    shirt_upper_waist: '', shirt_lower_waist: '', shirt_hip: '', shirt_neck: '',
+    shirt_arms: '', shirt_cuff: '', shirt_biceps: '', shirt_collar_type: '', shirt_daman_type: '',
+
+    // Pant
+    pant_length: '', pant_waist: '', pant_hip: '', pant_thigh: '',
+    pant_knee: '', pant_bottom: '', pant_fly: ''
             },
             payment: {
                 date:moment().format('YYYY-MM-DD HH:mm'),
@@ -1258,7 +1380,30 @@ Get_Client_Due(client_id) {
                   account_id: this.payment.account_id,
                   payment_notes: this.payment.notes,
                   montant : parseFloat(this.payment.montant).toFixed(2),
-                 
+                  //Shirt/suit measurements
+                  shirt_length: this.sale.shirt_length,
+                  shirt_shoulder: this.sale.shirt_shoulder,
+                  shirt_sleeves: this.sale.shirt_sleeves,
+                  shirt_chest: this.sale.shirt_chest,
+                  shirt_upper_waist: this.sale.shirt_upper_waist,
+                  shirt_lower_waist: this.sale.shirt_lower_waist,
+                  shirt_hip: this.sale.shirt_hip,
+                  shirt_neck: this.sale.shirt_neck,
+                  shirt_arms: this.sale.shirt_arms,
+                  shirt_cuff: this.sale.shirt_cuff,
+                  shirt_biceps: this.sale.shirt_biceps,
+                  shirt_collar_type: this.sale.shirt_collar_type,
+                  shirt_daman_type: this.sale.shirt_daman_type,
+                  
+                  //Pant/shalwar measurements
+                  pant_length: this.sale.pant_length,
+                  pant_waist: this.sale.pant_waist,
+                  pant_hip: this.sale.pant_hip,
+                  pant_thigh: this.sale.pant_thigh,
+                  pant_knee: this.sale.pant_knee,
+                  pant_bottom: this.sale.pant_bottom,
+                  pant_fly: this.sale.pant_fly,
+                  
                  
                 })
                 .then(response => {
