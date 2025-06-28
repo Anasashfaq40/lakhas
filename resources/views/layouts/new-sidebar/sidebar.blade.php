@@ -210,7 +210,7 @@
                         class="collapse-button"
                     >
                         @include('components.sidebar.collapse-navitem', [
-                            'title'=>__('translate.StockAdjustement'), 
+                            'title'=>'Stock Level', 
                             'icon'=>'components.icons.store'
                         ])
                     </div>
@@ -225,7 +225,7 @@
                                 <li>
                                     @include('components.sidebar.child-navitem', [
                                         'href'=>'/adjustment/adjustments', 
-                                        'title'=> __('translate.ListAdjustments')
+                                        'title'=> __('List Stock Level')
                                     ])
                                 </li>
                             @endif
@@ -233,7 +233,7 @@
                                 <li>
                                     @include('components.sidebar.child-navitem', [
                                         'href'=>'/adjustment/adjustments/create', 
-                                        'title'=> __('translate.CreateAdjustment')
+                                        'title'=> __('Create Stock Level')
                                     ])
                                 </li>
                             @endcan

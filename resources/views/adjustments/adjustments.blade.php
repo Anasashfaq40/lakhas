@@ -7,7 +7,7 @@
 @endsection
 
 <div class="breadcrumb">
-  <h1>{{ __('translate.Adjustments') }}</h1>
+  <h1>{{ __('Stock Levels') }}</h1>
 </div>
 
 <div class="separator-breadcrumb border-top"></div>
