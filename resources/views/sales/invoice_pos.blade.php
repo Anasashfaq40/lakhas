@@ -8,32 +8,51 @@
 <head>
   <meta charset="UTF-8">
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
-  <title>The Lakhas </title>
+  <title>The Lakhas - Order Invoice</title>
   <link rel=icon href={{ asset('images/logo.svg') }}>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
   <!-- CSS Files -->
-  <link rel="stylesheet" href="{{asset('assets/styles/vendor/invoice_pos.css')}}">
+  <!-- <link rel="stylesheet" href="{{asset('assets/styles/vendor/invoice_pos.css')}}"> -->
   <script src="{{asset('/assets/js/vue.js')}}"></script>
 
   <style>
+    :root {
+      --primary-color: #5d4bff;
+      --secondary-color: #7ec8ca;
+      --dark-color: #05070b;
+      --light-color: #f8f9fa;
+      --border-color: #e0e0e0;
+      --text-color: #333333;
+      --success-color: #28a745;
+      --warning-color: #ffc107;
+      --danger-color: #dc3545;
+    }
+    
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Poppins', sans-serif;
       margin: 0;
       padding: 0;
-      font-size: 11px;
-      line-height: 1.3;
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--text-color);
+      background-color: #f5f7fa;
     }
     
     #invoice-POS {
       width: 100%;
-      max-width: 297mm; /* Changed from 210mm to 297mm for landscape */
-      margin: 0 auto;
-      padding: 10px;
+      max-width: 300mm;
+      margin: 20px auto;
+      padding: 15px;
       background: #FFF;
       position: relative;
       overflow: visible;
-      min-height: 210mm; /* Changed from 297mm to 210mm for landscape */
+      min-height: 210mm;
       box-sizing: border-box;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      border-radius: 8px;
+      overflow: hidden;
+    
     }
 
     #invoice-POS::before {
@@ -47,7 +66,7 @@
       background-position: center;
       background-repeat: no-repeat;
       background-size: 40%;
-      opacity: 0.05;
+      opacity: 0.06;
       z-index: 0;
       pointer-events: none;
     }
@@ -60,139 +79,181 @@
     .invoice-container {
       display: flex;
       flex-direction: row;
-      gap: 5mm;
+      gap: 10mm;
       width: 100%;
-      min-height: 190mm; /* Adjusted for landscape */
+      min-height: 190mm;
       box-sizing: border-box;
     }
     
     .left-section {
-      width: 60%; /* Increased width for left section */
+      width: 60%;
       flex: 0 0 60%;
-      border-right: 2px dotted #000;
-      padding-right: 5mm;
+      border-right: 1px dashed var(--primary-color);
+      padding-right: 10mm;
       box-sizing: border-box;
     }
     
     .right-section {
-      width: 40%; /* Adjusted width for right section */
+      width: 40%;
       flex: 0 0 40%;
-      padding-left: 5mm;
+      padding-left: 10mm;
       box-sizing: border-box;
     }
     
     .header-section {
       text-align: center;
-      margin-bottom: 15px;
-      border-bottom: 2px solid #000;
-      padding-bottom: 10px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--primary-color);
+      padding-bottom: 15px;
     }
     
     .company-name {
-      font-size: 20px;
-      font-weight: bold;
+      font-size: 24px;
+      font-weight: 600;
       margin-bottom: 5px;
+      color: var(--primary-color);
+      letter-spacing: 0.5px;
     }
     
     .company-tagline {
-      font-size: 12px;
-      font-style: italic;
-      margin-bottom: 5px;
+      font-size: 14px;
+      font-weight: 400;
+      margin-bottom: 8px;
+      color: var(--dark-color);
+      opacity: 0.8;
     }
     
     .company-details {
-      font-size: 9px;
-      line-height: 1.2;
+      font-size: 11px;
+      line-height: 1.4;
+      color: #666;
     }
     
     .order-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
       flex-wrap: wrap;
+      background-color: rgba(93, 75, 255, 0.05);
+      padding: 12px;
+      border-radius: 6px;
     }
     
     .order-number {
-      font-size: 14px;
-      font-weight: bold;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--primary-color);
     }
     
     .order-form-label {
-      border: 1px solid #000;
-      padding: 3px 8px;
-      font-weight: bold;
-      font-size: 10px;
+      background-color: var(--primary-color);
+      color: white;
+      padding: 5px 12px;
+      font-weight: 500;
+      font-size: 11px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
     }
     
     .customer-section {
-      margin-bottom: 15px;
+      margin-bottom: 20px;
+      background-color: var(--light-color);
+      padding: 15px;
+      border-radius: 6px;
+      border-left: 4px solid var(--primary-color);
     }
     
     .form-row {
       display: flex;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
       align-items: center;
     }
     
     .form-label {
-      font-weight: bold;
-      margin-right: 8px;
-      min-width: 70px;
-      font-size: 10px;
+      font-weight: 500;
+      margin-right: 10px;
+      min-width: 80px;
+      font-size: 11px;
+      color: var(--dark-color);
     }
     
     .form-input {
-      border-bottom: 1px solid #000;
+      border-bottom: 1px solid var(--border-color);
       flex: 1;
-      padding: 2px 3px;
-      min-height: 14px;
-      font-size: 10px;
+      padding: 3px 5px;
+      min-height: 16px;
+      font-size: 11px;
+      transition: border-color 0.3s;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-bottom-color: var(--primary-color);
     }
     
     .dates-section {
       display: flex;
-      gap: 15px;
-      margin-bottom: 15px;
-      font-size: 9px;
+      gap: 20px;
+      margin-bottom: 20px;
+      font-size: 11px;
       flex-wrap: wrap;
+      background-color: var(--light-color);
+      padding: 12px;
+      border-radius: 6px;
     }
     
     .date-item {
       display: flex;
       align-items: center;
-      gap: 3px;
+      gap: 5px;
+      flex: 1;
+      min-width: 120px;
+    }
+    
+    .date-label {
+      font-weight: 500;
+      color: var(--dark-color);
     }
     
     .date-input {
-      border-bottom: 1px solid #000;
-      min-width: 60px;
-      padding: 2px;
-      font-size: 9px;
+      border-bottom: 1px solid var(--border-color);
+      min-width: 80px;
+      padding: 3px;
+      font-size: 11px;
+      flex: 1;
     }
     
     .items-table {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 15px;
-      font-size: 10px;
+      margin-bottom: 20px;
+      font-size: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
     
     .items-table th,
     .items-table td {
-      border: 1px solid #000;
-      padding: 4px;
+      border: 1px solid var(--border-color);
+      padding: 8px;
       text-align: center;
     }
     
     .items-table th {
-      background-color: #f0f0f0;
-      font-weight: bold;
-      font-size: 9px;
+      background-color: var(--primary-color);
+      color: white;
+      font-weight: 500;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+    }
+    
+    .items-table tr:nth-child(even) {
+      background-color: var(--light-color);
     }
     
     .items-col {
       width: 40%;
+      text-align: left !important;
     }
     
     .qty-col {
@@ -208,108 +269,176 @@
     }
     
     .terms-section {
-      margin-top: 15px;
-      font-size: 8px;
-      line-height: 1.2;
+      margin-top: 20px;
+      font-size: 10px;
+      line-height: 1.5;
+      background-color: var(--light-color);
+      padding: 15px;
+      border-radius: 6px;
+      border-left: 4px solid var(--secondary-color);
     }
     
     .terms-title {
-      font-weight: bold;
-      text-decoration: underline;
-      margin-bottom: 5px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--dark-color);
+      font-size: 12px;
     }
     
     .right-header {
       text-align: center;
-      margin-bottom: 15px;
-      border-bottom: 1px solid #000;
-      padding-bottom: 8px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--primary-color);
+      padding-bottom: 12px;
     }
     
     .measurements-section {
-      margin-bottom: 15px;
+      margin-bottom: 20px;
     }
     
     .measurement-category {
-      font-weight: bold;
-      text-decoration: underline;
-      margin-bottom: 8px;
-      font-size: 11px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      font-size: 13px;
+      color: var(--primary-color);
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 5px;
     }
     
     .measurement-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 4px;
-      margin-bottom: 12px;
+      gap: 8px;
+      margin-bottom: 15px;
     }
     
     .measurement-item {
       display: flex;
       align-items: center;
-      gap: 3px;
+      gap: 5px;
     }
     
     .measurement-label {
-      min-width: 60px;
-      font-size: 9px;
+      min-width: 80px;
+      font-size: 11px;
+      font-weight: 500;
+      color: #555;
     }
     
     .measurement-input {
-      border-bottom: 1px solid #000;
+      border-bottom: 1px solid var(--border-color);
       flex: 1;
-      min-height: 12px;
-      padding: 1px 2px;
-      font-size: 9px;
+      min-height: 16px;
+      padding: 3px 5px;
+      font-size: 11px;
     }
     
     .style-options {
-      margin-bottom: 12px;
+      margin-bottom: 15px;
+      background-color: var(--light-color);
+      padding: 12px;
+      border-radius: 6px;
     }
     
     .style-row {
       display: flex;
       align-items: center;
-      margin-bottom: 4px;
-      gap: 8px;
-      font-size: 9px;
+      margin-bottom: 6px;
+      gap: 10px;
+      font-size: 11px;
+    }
+    
+    .style-row-title {
+      font-weight: 500;
+      min-width: 60px;
+      color: var(--dark-color);
     }
     
     .checkbox-group {
       display: flex;
-      gap: 10px;
+      gap: 15px;
     }
     
     .checkbox-item {
       display: flex;
       align-items: center;
-      gap: 2px;
-      font-size: 8px;
-    }
-    
- 
-    
-    .notes-section {
-      margin-top: 8px;
-    }
-    
-    .notes-label {
-      font-weight: bold;
-      margin-bottom: 4px;
+      gap: 5px;
       font-size: 10px;
     }
     
+    .checkbox-item input {
+      accent-color: var(--primary-color);
+    }
+    
+    .swatches-box {
+      border: 1px solid var(--border-color);
+      height: 80px;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--light-color);
+      border-radius: 6px;
+    }
+    
+    .swatches-label {
+      font-size: 11px;
+      color: #777;
+      font-style: italic;
+    }
+    
+    .notes-section {
+      margin-top: 15px;
+    }
+    
+    .notes-label {
+      font-weight: 500;
+      margin-bottom: 8px;
+      font-size: 12px;
+      color: var(--dark-color);
+    }
+    
     .notes-area {
-      border: 1px solid #000;
-      height: 40px;
+      border: 1px solid var(--border-color);
+      height: 60px;
       width: 100%;
-      padding: 3px;
-      font-size: 8px;
+      padding: 8px;
+      font-size: 11px;
       box-sizing: border-box;
+      border-radius: 6px;
+      resize: none;
+      transition: border-color 0.3s;
+    }
+    
+    .notes-area:focus {
+      outline: none;
+      border-color: var(--primary-color);
     }
     
     .hidden-print {
       margin-bottom: 20px;
+      text-align: center;
+    }
+    
+    .btn {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: var(--primary-color);
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 5px rgba(93, 75, 255, 0.2);
+    }
+    
+    .btn:hover {
+      background-color: #4a3acc;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(93, 75, 255, 0.3);
     }
     
     /* Landscape orientation for printing */
@@ -332,15 +461,15 @@
       
       .left-section {
         border-right: none;
-        border-bottom: 2px dotted #000;
+        border-bottom: 1px dashed var(--primary-color);
         padding-right: 0;
-        padding-bottom: 10px;
-        margin-bottom: 10px;
+        padding-bottom: 15px;
+        margin-bottom: 15px;
       }
       
       .right-section {
         padding-left: 0;
-        padding-top: 10px;
+        padding-top: 15px;
       }
     }
     
@@ -352,6 +481,7 @@
       body {
         margin: 0;
         padding: 0;
+        background: none;
       }
       
       #invoice-POS {
@@ -359,6 +489,8 @@
         margin: 0;
         padding: 5mm;
         max-width: none;
+        box-shadow: none;
+        border: none;
       }
       
       .invoice-container {
@@ -367,19 +499,19 @@
       
       .left-section,
       .right-section {
-        width: 60% 40%; /* Maintain landscape proportions */
+        width: 60% 40%;
         flex: 0 0 60% 40%;
       }
       
       .left-section {
-        border-right: 2px dotted #000;
+        border-right: 1px dashed var(--primary-color);
         border-bottom: none;
-        padding-right: 5mm;
+        padding-right: 10mm;
         margin-bottom: 0;
       }
       
       .right-section {
-        padding-left: 5mm;
+        padding-left: 10mm;
         padding-top: 0;
       }
     }
@@ -389,7 +521,7 @@
 <body>
   <div id="in_pos">
     <div class="hidden-print">
-      <a @click="print_pos()" class="btn btn-primary">{{ __('translate.print') }}</a>
+      <a @click="print_pos()" class="btn">{{ __('translate.print') }}</a>
       <br>
     </div>
     
@@ -433,15 +565,15 @@
           <!-- Dates Section -->
           <div class="dates-section">
             <div class="date-item">
-              <span>Order Date:</span>
+              <span class="date-label">Order Date:</span>
               <div class="date-input">@{{sale?.date ?? ''}}</div>
             </div>
             <div class="date-item">
-              <span>Trial Date:</span>
+              <span class="date-label">Trial Date:</span>
               <div class="date-input">@{{sale?.trial_date ?? ''}}</div>
             </div>
             <div class="date-item">
-              <span>Delivery Date:</span>
+              <span class="date-label">Delivery Date:</span>
               <div class="date-input">@{{sale?.delivery_date ?? ''}}</div>
             </div>
           </div>
@@ -515,15 +647,15 @@
           <!-- Dates (Right) -->
           <div class="dates-section">
             <div class="date-item">
-              <span>Order Date:</span>
+              <span class="date-label">Order Date:</span>
               <div class="date-input">@{{sale?.date ?? ''}}</div>
             </div>
             <div class="date-item">
-              <span>Trial Date:</span>
+              <span class="date-label">Trial Date:</span>
               <div class="date-input">@{{sale?.trial_date ?? ''}}</div>
             </div>
             <div class="date-item">
-              <span>Delivery Date:</span>
+              <span class="date-label">Delivery Date:</span>
               <div class="date-input">@{{sale?.delivery_date ?? ''}}</div>
             </div>
           </div>
@@ -531,7 +663,7 @@
           <!-- Measurements Section -->
           <div class="measurements-section">
             <!-- Shirt/Suit Measurements -->
-            <div class="measurement-category">SHIRT/SUIT:</div>
+            <div class="measurement-category">SHIRT/SUIT MEASUREMENTS</div>
             <div class="measurement-grid">
               <div class="measurement-item">
                 <span class="measurement-label">Length:</span>
@@ -582,7 +714,7 @@
             <!-- Style Options -->
             <div class="style-options">
               <div class="style-row">
-                <span>Collar:</span>
+                <span class="style-row-title">Collar:</span>
                 <div class="checkbox-group">
                   <div class="checkbox-item">
                     <input type="checkbox" :checked="measurements?.collar_type === 'shirt'"> Shirt
@@ -593,7 +725,7 @@
                 </div>
               </div>
               <div class="style-row">
-                <span>Daman:</span>
+                <span class="style-row-title">Daman:</span>
                 <div class="checkbox-group">
                   <div class="checkbox-item">
                     <input type="checkbox" :checked="measurements?.daman_type === 'round'"> Round
@@ -606,7 +738,7 @@
             </div>
             
             <!-- Pant/Shalwar Measurements -->
-            <div class="measurement-category">PANT/SHALWAR:</div>
+            <div class="measurement-category">PANT/SHALWAR MEASUREMENTS</div>
             <div class="measurement-grid">
               <div class="measurement-item">
                 <span class="measurement-label">Length:</span>
@@ -640,12 +772,14 @@
           </div>
           
           <!-- Swatches Box -->
-         
+          <div class="swatches-box">
+            <div class="swatches-label">Fabric Swatches Attached Here</div>
+          </div>
           
           <!-- Notes Section -->
           <div class="notes-section">
-            <div class="notes-label">NOTES:</div>
-            <div class="notes-area">@{{sale?.notes ?? ''}}</div>
+            <div class="notes-label">CUSTOMER NOTES & SPECIAL INSTRUCTIONS:</div>
+            <textarea class="notes-area" readonly>@{{sale?.notes ?? ''}}</textarea>
           </div>
         </div>
       </div>
@@ -658,7 +792,7 @@
     var app = new Vue({
       el: '#in_pos',
       
-          data: {
+      data: {
         payments: @json($payments),
         details: @json($details),
         pos_settings: @json($pos_settings),
@@ -727,15 +861,18 @@
               body {
                 margin: 0;
                 padding: 0;
+                background: none;
               }
               #invoice-POS {
                 width: 100%;
                 margin: 0;
                 padding: 5mm;
                 background: #FFF;
+                box-shadow: none;
+                border: none;
               }
               #invoice-POS::before {
-                opacity: 0.05;
+                opacity: 0.06;
               }
               .invoice-container {
                 flex-direction: row;

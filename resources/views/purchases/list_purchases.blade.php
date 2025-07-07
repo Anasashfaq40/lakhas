@@ -37,6 +37,8 @@
                   <th>{{ __('translate.Ref') }}</th>
                   <th>{{ __('translate.Supplier') }}</th>
                   <th>{{ __('translate.warehouse') }}</th>
+                  <th>{{ __('translate.Cost') }}</th>
+                  <th>{{ __('translate.PurchaseQuantity') }}</th>
                   <th>{{ __('translate.Total') }}</th>
                   <th>{{ __('translate.Paid') }}</th>
                   <th>{{ __('translate.Due') }}</th>
@@ -368,7 +370,7 @@
                             'searchable': false,
                         },
                         {
-                            'targets': [3,4,5,6,7,8,9],
+                            'targets': [3,4,5,6,7,8,9,10],
                             "orderable": false,
                         },
                     ],
@@ -392,6 +394,8 @@
                     {data: 'Ref'},
                     {data: 'provider_name'},
                     {data: 'warehouse_name'},
+                    {data: 'cost', className: "text-center"},
+                    {data: 'quantity', className: "text-center"},
                     {data: 'GrandTotal'},
                     {data: 'paid_amount'},
                     {data: 'due'},

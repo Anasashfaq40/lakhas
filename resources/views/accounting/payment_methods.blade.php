@@ -38,16 +38,23 @@
                                         <td>{{$payment_method->title}}</td>
                                         <td>
                                             @if (auth()->user()->can('payment_method'))
-                                            <a @click="Edit_payment_method( {{ $payment_method}})"
-                                                class="cursor-pointer ul-link-action text-success" data-toggle="tooltip" data-placement="top"
-                                                title="Edit">
-                                                <i class="i-Edit"></i>
-                                            </a>
-                                            <a @click="Remove_payment_method( {{ $payment_method->id}})"
-                                                class="cursor-pointer ul-link-action text-danger mr-1" data-toggle="tooltip" data-placement="top"
-                                                title="Delete">
-                                                <i class="i-Close-Window"></i>
-                                            </a>
+                                           <a @click="Edit_payment_method({ 
+        id: {{ $payment_method->id }}, 
+        title: '{{ $payment_method->title }}', 
+        is_default: {{ $payment_method->is_default }} 
+    })"
+    class="cursor-pointer ul-link-action text-success" 
+    data-toggle="tooltip" 
+    data-placement="top" title="Edit">
+    <i class="i-Edit"></i>
+</a>
+
+                                           <a @click="Remove_payment_method({ id: {{ $payment_method->id }}, is_default: {{ $payment_method->is_default }} })"
+   class="cursor-pointer ul-link-action text-danger mr-1" data-toggle="tooltip" data-placement="top"
+   title="Delete">
+   <i class="i-Close-Window"></i>
+</a>
+
                                             @endif
                                         </td>
                                     </tr>
@@ -142,12 +149,26 @@
             },
 
             //------------------------------ Show Modal (Update payment_method) -------------------------------\\
-            Edit_payment_method(payment_method) {
-                this.editmode = true;
-                this.reset_Form();
-                this.payment_method = payment_method;
-                $('#payment_method_Modal').modal('show');
-            },
+  Edit_payment_method(payment_method) {
+    if (payment_method.is_default === 1) {
+        toastr.warning("You cannot edit default payment methods.");
+        return;
+    }
+
+    this.editmode = true;
+    this.reset_Form();
+
+    // Deep clone to avoid binding issues
+    this.payment_method = {
+        id: payment_method.id,
+        title: payment_method.title,
+        is_default: payment_method.is_default,
+    };
+
+    $('#payment_method_Modal').modal('show');
+},
+
+
 
             //----------------------------- Reset Form ---------------------------\\
             reset_Form() {
@@ -201,34 +222,38 @@
             },
 
              //--------------------------------- Remove payment_method ---------------------------\\
-            Remove_payment_method(id) {
+          Remove_payment_method(payment_method) {
+    // Default method check
+    if (payment_method.is_default === 1) {
+        toastr.warning("You cannot delete default payment methods.");
+        return;
+    }
 
-                swal({
-                    title: '{{ __('translate.Are_you_sure') }}',
-                    text: '{{ __('translate.You_wont_be_able_to_revert_this') }}',
-                    type: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#0CC27E',
-                    cancelButtonColor: '#FF586B',
-                    confirmButtonText: '{{ __('translate.Yes_delete_it') }}',
-                    cancelButtonText: '{{ __('translate.No_cancel') }}',
-                    confirmButtonClass: 'btn btn-primary mr-5',
-                    cancelButtonClass: 'btn btn-danger',
-                    buttonsStyling: false
-                }).then(function () {
-                        axios
-                            .delete("/accounting/payment_methods/" + id)
-                            .then(() => {
-                                window.location.href = '/accounting/payment_methods'; 
-                                toastr.success('{{ __('translate.Deleted_in_successfully') }}');
-                            })
-                            .catch(() => {
-                                toastr.error('{{ __('translate.There_was_something_wronge') }}');
-                            });
-                    });
-                },
-
-           
+    // Confirmation & delete
+    swal({
+        title: '{{ __('translate.Are_you_sure') }}',
+        text: '{{ __('translate.You_wont_be_able_to_revert_this') }}',
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#0CC27E',
+        cancelButtonColor: '#FF586B',
+        confirmButtonText: '{{ __('translate.Yes_delete_it') }}',
+        cancelButtonText: '{{ __('translate.No_cancel') }}',
+        confirmButtonClass: 'btn btn-primary mr-5',
+        cancelButtonClass: 'btn btn-danger',
+        buttonsStyling: false
+    }).then(function () {
+        axios
+            .delete("/accounting/payment_methods/" + payment_method.id)
+            .then(() => {
+                window.location.href = '/accounting/payment_methods';
+                toastr.success('{{ __('translate.Deleted_in_successfully') }}');
+            })
+            .catch(() => {
+                toastr.error('{{ __('translate.There_was_something_wronge') }}');
+            });
+    });
+}
         },
         //-----------------------------Autoload function-------------------
         created() {

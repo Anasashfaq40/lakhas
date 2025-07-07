@@ -22,6 +22,16 @@
     font-size: 0.9em;
     color: #666;
   }
+  .product-table th {
+    white-space: nowrap;
+  }
+  .product-table td {
+    vertical-align: middle;
+  }
+  .measurement-cell {
+    max-width: 200px;
+    white-space: normal;
+  }
 </style>
 @endsection
 
@@ -41,14 +51,9 @@
             <i class="i-Add me-2 font-weight-bold"></i>{{ __('translate.Create') }}
           </a>
           @endcan
-          <a class="btn btn-outline-success btn-md m-1" id="Show_Modal_Filter">
+          <!-- <a class="btn btn-outline-success btn-md m-1" id="Show_Modal_Filter">
             <i class="i-Filter-2 me-2 font-weight-bold"></i>{{ __('translate.Filter') }}
-          </a>
-          <!-- @can('products_view')
-          <a href="{{ route('products.export') }}" class="btn btn-outline-secondary btn-md m-1">
-            <i class="i-Data-Download me-2 font-weight-bold"></i>{{ __('translate.Export') }}
-          </a>
-          @endcan -->
+          </a> -->
         </div>
 
         <div class="table-responsive">
@@ -81,7 +86,6 @@
             <tbody></tbody>
           </table>
         </div>
-
       </div>
     </div>
   </div>
@@ -183,6 +187,7 @@
         columnDefs: [
           { targets: [0], visible: false, searchable: false },
           { targets: [1,2,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19], orderable: false },
+          { targets: [16], className: "measurement-cell" }
         ],
         ajax: {
           url: "{{ route('products_datatable') }}",
@@ -222,6 +227,7 @@
         ],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         dom: "<'row'<'col-sm-12 col-md-7'lB><'col-sm-12 col-md-5 p-0'f>>rtip",
+        className: "product-table",
         oLanguage: {
           sEmptyTable: "{{ __('datatable.sEmptyTable') }}",
           sInfo: "{{ __('datatable.sInfo') }}",

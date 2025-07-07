@@ -3,26 +3,22 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Category extends Model
 {
+    use SoftDeletes;
+
     protected $dates = ['deleted_at'];
 
-    protected $fillable = [
-        'code', 'name', 'image', 'sub_category_id'
-    ];
+    protected $fillable = ['code', 'name', 'image'];
 
-    // Relationship with subcategories
+    /**
+     * Category ke paas kai SubCategories hoti hain.
+     */
     public function subcategories(): HasMany
     {
-        return $this->hasMany(Category::class, 'sub_category_id');
-    }
-
-    // Relationship with parent category
-    public function parent(): BelongsTo
-    {
-        return $this->belongsTo(Category::class, 'sub_category_id');
+        return $this->hasMany(SubCategory::class, 'category_id');
     }
 }

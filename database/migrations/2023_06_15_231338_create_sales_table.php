@@ -32,7 +32,7 @@ class CreateSalesTable extends Migration {
 			$table->float('paid_amount', 10, 0)->default(0);
 			$table->string('payment_statut', 192);
 			$table->string('statut', 191);
-			$table->string('assigned_driver')->nullable();
+			// $table->string('assigned_driver')->nullable();
 			$table->text('notes')->nullable();
 			$table->timestamps(6);
 			$table->softDeletes();

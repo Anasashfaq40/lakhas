@@ -5,6 +5,8 @@
 <link rel="stylesheet" href="{{asset('assets/styles/vendor/datatables.min.css')}}">
 <link rel="stylesheet" href="{{asset('assets/styles/vendor/nprogress.css')}}">
 <link rel="stylesheet" href="{{asset('assets/styles/vendor/datepicker.min.css')}}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
 
 
 @endsection
@@ -124,6 +126,7 @@
                         <th>{{ __('translate.Ref') }}</th>
                         <th>{{ __('translate.Date') }}</th>
                         <th>{{ __('Created At') }}</th>
+                          <th>{{ __('translate.Action') }}</th> 
                     </tr>
                 </thead>
                 <tbody>
@@ -132,6 +135,12 @@
                             <td>{{ $sale->Ref }}</td>
                             <td>{{ \Carbon\Carbon::parse($sale->date)->format('d M Y') }}</td>
                             <td>{{ \Carbon\Carbon::parse($sale->created_at)->format('d M Y h:i A') }}</td>
+                   <td>
+    <a href="{{ route('clients.sales.details', $sale->id) }}" class="btn btn-sm btn-info">
+        <i class="fas fa-eye"></i> View Sales
+    </a>
+</td>
+
                         </tr>
                     @empty
                         <tr>

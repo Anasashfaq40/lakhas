@@ -90,24 +90,30 @@ class PaymentMethodController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
-    {
-        $user_auth = auth()->user();
-		if ($user_auth->can('payment_method')){
+ public function update(Request $request, $id)
+{
+    $user_auth = auth()->user();
+    if ($user_auth->can('payment_method')) {
 
-            request()->validate([
-                'title'           => 'required|string|max:255',
-            ]);
+        request()->validate([
+            'title' => 'required|string|max:255',
+        ]);
 
-            PaymentMethod::where('is_default', 0)->whereId($id)->update([
-                'title'           => $request['title'],
-            ]);
-        
-            return response()->json(['success' => true]);
-
+        $method = PaymentMethod::findOrFail($id);
+        if ($method->is_default == 1) {
+            return response()->json(['message' => 'Default method cannot be updated.'], 403);
         }
-        return abort('403', __('You are not authorized'));
+
+        $method->update([
+            'title' => $request->title,
+        ]);
+
+        return response()->json(['success' => true]);
     }
+
+    return abort('403', __('You are not authorized'));
+}
+
 
     /**
      * Remove the specified resource from storage.

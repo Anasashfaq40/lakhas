@@ -14,6 +14,10 @@ use App\Models\SaleReturn;
 use Carbon\Carbon;
 use App\Models\PaymentMethod;
 use App\Models\Account;
+use App\Models\Warehouse;
+use App\Models\Unit;
+use App\Models\Setting;
+
 use Excel;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -329,7 +333,7 @@ public function show(Request $request, $id)
         $sales = DB::table('sales')
             ->where('deleted_at', '=', null)
             ->where('client_id', $id)
-            ->select('Ref', 'date', 'created_at')
+            ->select('id','Ref', 'date', 'created_at')
             ->orderBy('date', 'desc')
             ->get();
 
@@ -938,5 +942,180 @@ public function show(Request $request, $id)
         'sell_due' => $this->render_price_with_symbol_placement(number_format($sell_due, 2, '.', ',')),
     ]);
 }
+
+
+
+// public function clientdetailshow($id)
+// {
+//     $client = Client::findOrFail($id); // Get client detail by ID
+
+//     // Fetch related sales using Eloquent Model
+//     $sales = Sale::where('client_id', $id)
+//         ->whereNull('deleted_at') // Proper way to check null in Eloquent
+//         ->orderBy('id', 'desc')
+//         ->get();
+
+//     return view('sales.details_sale', [
+//         'client_data' => $client,
+//         'sales' => $sales,
+//     ]);
+// }
+
+public function clientdetailshow($id)
+{
+    $user_auth = auth()->user();
+    if ($user_auth->can('sales_details')) {
+
+        if($user_auth->is_all_warehouses){
+            $array_warehouses_id = Warehouse::where('deleted_at', '=', null)->pluck('id')->toArray();
+        } else {
+            $array_warehouses_id = UserWarehouse::where('user_id', $user_auth->id)->pluck('warehouse_id')->toArray();
+        }
+
+        $sale_data = Sale::with('details.product.unitSale', 'details.product.category', 'details.product.brand')
+            ->where('deleted_at', '=', null)
+            ->where(function ($query) use ($array_warehouses_id) {
+                return $query->whereIn('warehouse_id', $array_warehouses_id);
+            })
+            ->where(function ($query) use ($user_auth) {
+                if (!$user_auth->can('sales_view_all')) {
+                    return $query->where('user_id', '=', $user_auth->id);
+                }
+            })->findOrFail($id);
+
+        $details = array();
+        $total_quantity = 0;
+        $total_product_discount = 0;
+
+        $sale_details['id']                     = $sale_data->id;
+        $sale_details['Ref']                    = $sale_data->Ref;
+        $sale_details['date']                   = $sale_data->date;
+        $sale_details['note']                   = $sale_data->notes;
+        $sale_details['statut']                 = $sale_data->statut;
+        $sale_details['warehouse']              = $sale_data['warehouse']->name;
+
+        if($sale_data->discount_type == 'fixed'){
+            $sale_details['discount']           = $this->render_price_with_symbol_placement(number_format($sale_data->discount, 2, '.', ','));
+        } else {
+            $sale_details['discount']           = $this->render_price_with_symbol_placement(number_format($sale_data->discount_percent_total, 2, '.', ',')) .' ('.$sale_data->discount.'%)';
+        }
+
+        $sale_details['shipping']               = $this->render_price_with_symbol_placement(number_format($sale_data->shipping, 2, '.', ','));
+        $sale_details['tax_rate']               = $sale_data->tax_rate;
+        $sale_details['TaxNet']                 = $this->render_price_with_symbol_placement(number_format($sale_data->TaxNet, 2, '.', ','));
+        $sale_details['client_name']            = $sale_data['client']->username;
+        $sale_details['client_phone']           = $sale_data['client']->phone;
+        $sale_details['client_adr']             = $sale_data['client']->address;
+        $sale_details['client_email']           = $sale_data['client']->email;
+        $sale_details['GrandTotal']             = $this->render_price_with_symbol_placement(number_format($sale_data->GrandTotal, 2, '.', ','));
+        $sale_details['paid_amount']            = $this->render_price_with_symbol_placement(number_format($sale_data->paid_amount, 2, '.', ','));
+        $sale_details['due']                    = $this->render_price_with_symbol_placement(number_format($sale_data->GrandTotal - $sale_data->paid_amount, 2, '.', ','));
+        $sale_details['payment_status']         = $sale_data->payment_statut;
+        $sale_details['assigned_driver']        = $sale_data->assigned_driver;
+
+        $sale_details['sale_has_return'] = SaleReturn::where('sale_id', $id)->where('deleted_at', '=', null)->exists() ? 'yes' : 'no';
+
+        foreach ($sale_data['details'] as $detail) {
+            $unit = Unit::where('id', $detail->sale_unit_id)->first();
+
+            if ($detail->product_variant_id) {
+                $productsVariants = ProductVariant::where('product_id', $detail->product_id)
+                    ->where('id', $detail->product_variant_id)->first();
+
+                $data['code'] = $productsVariants->code;
+                $variant_name = '['.$productsVariants->name . '] ';
+            } else {
+                $data['code'] = $detail['product']['code'];
+                $variant_name = '';
+            }
+
+            $category_name = $detail['product']['category'] ? $detail['product']['category']->name : '';
+            $brand_name = $detail['product']['brand'] ? $detail['product']['brand']->name : '';
+            $product_name = $detail['product']['name'];
+            $name_parts = array_filter([$category_name, $brand_name, $product_name]);
+            $data['name'] = $variant_name . implode(' - ', $name_parts);
+
+            $data['quantity'] = $detail->quantity;
+            $data['total'] = $detail->total;
+            $data['price'] = $detail->price;
+            $data['unit_sale'] = $unit ? $unit->ShortName : '';
+
+            // Handle discount
+            if ($detail->discount_method == '2') {
+                $data['DiscountNet'] = $detail->discount;
+            } else {
+                $data['DiscountNet'] = $detail->price * $detail->discount / 100;
+            }
+
+            // Sum product discount
+            $total_product_discount += $data['DiscountNet'] * $detail->quantity;
+
+            $tax_price = $detail->TaxNet * (($detail->price - $data['DiscountNet']) / 100);
+            $data['Unit_price'] = $detail->price;
+            $data['discount'] = $detail->discount;
+
+            if ($detail->tax_method == '1') {
+                $data['Net_price'] = $detail->price - $data['DiscountNet'];
+                $data['taxe'] = $tax_price;
+            } else {
+                $data['Net_price'] = ($detail->price - $data['DiscountNet']) / (($detail->TaxNet / 100) + 1);
+                $data['taxe'] = $detail->price - $data['Net_price'] - $data['DiscountNet'];
+            }
+
+            $data['is_imei'] = $detail['product']['is_imei'];
+            $data['imei_number'] = $detail->imei_number;
+
+            $details[] = $data;
+            $total_quantity += $detail->quantity;
+        }
+
+        $sale_details['total_quantity'] = number_format($total_quantity, 2, '.', ',');
+
+        // 🎯 Add total product discount to the final result
+        $sale_details['product_discount_total'] = $this->render_price_with_symbol_placement(number_format($total_product_discount, 2, '.', ','));
+
+        $company = Setting::where('deleted_at', '=', null)->first();
+
+        // ➕ Previous balance logic
+        $client_id = $sale_data->client_id;
+        
+        $total_amount_prev = DB::table('sales')
+            ->where('deleted_at', '=', null)
+            ->where('client_id', $client_id)
+            ->where('id', '!=', $sale_data->id) // exclude this sale
+            ->sum('GrandTotal');
+        
+        $total_paid_prev = DB::table('sales')
+            ->where('deleted_at', '=', null)
+            ->where('client_id', $client_id)
+            ->where('id', '!=', $sale_data->id) // exclude this sale
+            ->sum('paid_amount');
+        
+        $previous_balance = $total_amount_prev - $total_paid_prev;
+        
+        $sale_details['previous_balance'] = $this->render_price_with_symbol_placement(
+            number_format($previous_balance, 2, '.', ',')
+        );
+        
+        // ➕ Updated balance after this sale
+        $total_amount_now = $total_amount_prev + $sale_data->GrandTotal;
+        $total_paid_now = $total_paid_prev + $sale_data->paid_amount;
+        
+        $updated_balance = $total_amount_now - $total_paid_now;
+        
+        $sale_details['updated_balance'] = $this->render_price_with_symbol_placement(
+            number_format($updated_balance, 2, '.', ',')
+        );
+
+        return view('sales.details_sale', [
+            'sale' => $sale_details,
+            'details' => $details,
+            'company' => $company,
+        ]);
+    }
+
+    return abort('403', __('You are not authorized'));
+}
+
 
 }

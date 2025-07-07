@@ -39,16 +39,38 @@
                             </span>
                         </div>
 
-                        <div class="form-group col-md-4">
-                            <label>{{ __('translate.Category') }} <span class="field_required">*</span></label>
-                            <v-select placeholder="{{ __('translate.Choose_Category') }}" v-model="product.category_id"
-                                :reduce="(option) => option.value"
-                                :options="categories.map(categories => ({label: categories.name, value: categories.id}))">
-                            </v-select>
-                            <span class="error" v-if="errors && errors.category_id">
-                                @{{ errors.category_id[0] }}
-                            </span>
-                        </div>
+<!-- Category -->
+<div class="form-group col-md-4">
+    <label>{{ __('translate.Category') }} <span class="field_required">*</span></label>
+    <v-select
+        placeholder="{{ __('translate.Choose_Category') }}"
+        v-model="product.category_id"
+        :reduce="option => option.id"
+        label="name"
+        :options="categories">
+    </v-select>
+    <span class="error" v-if="errors && errors.category_id">
+        @{{ errors.category_id[0] }}
+    </span>
+</div>
+
+<!-- Subcategory -->
+<div class="form-group col-md-4">
+    <label>{{ __('translate.Subcategory') }}</label>
+    <v-select
+        placeholder="Choose Subcategory"
+        v-model="product.sub_category_id"
+        :reduce="option => option.id"
+        label="name"
+        :options="filteredSubcategories"
+        :disabled="!filteredSubcategories.length">
+    </v-select>
+    <span class="error" v-if="errors && errors.sub_category_id">
+        @{{ errors.sub_category_id[0] }}
+    </span>
+</div>
+
+
 
                         <div class="form-group col-md-4">
                             <label>{{ __('translate.Brand') }} </label>
@@ -121,10 +143,10 @@
                                 :reduce="(option) => option.value" :options="
                                                 [
                                                 {label: 'Standard Product', value: 'is_single'},
-                                                {label: 'Service Product', value: 'is_service'},
+                                                <!-- {label: 'Service Product', value: 'is_service'}, -->
                                                 {label: 'Stitched Garment', value: 'stitched_garment'},
                                                 {label: 'Unstitched Garment', value: 'unstitched_garment'},
-                                                {label: 'Variant Product', value: 'is_variant'}
+                                                <!-- {label: 'Variant Product', value: 'is_variant'} -->
                                                 ]" @input="handleProductTypeChange">
                             </v-select>
                             <span class="error" v-if="errors && errors.type">
@@ -144,127 +166,184 @@
                                         <v-select placeholder="Select Garment Type" v-model="product.garment_type"
                                             :reduce="(option) => option.value" :options="
                                                             [
-                                                            {label: 'Shirt/Suit', value: 'shirt_suit'},
-                                                            {label: 'Pant/Shalwar', value: 'pant_shalwar'}
+                                                            {label: 'Shalwar/Suit', value: 'shalwar_suit'},
+                                                            {label: 'Pant/Shirt', value: 'pant_shirt'}
                                                             ]">
                                         </v-select>
                                     </div>
 
-                                    <!-- Shirt/Suit Measurements -->
-                                    <div v-if="product.garment_type === 'shirt_suit'">
-                                        <h6>Shirt/Suit Measurements</h6>
-                                        <div class="row">
-                                            <div class="form-group col-md-4">
-                                                <label>Length</label>
-                                                <input type="text" class="form-control" v-model="product.shirt_length">
-                                            </div>
-                                            <div class="form-group col-md-4">
-                                                <label>Shoulder</label>
-                                                <input type="text" class="form-control" v-model="product.shirt_shoulder">
-                                            </div>
-                                            <div class="form-group col-md-4">
-                                                <label>Sleeves</label>
-                                                <input type="text" class="form-control" v-model="product.shirt_sleeves">
-                                            </div>
-                                            <div class="form-group col-md-4">
-                                                <label>Chest</label>
-                                                <input type="text" class="form-control" v-model="product.shirt_chest">
-                                            </div>
-                                            <div class="form-group col-md-4">
-                                                <label>Upper Waist</label>
-                                                <input type="text" class="form-control" v-model="product.shirt_upper_waist">
-                                            </div>
-                                            <div class="form-group col-md-4">
-                                                <label>Lower Waist</label>
-                                                <input type="text" class="form-control" v-model="product.shirt_lower_waist">
-                                            </div>
-                                            <div class="form-group col-md-4">
-                                                <label>Hip</label>
-                                                <input type="text" class="form-control" v-model="product.shirt_hip">
-                                            </div>
-                                            <div class="form-group col-md-4">
-                                                <label>Neck</label>
-                                                <input type="text" class="form-control" v-model="product.shirt_neck">
-                                            </div>
-                                            <div class="form-group col-md-4">
-                                                <label>Arms</label>
-                                                <input type="text" class="form-control" v-model="product.shirt_arms">
-                                            </div>
-                                            <div class="form-group col-md-4">
-                                                <label>Cuff</label>
-                                                <input type="text" class="form-control" v-model="product.shirt_cuff">
-                                            </div>
-                                            <div class="form-group col-md-4">
-                                                <label>Biceps</label>
-                                                <input type="text" class="form-control" v-model="product.shirt_biceps">
-                                            </div>
-                                        </div>
-                                        
-                                      <div class="form-group mt-3">
-    <label>Collar Type</label>
-    <div class="d-flex flex-wrap">
-        <div class="form-check me-3">
-            <input class="form-check-input" type="checkbox" id="collar_shirt" 
-                   v-model="product.collar_shirt" true-value="1" false-value="0">
-            <label class="form-check-label" for="collar_shirt">Shirt</label>
+                            <div v-if="product.garment_type === 'shalwar_suit'">
+    <h6>Kameez Measurements</h6>
+    <div class="row">
+        <div class="form-group col-md-4">
+            <label>Kameez Length</label>
+            <input type="text" class="form-control" v-model="product.kameez_length">
         </div>
-        <div class="form-check me-3">
-            <input class="form-check-input" type="checkbox" id="collar_sherwani" 
-                   v-model="product.collar_sherwani" true-value="1" false-value="0">
-            <label class="form-check-label" for="collar_sherwani">Sherwani</label>
+        <div class="form-group col-md-4">
+            <label>Shoulder</label>
+            <input type="text" class="form-control" v-model="product.kameez_shoulder">
         </div>
-        <div class="form-check me-3">
-            <input class="form-check-input" type="checkbox" id="collar_damian" 
-                   v-model="product.collar_damian" true-value="1" false-value="0">
-            <label class="form-check-label" for="collar_damian">Damian</label>
+        <div class="form-group col-md-4">
+            <label>Sleeves</label>
+            <input type="text" class="form-control" v-model="product.kameez_sleeves">
         </div>
-        <div class="form-check me-3">
-            <input class="form-check-input" type="checkbox" id="collar_round" 
-                   v-model="product.collar_round" true-value="1" false-value="0">
-            <label class="form-check-label" for="collar_round">Round</label>
+        <div class="form-group col-md-4">
+            <label>Chest</label>
+            <input type="text" class="form-control" v-model="product.kameez_chest">
         </div>
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="collar_square" 
-                   v-model="product.collar_square" true-value="1" false-value="0">
-            <label class="form-check-label" for="collar_square">Square</label>
+        <div class="form-group col-md-4">
+            <label>Upper Waist</label>
+            <input type="text" class="form-control" v-model="product.kameez_upper_waist">
+        </div>
+        <div class="form-group col-md-4">
+            <label>Lower Waist</label>
+            <input type="text" class="form-control" v-model="product.kameez_lower_waist">
+        </div>
+        <div class="form-group col-md-4">
+            <label>Hip</label>
+            <input type="text" class="form-control" v-model="product.kameez_hip">
+        </div>
+        <div class="form-group col-md-4">
+            <label>Neck</label>
+            <input type="text" class="form-control" v-model="product.kameez_neck">
+        </div>
+        <div class="form-group col-md-4">
+            <label>Arms</label>
+            <input type="text" class="form-control" v-model="product.kameez_arms">
+        </div>
+        <div class="form-group col-md-4">
+            <label>Cuff</label>
+            <input type="text" class="form-control" v-model="product.kameez_cuff">
+        </div>
+        <div class="form-group col-md-4">
+            <label>Biceps</label>
+            <input type="text" class="form-control" v-model="product.kameez_biceps">
+        </div>
+    </div>
+
+    <div class="form-group mt-3">
+        <label>Collar Type</label>
+        <div class="d-flex flex-wrap">
+            <div class="form-check me-3">
+                <input class="form-check-input" type="checkbox" id="collar_shirt" v-model="product.collar_shirt" true-value="1" false-value="0">
+                <label class="form-check-label" for="collar_shirt">Shirt</label>
+            </div>
+            <div class="form-check me-3">
+                <input class="form-check-input" type="checkbox" id="collar_sherwani" v-model="product.collar_sherwani" true-value="1" false-value="0">
+                <label class="form-check-label" for="collar_sherwani">Sherwani</label>
+            </div>
+            <div class="form-check me-3">
+                <input class="form-check-input" type="checkbox" id="collar_damian" v-model="product.collar_damian" true-value="1" false-value="0">
+                <label class="form-check-label" for="collar_damian">Damian</label>
+            </div>
+            <div class="form-check me-3">
+                <input class="form-check-input" type="checkbox" id="collar_round" v-model="product.collar_round" true-value="1" false-value="0">
+                <label class="form-check-label" for="collar_round">Round</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="collar_square" v-model="product.collar_square" true-value="1" false-value="0">
+                <label class="form-check-label" for="collar_square">Square</label>
+            </div>
+        </div>
+    </div>
+
+    <h6 class="mt-4">Shalwar Measurements</h6>
+    <div class="row">
+        <div class="form-group col-md-4">
+            <label>Shalwar Length</label>
+            <input type="text" class="form-control" v-model="product.shalwar_length">
+        </div>
+        <div class="form-group col-md-4">
+            <label>Shalwar Waist</label>
+            <input type="text" class="form-control" v-model="product.shalwar_waist">
+        </div>
+        <div class="form-group col-md-4">
+            <label>Shalwar Bottom</label>
+            <input type="text" class="form-control" v-model="product.shalwar_bottom">
         </div>
     </div>
 </div>
-                                    </div>
+                                                         
 
-                                    <!-- Pant/Shalwar Measurements -->
-                                    <div v-if="product.garment_type === 'pant_shalwar'">
-                                        <h6>Pant/Shalwar Measurements</h6>
-                                        <div class="row">
-                                            <div class="form-group col-md-4">
-                                                <label>Length</label>
-                                                <input type="text" class="form-control" v-model="product.pant_length">
-                                            </div>
-                                            <div class="form-group col-md-4">
-                                                <label>Waist</label>
-                                                <input type="text" class="form-control" v-model="product.pant_waist">
-                                            </div>
-                                            <div class="form-group col-md-4">
-                                                <label>Hip</label>
-                                                <input type="text" class="form-control" v-model="product.pant_hip">
-                                            </div>
-                                            <div class="form-group col-md-4">
-                                                <label>Thai</label>
-                                                <input type="text" class="form-control" v-model="product.pant_thai">
-                                            </div>
-                                            <div class="form-group col-md-4">
-                                                <label>Knee</label>
-                                                <input type="text" class="form-control" v-model="product.pant_knee">
-                                            </div>
-                                            <div class="form-group col-md-4">
-                                                <label>Bottom</label>
-                                                <input type="text" class="form-control" v-model="product.pant_bottom">
-                                            </div>
-                                            <div class="form-group col-md-4">
-                                                <label>Fly</label>
-                                                <input type="text" class="form-control" v-model="product.pant_fly">
-                                            </div>
-                                        </div>
+                                    <!-- Pant/Shirt Measurements -->
+                                    <div v-if="product.garment_type === 'pant_shirt'">
+                                       <h6>Shirt Measurements</h6>
+    <div class="row">
+        <div class="form-group col-md-4">
+            <label>Shirt Length</label>
+            <input type="text" class="form-control" v-model="product.pshirt_length">
+        </div>
+        <div class="form-group col-md-4">
+            <label>Shoulder</label>
+            <input type="text" class="form-control" v-model="product.pshirt_shoulder">
+        </div>
+        <div class="form-group col-md-4">
+            <label>Sleeves</label>
+            <input type="text" class="form-control" v-model="product.pshirt_sleeves">
+        </div>
+        <div class="form-group col-md-4">
+            <label>Chest</label>
+            <input type="text" class="form-control" v-model="product.pshirt_chest">
+        </div>
+        <div class="form-group col-md-4">
+            <label>Neck</label>
+            <input type="text" class="form-control" v-model="product.pshirt_neck">
+        </div>
+    </div>
+
+       <div class="form-group mt-3">
+        <label>Collar Type</label>
+        <div class="d-flex flex-wrap">
+            <div class="form-check me-3">
+                <input class="form-check-input" type="checkbox" id="pshirt_collar_shirt"
+                       v-model="product.pshirt_collar_shirt" true-value="1" false-value="0">
+                <label class="form-check-label" for="pshirt_collar_shirt">Shirt</label>
+            </div>
+            <div class="form-check me-3">
+                <input class="form-check-input" type="checkbox" id="pshirt_collar_round"
+                       v-model="product.pshirt_collar_round" true-value="1" false-value="0">
+                <label class="form-check-label" for="pshirt_collar_round">Round</label>
+            </div>
+            <div class="form-check me-3">
+                <input class="form-check-input" type="checkbox" id="pshirt_collar_square"
+                       v-model="product.pshirt_collar_square" true-value="1" false-value="0">
+                <label class="form-check-label" for="pshirt_collar_square">Square</label>
+            </div>
+        </div>
+    </div>
+        <h6 class="mt-4">Pant Measurements</h6>
+    <div class="row">
+        <div class="form-group col-md-4">
+            <label>Pant Length</label>
+            <input type="text" class="form-control" v-model="product.pant_length">
+        </div>
+        <div class="form-group col-md-4">
+            <label>Waist</label>
+            <input type="text" class="form-control" v-model="product.pant_waist">
+        </div>
+        <div class="form-group col-md-4">
+            <label>Hip</label>
+            <input type="text" class="form-control" v-model="product.pant_hip">
+        </div>
+        <div class="form-group col-md-4">
+            <label>Thigh</label>
+            <input type="text" class="form-control" v-model="product.pant_thai">
+        </div>
+        <div class="form-group col-md-4">
+            <label>Knee</label>
+            <input type="text" class="form-control" v-model="product.pant_knee">
+        </div>
+        <div class="form-group col-md-4">
+            <label>Bottom</label>
+            <input type="text" class="form-control" v-model="product.pant_bottom">
+        </div>
+        <div class="form-group col-md-4">
+            <label>Fly</label>
+            <input type="text" class="form-control" v-model="product.pant_fly">
+        </div>
+                                                            </div>
+
+    
                                     </div>
                                 </div>
                             </div>
@@ -331,38 +410,42 @@
                             </span>
                         </div>
 
-                        <div class="form-group col-md-4" v-if="product.type != 'is_service'">
-                            <label>{{ __('translate.Unit_Product') }} <span class="field_required">*</span></label>
-                            <v-select @input="Selected_Unit" placeholder="{{ __('translate.Choose_Unit_Product') }}"
-                                v-model="product.unit_id" :reduce="label => label.value"
-                                :options="units.map(units => ({label: units.name, value: units.id}))">
-                            </v-select>
-                            <span class="error" v-if="errors && errors.unit_id">
-                                @{{ errors.unit_id[0] }}
-                            </span>
-                        </div>
+             <!-- Unit Product -->
+<div class="form-group col-md-4" v-if="product.type != 'is_service'">
+    <label>{{ __('translate.Unit_Product') }} <small>(optional)</small></label>
+    <v-select @input="Selected_Unit" placeholder="{{ __('translate.Choose_Unit_Product') }}"
+        v-model="product.unit_id" :reduce="label => label.value"
+        :options="units.map(units => ({label: units.name, value: units.id}))">
+    </v-select>
+    <span class="error" v-if="errors && errors.unit_id">
+        @{{ errors.unit_id[0] }}
+    </span>
+</div>
 
-                        <div class="form-group col-md-4" v-if="product.type != 'is_service'">
-                            <label>{{ __('translate.Unit_Sale') }} <span class="field_required">*</span></label>
-                            <v-select placeholder="{{ __('translate.Choose_Unit_Sale') }}"
-                                v-model="product.unit_sale_id" :reduce="label => label.value"
-                                :options="units_sub.map(units_sub => ({label: units_sub.name, value: units_sub.id}))">
-                            </v-select>
-                            <span class="error" v-if="errors && errors.unit_sale_id">
-                                @{{ errors.unit_sale_id[0] }}
-                            </span>
-                        </div>
+<!-- Unit Sale -->
+<div class="form-group col-md-4" v-if="product.type != 'is_service'">
+    <label>{{ __('translate.Unit_Sale') }} <small>(optional)</small></label>
+    <v-select placeholder="{{ __('translate.Choose_Unit_Sale') }}"
+        v-model="product.unit_sale_id" :reduce="label => label.value"
+        :options="units_sub.map(units_sub => ({label: units_sub.name, value: units_sub.id}))">
+    </v-select>
+    <span class="error" v-if="errors && errors.unit_sale_id">
+        @{{ errors.unit_sale_id[0] }}
+    </span>
+</div>
 
-                        <div class="form-group col-md-4" v-if="product.type != 'is_service'">
-                            <label>{{ __('translate.Unit_Purchase') }} <span class="field_required">*</span></label>
-                            <v-select placeholder="{{ __('translate.Choose_Unit_Purchase') }}"
-                                v-model="product.unit_purchase_id" :reduce="label => label.value"
-                                :options="units_sub.map(units_sub => ({label: units_sub.name, value: units_sub.id}))">
-                            </v-select>
-                            <span class="error" v-if="errors && errors.unit_purchase_id">
-                                @{{ errors.unit_purchase_id[0] }}
-                            </span>
-                        </div>
+<!-- Unit Purchase -->
+<div class="form-group col-md-4" v-if="product.type != 'is_service'">
+    <label>{{ __('translate.Unit_Purchase') }} <small>(optional)</small></label>
+    <v-select placeholder="{{ __('translate.Choose_Unit_Purchase') }}"
+        v-model="product.unit_purchase_id" :reduce="label => label.value"
+        :options="units_sub.map(units_sub => ({label: units_sub.name, value: units_sub.id}))">
+    </v-select>
+    <span class="error" v-if="errors && errors.unit_purchase_id">
+        @{{ errors.unit_purchase_id[0] }}
+    </span>
+</div>
+
 
                         <div class="form-group col-md-4" v-if="product.type != 'is_service'">
                             <label for="qty_min">{{ __('translate.Minimum_sale_quantity') }} </label>
@@ -463,280 +546,238 @@
 <script src="{{asset('assets/js/bootstrap-tagsinput.js')}}"></script>
 <script src="{{asset('assets/js/datepicker.min.js')}}"></script>
 <script src="{{asset('assets/js/vendor/vuejs-datepicker/vuejs-datepicker.min.js')}}"></script>
-
 <script>
-    Vue.component('v-select', VueSelect.VueSelect)
-    
-    var app = new Vue({
-        el: '#section_create_product',
-        data: {
-            tag: "",
-            len: 8,
-            SubmitProcessing: false,
-            errors: [],
-            categories: @json($categories),
-            units: @json($units),
-            units_sub: [],
-            brands: @json($brands),
-            variants: [],
-            availableSizes: ['S', 'M', 'L', 'XL'],
-            product: {
-                type: "is_single",
-                garment_type: "shirt_suit", // Default to shirt/suit
-                name: "",
-                code: "",
-                Type_barcode: "",
-                cost: "",
-                price: "",
-                brand_id: "",
-                category_id: "",
-                TaxNet: "0",
-                tax_method: "1",
-                unit_id: "",
-                unit_sale_id: "",
-                unit_purchase_id: "",
-                stock_alert: "0",
-                qty_min: 0,
-                image: "",
-                note: "",
-                is_variant: false,
-                is_imei: false,
-                is_promo: false,
-                promo_price: '',
-                promo_start_date: new Date().toISOString().slice(0, 10),
-                promo_end_date: '',
-                multiple_images: [],
-                
-                // Shirt/Suit measurements
-                shirt_length: '',
-                shirt_shoulder: '',
-                shirt_sleeves: '',
-                shirt_chest: '',
-                shirt_upper_waist: '',
-                shirt_lower_waist: '',
-                shirt_hip: '',
-                shirt_neck: '',
-                shirt_arms: '',
-                shirt_cuff: '',
-                shirt_biceps: '',
-                
-                // Pant/Shalwar measurements
-                pant_length: '',
-                pant_waist: '',
-                pant_hip: '',
-                pant_thai: '',
-                pant_knee: '',
-                pant_bottom: '',
-                pant_fly: '',
-                
-                // Collar types (initialize as 0/false)
-                collar_shirt: 0,
-                collar_sherwani: 0,
-                collar_damian: 0,
-                collar_round: 0,
-                collar_square: 0,
-                
-                // Unstitched Garment Properties
-                thaan_length: 22.5,
-                suit_length: 4.5,
-                available_sizes: []
-            },
-        },
-        
-        methods: {
-            generateNumber() {
-                this.code_exist = "";
-                this.product.code = Math.floor(
-                    Math.pow(10, this.len - 1) +
-                    Math.random() *
-                    (Math.pow(10, this.len) - Math.pow(10, this.len - 1) - 1)
-                );
-            },
-            
-            onMultipleFilesSelected(e) {
-                this.product.multiple_images = Array.from(e.target.files);
-                const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
-                const maxSize = 2 * 1024 * 1024;
-                
-                this.product.multiple_images = this.product.multiple_images.filter(file => {
-                    return validTypes.includes(file.type) && file.size <= maxSize;
-                });
-                
-                if (this.product.multiple_images.length !== e.target.files.length) {
-                    toastr.warning('Some files were skipped due to invalid format or size');
-                }
-            },
+Vue.component('v-select', VueSelect.VueSelect);
 
-            add_variant(tag) {
-                if (this.variants.length > 0 && this.variants.some(variant => variant.text === tag)) {
-                    toastr.error('Variant Duplicate');
-                } else {
-                    if(this.tag != ''){
-                        var variant_tag = {
-                            var_id: this.variants.length + 1,
-                            text: tag,
-                            code: '',
-                            cost: '',
-                            price: ''
-                        };
-                        this.variants.push(variant_tag);
-                        this.tag = "";
-                    } else {
-                        toastr.error('Please Enter the Variant');
-                    }
-                }
-            },
-
-            delete_variant(var_id) {
-                for (var i = 0; i < this.variants.length; i++) {
-                    if (var_id === this.variants[i].var_id) {
-                        this.variants.splice(i, 1);
-                    }
-                }
-            },
-
-            formatDate(d){
-                var m1 = d.getMonth()+1;
-                var m2 = m1 < 10 ? '0' + m1 : m1;
-                var d1 = d.getDate();
-                var d2 = d1 < 10 ? '0' + d1 : d1;
-                return [d.getFullYear(), m2, d2].join('-');
-            },
-
-            getValidationState({ dirty, validated, valid = null }) {
-                return dirty || validated ? valid : null;
-            },
-            
-            onFileSelected(e){
-                let file = e.target.files[0];
-                this.product.image = file;
-            },
-
-            Get_Units_SubBase(value) {
-                axios
-                    .get("/products/Get_Units_SubBase?id=" + value)
-                    .then(({ data }) => (this.units_sub = data));
-            },
-
-            Selected_Unit(value) {
-                this.units_sub = [];
-                this.product.unit_sale_id = "";
-                this.product.unit_purchase_id = "";
-                this.Get_Units_SubBase(value);
-            },
-
-            handleProductTypeChange(type) {
-                if (type === 'unstitched_garment') {
-                    this.product.thaan_length = 22.5;
-                    this.product.suit_length = 4.5;
-                    this.product.available_sizes = ['S', 'M', 'L', 'XL'];
-                } else if (type === 'stitched_garment') {
-                    this.product.garment_type = 'shirt_suit'; // Default to shirt/suit
-                    this.product.available_sizes = ['S', 'M', 'L', 'XL'];
-                } else {
-                    this.product.available_sizes = [];
-                }
-            },
-
-            prepareProductData() {
-                // Create a deep copy of the product object
-                let data = JSON.parse(JSON.stringify(this.product));
-                
-                // Convert collar types to integers (1 or 0)
-                data.collar_shirt = data.collar_shirt ? 1 : 0;
-                data.collar_sherwani = data.collar_sherwani ? 1 : 0;
-                data.collar_damian = data.collar_damian ? 1 : 0;
-                data.collar_round = data.collar_round ? 1 : 0;
-                data.collar_square = data.collar_square ? 1 : 0;
-                
-                return data;
-            },
-
-            Create_Product() {
-                if (this.product.type == 'is_variant' && this.variants.length <= 0) {
-                    toastr.error('The variants array is required.');
-                } else {
-                    NProgress.start();
-                    NProgress.set(0.1);
-                    var self = this;
-                    self.SubmitProcessing = true;
-
-                    let formData = new FormData();
-                    let productData = this.prepareProductData();
-
-                    if (self.product.type == 'is_variant' && self.variants.length > 0) {
-                        productData.is_variant = true;
-                    } else {
-                        productData.is_variant = false;
-                    }
-
-                    // Append product data
-                    Object.entries(productData).forEach(([key, value]) => {
-                        if (key !== 'multiple_images') {
-                            if (key === 'available_sizes') {
-                                formData.append(key, JSON.stringify(value));
-                            } else {
-                                formData.append(key, value);
-                            }
-                        }
-                    });
-
-                    // Append main image if exists
-                    if (self.product.image instanceof File) {
-                        formData.append('image', self.product.image);
-                    }
-
-                    // Append multiple images if exists
-                    if (self.product.multiple_images.length > 0) {
-                        self.product.multiple_images.forEach((file, index) => {
-                            formData.append(`multiple_images[${index}]`, file);
-                        });
-                    }
-
-                    // Append variants if exists
-                    if (self.variants.length) {
-                        formData.append("variants", JSON.stringify(self.variants));
-                    }
-
-                    // Send Data with axios
-                    axios.post("/products/products", formData, {
-                        headers: {
-                            'Content-Type': 'multipart/form-data'
-                        }
-                    })
-                    .then(response => {
-                        NProgress.done();
-                        self.SubmitProcessing = false;
-                        window.location.href = '/products/products'; 
-                        toastr.success('{{ __('translate.Created_in_successfully') }}');
-                        self.errors = {};
-                    })
-                    .catch(error => {
-                        NProgress.done();
-                        self.SubmitProcessing = false;
-
-                        if (error.response.status == 422) {
-                            self.errors = error.response.data.errors;
-                            toastr.error('{{ __('translate.There_was_something_wronge') }}');
-                        }
-
-                        if(self.errors.variants && self.errors.variants.length > 0){
-                            toastr.error(self.errors.variants[0]);
-                        }
-                    });
-                }
-            }
-        },
-        
-        watch: {
-            'product.type': function(newVal, oldVal) {
-                this.handleProductTypeChange(newVal);
-            }
-        },
-        
-        created() {
-            // Initialize with default values if needed
+var app = new Vue({
+    el: '#section_create_product',
+    data: {
+        tag: "",
+        len: 8,
+        SubmitProcessing: false,
+        errors: [],
+        categories: @json($categories), // Make sure each category has 'subcategories'
+        units: @json($units),
+        units_sub: [],
+        brands: @json($brands),
+        variants: [],
+        availableSizes: ['S', 'M', 'L', 'XL'],
+        product: {
+            type: "is_single",
+            garment_type: "shalwar_suit",
+            name: "",
+            code: "",
+            Type_barcode: "",
+            cost: "",
+            price: "",
+            brand_id: "",
+            category_id: "",
+            sub_category_id: "",
+            TaxNet: "0",
+            tax_method: "1",
+            unit_id: "",
+            unit_sale_id: "",
+            unit_purchase_id: "",
+            stock_alert: "0",
+            qty_min: 0,
+            image: "",
+            note: "",
+            is_variant: false,
+            is_imei: false,
+            is_promo: false,
+            promo_price: '',
+            promo_start_date: new Date().toISOString().slice(0, 10),
+            promo_end_date: '',
+            multiple_images: [],
+            // Measurements
+            kameez_length: '', kameez_shoulder: '', kameez_sleeves: '', kameez_chest: '', 
+            kameez_upper_waist: '', kameez_lower_waist: '', kameez_hip: '', kameez_neck: '', 
+            kameez_arms: '', kameez_cuff: '', kameez_biceps: '',
+            shalwar_length: '', shalwar_waist: '', shalwar_bottom: '',
+            collar_shirt: 0, collar_sherwani: 0, collar_damian: 0, collar_round: 0, collar_square: 0,
+            pshirt_length: '', pshirt_shoulder: '', pshirt_sleeves: '', pshirt_chest: '', pshirt_neck: '',
+            pshirt_collar_shirt: 0, pshirt_collar_round: 0, pshirt_collar_square: 0,
+            pant_length: '', pant_waist: '', pant_hip: '', pant_thai: '', pant_knee: '', pant_bottom: '', pant_fly: '',
+            thaan_length: 22.5,
+            suit_length: 4.5,
+            available_sizes: []
         }
-    });
+    },
+
+    computed: {
+        filteredSubcategories() {
+            const selectedCategory = this.categories.find(cat => cat.id == this.product.category_id);
+            console.log("Selected Category ID:", this.product.category_id);
+            console.log("Selected Category Object:", selectedCategory);
+            if (selectedCategory && selectedCategory.subcategories) {
+                console.log("Subcategories:", selectedCategory.subcategories);
+                return selectedCategory.subcategories;
+            }
+            console.warn("No subcategories found for selected category.");
+            return [];
+        }
+    },
+
+    watch: {
+        'product.type': function (newVal) {
+            this.handleProductTypeChange(newVal);
+        },
+
+        'product.garment_type': function (newVal) {
+            if (newVal === 'shalwar_suit') {
+                Object.assign(this.product, {
+                    pshirt_length: '', pshirt_shoulder: '', pshirt_sleeves: '', pshirt_chest: '', pshirt_neck: '',
+                    pshirt_collar_shirt: 0, pshirt_collar_round: 0, pshirt_collar_square: 0,
+                    pant_length: '', pant_waist: '', pant_hip: '', pant_thai: '', pant_knee: '', pant_bottom: '', pant_fly: ''
+                });
+            } else if (newVal === 'pant_shirt') {
+                Object.assign(this.product, {
+                    kameez_length: '', kameez_shoulder: '', kameez_sleeves: '', kameez_chest: '', 
+                    kameez_upper_waist: '', kameez_lower_waist: '', kameez_hip: '', kameez_neck: '', 
+                    kameez_arms: '', kameez_cuff: '', kameez_biceps: '',
+                    shalwar_length: '', shalwar_waist: '', shalwar_bottom: '',
+                    collar_shirt: 0, collar_sherwani: 0, collar_damian: 0, collar_round: 0, collar_square: 0
+                });
+            }
+        },
+
+        'product.category_id': function () {
+            this.product.sub_category_id = null;
+            console.log("Category changed to:", this.product.category_id);
+        }
+    },
+
+    methods: {
+        generateNumber() {
+            this.code_exist = "";
+            this.product.code = Math.floor(
+                Math.pow(10, this.len - 1) + Math.random() * (Math.pow(10, this.len) - Math.pow(10, this.len - 1) - 1)
+            );
+        },
+
+        onMultipleFilesSelected(e) {
+            this.product.multiple_images = Array.from(e.target.files);
+            const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+            const maxSize = 2 * 1024 * 1024;
+
+            this.product.multiple_images = this.product.multiple_images.filter(file =>
+                validTypes.includes(file.type) && file.size <= maxSize
+            );
+
+            if (this.product.multiple_images.length !== e.target.files.length) {
+                toastr.warning('Some files were skipped due to invalid format or size');
+            }
+        },
+
+        onFileSelected(e) {
+            this.product.image = e.target.files[0];
+        },
+
+        Get_Units_SubBase(value) {
+            axios.get("/products/Get_Units_SubBase?id=" + value).then(({ data }) => {
+                this.units_sub = data;
+            });
+        },
+
+        Selected_Unit(value) {
+            this.units_sub = [];
+            this.product.unit_sale_id = "";
+            this.product.unit_purchase_id = "";
+            this.Get_Units_SubBase(value);
+        },
+
+        handleProductTypeChange(type) {
+            if (type === 'unstitched_garment') {
+                this.product.thaan_length = 22.5;
+                this.product.suit_length = 4.5;
+                this.product.available_sizes = ['S', 'M', 'L', 'XL'];
+            } else if (type === 'stitched_garment') {
+                this.product.garment_type = 'shalwar_suit';
+                this.product.available_sizes = ['S', 'M', 'L', 'XL'];
+            } else {
+                this.product.available_sizes = [];
+            }
+        },
+
+        prepareProductData() {
+            let data = JSON.parse(JSON.stringify(this.product));
+            [
+                'collar_shirt', 'collar_sherwani', 'collar_damian', 'collar_round', 'collar_square',
+                'pshirt_collar_shirt', 'pshirt_collar_round', 'pshirt_collar_square'
+            ].forEach(key => {
+                data[key] = data[key] ? 1 : 0;
+            });
+            return data;
+        },
+
+        Create_Product() {
+            if (this.product.type === 'is_variant' && this.variants.length <= 0) {
+                toastr.error('The variants array is required.');
+                return;
+            }
+
+            NProgress.start();
+            NProgress.set(0.1);
+            this.SubmitProcessing = true;
+
+            let formData = new FormData();
+            let productData = this.prepareProductData();
+            productData.is_variant = (this.product.type === 'is_variant' && this.variants.length > 0);
+
+          Object.entries(productData).forEach(([key, value]) => {
+    if (key !== 'multiple_images') {
+        if (key === 'available_sizes' && Array.isArray(value)) {
+            value.forEach(val => {
+                formData.append('available_sizes[]', val);
+            });
+        } else {
+            formData.append(key, value);
+        }
+    }
+});
+
+
+            if (this.product.image instanceof File) {
+                formData.append('image', this.product.image);
+            }
+
+            if (this.product.multiple_images.length > 0) {
+                this.product.multiple_images.forEach((file, index) => {
+                    formData.append(`multiple_images[${index}]`, file);
+                });
+            }
+
+            if (this.variants.length) {
+                formData.append("variants", JSON.stringify(this.variants));
+            }
+
+            axios.post("/products/products", formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            })
+            .then(response => {
+                NProgress.done();
+                this.SubmitProcessing = false;
+                window.location.href = '/products/products';
+                toastr.success('{{ __('translate.Created_in_successfully') }}');
+                this.errors = {};
+            })
+            .catch(error => {
+                NProgress.done();
+                this.SubmitProcessing = false;
+                if (error.response && error.response.status === 422) {
+                    this.errors = error.response.data.errors;
+                    toastr.error('{{ __('translate.There_was_something_wronge') }}');
+                } else {
+                    toastr.error('An error occurred while processing your request.');
+                }
+                if (this.errors.variants && this.errors.variants.length > 0) {
+                    toastr.error(this.errors.variants[0]);
+                }
+            });
+        }
+    }
+});
 </script>
+
+
 @endsection

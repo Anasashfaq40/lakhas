@@ -14,10 +14,11 @@ use DataTables;
 use DB;
 use App\utils\helpers;
 use Illuminate\Routing\Controller;
+use App\Models\AccountLedger;
 use App\Services\AccountLedgerService;
-use App\Models\AccountLedger
 class ExpenseController extends Controller
 {
+  
     /**
      * Display a listing of the resource.
      *
@@ -133,7 +134,7 @@ class ExpenseController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    use App\Services\AccountLedgerService;
+    // use App\Services\AccountLedgerService;
 
 public function store(Request $request)
 {

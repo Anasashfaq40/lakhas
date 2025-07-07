@@ -70,7 +70,7 @@
               </div>
 
               <!-- Assigned Driver -->
-              <div class="form-group col-md-4">
+              <!-- <div class="form-group col-md-4">
                 <validation-provider name="assigned_driver" v-slot="{ valid, errors }">
                   <label>{{ __('Assigned Driver') }}</label>
                   <v-select 
@@ -81,7 +81,7 @@
                   </v-select>
                   <span class="error">@{{ errors[0] }}</span>
                 </validation-provider>
-              </div>
+              </div> -->
 
             </div>
           </div>
@@ -358,15 +358,16 @@
                 </div>
 
                 <!-- Unit Sale -->
-                <div class="form-group col-md-6" v-if="detail.product_type != 'is_service'">
-                  <validation-provider name="UnitSale" rules="required" v-slot="{ valid, errors }">
-                    <label>{{ __('translate.Unit_Sale') }} <span class="field_required">*</span></label>
-                    <v-select v-model="detail.sale_unit_id" :reduce="label => label.value"
-                      placeholder="{{ __('translate.Choose_Unit_Sale') }}"
-                      :options="units.map(units => ({label: units.name, value: units.id}))"></v-select>
-                    <span class="error">@{{ errors[0] }}</span>
-                  </validation-provider>
-                </div>
+             <div class="form-group col-md-6" v-if="detail.product_type != 'is_service'">
+  <validation-provider name="UnitSale" v-slot="{ valid, errors }">
+    <label>{{ __('translate.Unit_Sale') }} <span class="field_required">*</span></label>
+    <v-select v-model="detail.sale_unit_id" :reduce="label => label.value"
+      placeholder="{{ __('translate.Choose_Unit_Sale') }}"
+      :options="units.map(units => ({label: units.name, value: units.id}))"></v-select>
+    <span class="error">@{{ errors[0] }}</span>
+  </validation-provider>
+</div>
+
 
                 <!-- imei_number -->
                 <div class="form-group col-md-12" v-show="detail.is_imei">
@@ -600,7 +601,8 @@
               this.details[i].quantity =1;
             }
 
-          this.detail.Unit_price = Number((this.detail.Unit_price).toFixed(2));
+         this.detail.Unit_price = Number(parseFloat(this.detail.Unit_price || 0).toFixed(2));
+
 
           this.details[i].Unit_price = this.detail.Unit_price;
           this.details[i].tax_percent = this.detail.tax_percent;

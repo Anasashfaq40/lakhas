@@ -584,7 +584,7 @@
                               <button type="submit" class="btn btn-primary" :disabled="paymentProcessing">
                                 <span v-if="paymentProcessing" class="spinner-border spinner-border-sm" role="status"
                                   aria-hidden="true"></span> <i class="i-Yes me-2 font-weight-bold"></i>
-                                {{ __('translate.Submit') }}
+                                {{ __('translate.Recieved') }}
                               </button>
 
                             </div>

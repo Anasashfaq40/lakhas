@@ -5,7 +5,6 @@
 <link rel="stylesheet" href="{{asset('assets/styles/vendor/nprogress.css')}}">
 <link rel="stylesheet" href="{{asset('assets/styles/vendor/datepicker.min.css')}}">
 <link rel="stylesheet" href="{{asset('assets/styles/vendor/flatpickr.min.css')}}">
-
 @endsection
 
 <div class="breadcrumb">
@@ -13,7 +12,6 @@
 </div>
 
 <div class="separator-breadcrumb border-top"></div>
-
 
 <div id="section_sale_list">
   <div class="row">
@@ -42,10 +40,6 @@
                   <th>{{ __('translate.Created_by') }}</th>
                   <th>{{ __('translate.Customer') }}</th>
                   <th>{{ __('translate.warehouse') }}</th>
-                  <th>{{ __('Assigned Driver') }}</th>
-                  {{-- <th>{{ __('translate.Total') }}</th>
-                  <th>{{ __('translate.Paid') }}</th>
-                  <th>{{ __('translate.Due') }}</th> --}}
                   <th>{{ __('translate.Payment_Status') }}</th>
                 </tr>
               </thead>
@@ -68,11 +62,9 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-
           <form method="POST" id="filter_sale">
             @csrf
             <div class="row">
-
               <div class="form-group col-md-6">
                 <label for="Ref">{{ __('translate.Reference') }}
                 </label>
@@ -102,7 +94,6 @@
                 </select>
               </div>
 
-
               <div class="form-group col-md-6">
                 <label for="payment_status">{{ __('translate.Payment_Status') }}
                 </label>
@@ -113,7 +104,6 @@
                   <option value="unpaid">{{ __('translate.Unpaid') }}</option>
                 </select>
               </div>
-
 
               <div class="form-group col-md-6">
                 <label for="start_date">{{ __('translate.From_Date') }}
@@ -127,12 +117,9 @@
                 <input type="text" class="form-control date" name="end_date" id="end_date"
                   placeholder="{{ __('translate.To_Date') }}" value="">
               </div>
-
-
             </div>
 
             <div class="row mt-3">
-
               <div class="col-md-6">
                 <button type="submit" class="btn btn-primary">
                   <i class="i-Filter-2 me-2 font-weight-bold"></i> {{ __('translate.Filter') }}
@@ -142,12 +129,8 @@
                 </button>
               </div>
             </div>
-
-
           </form>
-
         </div>
-
       </div>
     </div>
   </div>
@@ -196,14 +179,6 @@
                             <i class="i-Edit"></i>
                           </span>
                           @endcan
-                          <!--<span title="Email" class="btn btn-icon btn-warning btn-sm"-->
-                          <!--  @click="Send_Email_Payment(payment.id)">-->
-                          <!--  <i class="i-Envelope-2"></i>-->
-                          <!--</span>-->
-                          <!--<span title="SMS" class="btn btn-icon btn-light btn-sm"-->
-                          <!--  @click="Payment_Sell_SMS(payment.id)">-->
-                          <!--  <i class="i-Envelope-2"></i>-->
-                          <!--</span>-->
                           @can('payment_sales_delete')
                           <span title="Delete" class="btn btn-icon btn-danger btn-sm"
                             @click="Remove_Payment(payment.id)">
@@ -223,7 +198,6 @@
     </div>
   </div>
 
-
   <!-- Modal add_payment -->
   <validation-observer ref="Add_payment">
     <div class="modal fade" id="Add_Payment" tabindex="-1" role="dialog" aria-labelledby="Add_Payment"
@@ -238,13 +212,10 @@
           <div class="modal-body">
             <form @submit.prevent="Submit_Payment()">
               <div class="row">
-
-
-              <div class="col-md-6">
+                <div class="col-md-6">
                   <validation-provider name="date" rules="required" v-slot="validationContext">
                     <div class="form-group">
                       <label for="picker3">{{ __('translate.Date') }}</label>
-  
                       <input type="text" 
                         :state="getValidationState(validationContext)" 
                         aria-describedby="date-feedback" 
@@ -252,7 +223,6 @@
                         placeholder="{{ __('translate.Select_Date') }}"  
                         id="datetimepicker" 
                         v-model="payment.date">
-  
                       <span class="error">@{{  validationContext.errors[0] }}</span>
                     </div>
                   </validation-provider>
@@ -282,7 +252,6 @@
                               :state="errors[0] ? false : (valid ? true : null)"
                               v-model="payment.payment_method_id" :reduce="(option) => option.value" 
                               :options="payment_methods.map(payment_methods => ({label: payment_methods.title, value: payment_methods.id}))">
-
                           </v-select>
                           <span class="error">@{{ errors[0] }}</span>
                       </validation-provider>
@@ -294,10 +263,8 @@
                             placeholder="{{ __('translate.Choose_Account') }}"
                           v-model="payment.account_id" :reduce="(option) => option.value" 
                           :options="accounts.map(accounts => ({label: accounts.account_name, value: accounts.id}))">
-
                       </v-select>
                   </div>
-
             
                 <div class="form-group col-md-12">
                   <label for="note">{{ __('translate.Please_provide_any_details') }}
@@ -312,24 +279,18 @@
                       aria-hidden="true"></span> <i class="i-Yes me-2 font-weight-bold"></i>
                     {{ __('translate.Submit') }}
                   </button>
-
                 </div>
-
               </div>
-
             </form>
           </div>
         </div>
       </div>
     </div>
   </validation-observer>
-
-
 </div>
 @endsection
 
 @section('page-js')
-
 <script src="{{asset('assets/js/vendor/datatables.min.js')}}"></script>
 <script src="{{asset('assets/js/flatpickr.min.js')}}"></script>
 <script src="{{asset('assets/js/datepicker.min.js')}}"></script>
@@ -340,7 +301,6 @@
       "use strict";
 
       $(document).ready(function () {
-
           flatpickr("#datetimepicker", {
             enableTime: true,
             dateFormat: "Y-m-d H:i"
@@ -365,9 +325,7 @@
 
           //init datatable
           sale_datatable();
-
         });
-
 
         //Get Data
         function sale_datatable(start_date ='', end_date ='', Ref ='', client_id ='', payment_statut ='',warehouse_id =''){
@@ -382,8 +340,7 @@
                             'searchable': false,
                         },
                         {
-                            // 'targets': [1,4,5,6,7,8,9,10],
-                            'targets': [1,4,5,6,7,8],
+                            'targets': [1,4,5,6,7],
                             "orderable": false,
                         },
                   ],
@@ -409,10 +366,7 @@
                     {data: 'created_by'},
                     {data: 'client_name'},
                     {data: 'warehouse_name'},
-                    {data: 'assigned_driver'},
-                  
                     {data: 'payment_status'},
-                
                 ],
             
                 lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
@@ -508,15 +462,12 @@
             var payment_statut = $('#payment_status').val('0');
             let client_id = $('#client_id').val('0');
             let warehouse_id = $('#warehouse_id').val('0');
-
         });
-
 
          // Show Modal Filter
         $('#Show_Modal_Filter').on('click' , function (e) {
             $('#filter_sale_modal').modal('show');
         });
-
 
          // Submit Filter
         $('#filter_sale').on('submit' , function (e) {
@@ -532,7 +483,6 @@
             sale_datatable(start_date, end_date, Ref ,client_id, payment_statut,warehouse_id);
 
             $('#filter_sale_modal').modal('hide');
-           
         });
 
         // event reload Datatatble
@@ -567,7 +517,6 @@
             app.sale_PDF(Ref , id);
         });
 
-
         //Delete sale
         $(document).on('click', '.delete', function () {
             var id = $(this).attr('id');
@@ -589,21 +538,17 @@
 
          // event Create_Facture_sale
          $(document).bind('Create_Facture_sale', function (e) {
-
             $('#Add_Payment').modal('hide');
             NProgress.done();
-
             $('#sale_table').DataTable().destroy();
             sale_datatable();
         });
-
 
         // event Update_Facture_sale
         $(document).bind('Update_Facture_sale', function (e) {
             $('#Add_Payment').modal('hide');
             $('#Show_payment').modal('hide');
             NProgress.done();
-
             $('#sale_table').DataTable().destroy();
             sale_datatable();
         });
@@ -611,12 +556,9 @@
         // event Delete_Facture_sale
         $(document).bind('Delete_Facture_sale', function (e) {
             $('#Show_payment').modal('hide');
-
             $('#sale_table').DataTable().destroy();
             sale_datatable();
         });
-
-
     });
 </script>
 
@@ -653,44 +595,37 @@
             payments: [],
             payment: {},
             Sale_id: "",
-          
         },
        
         methods: {
-
-
           Selected_Payment_Method(value) {
                 if (value === null) {
                     this.payment.payment_method_id = "";
                 }
             },
 
-          
       //---------- keyup paid Amount
- Verified_paidAmount() {
-  if (isNaN(this.payment.montant)) {
-    this.payment.montant = 0;
-  }
-},
+      Verified_paidAmount() {
+        if (isNaN(this.payment.montant)) {
+          this.payment.montant = 0;
+        }
+      },
 
-//------ Validate Form Submit_Payment
-Submit_Payment() {
-  this.$refs.Add_payment.validate().then(success => {
-    if (!success) {
-      toastr.error('{{ __('translate.Please_fill_the_form_correctly') }}');
-    } else if (!this.EditPaiementMode) {
-      this.Create_Payment();
-    } else {
-      this.Update_Payment();
-    }
-  });
-},
-
-
+      //------ Validate Form Submit_Payment
+      Submit_Payment() {
+        this.$refs.Add_payment.validate().then(success => {
+          if (!success) {
+            toastr.error('{{ __('translate.Please_fill_the_form_correctly') }}');
+          } else if (!this.EditPaiementMode) {
+            this.Create_Payment();
+          } else {
+            this.Update_Payment();
+          }
+        });
+      },
 
       //---------SMS notification
       Sale_SMS(id) {
-          // Start the progress bar.
           NProgress.start();
           NProgress.set(0.1);
           axios
@@ -698,12 +633,10 @@ Submit_Payment() {
               id: id,
             })
             .then(response => {
-              // Complete the animation of the  progress bar.
               setTimeout(() => NProgress.done(), 500);
               toastr.success('{{ __('translate.sent_in_successfully') }}');
             })
             .catch(error => {
-              // Complete the animation of the  progress bar.
               setTimeout(() => NProgress.done(), 500);
               toastr.error('{{ __('translate.There_was_something_wronge') }}');
             });
@@ -711,7 +644,6 @@ Submit_Payment() {
 
         //---------SMS notification
         Payment_Sell_SMS(id) {
-          // Start the progress bar.
           NProgress.start();
           NProgress.set(0.1);
           axios
@@ -719,27 +651,22 @@ Submit_Payment() {
               id: id,
             })
             .then(response => {
-              // Complete the animation of the  progress bar.
               setTimeout(() => NProgress.done(), 500);
               toastr.success('{{ __('translate.sent_in_successfully') }}');
             })
             .catch(error => {
-              // Complete the animation of the  progress bar.
               setTimeout(() => NProgress.done(), 500);
               toastr.error('{{ __('translate.There_was_something_wronge') }}');
             });
         },
 
-
      //------------------------ Payments Sale PDF ------------------------------\\
      Payment_Sale_PDF(payment, id) {
-      // Start the progress bar.
       NProgress.start();
       NProgress.set(0.1);
-     
       axios
         .get("/payment_Sale_PDF/" + id, {
-          responseType: "blob", // important
+          responseType: "blob",
           headers: {
             "Content-Type": "application/json"
           }
@@ -751,17 +678,14 @@ Submit_Payment() {
           link.setAttribute("download", "Payment_" + payment.Ref + ".pdf");
           document.body.appendChild(link);
           link.click();
-          // Complete the animation of the  progress bar.
           setTimeout(() => NProgress.done(), 500);
         })
         .catch(() => {
-          // Complete the animation of the  progress bar.
           setTimeout(() => NProgress.done(), 500);
         });
     },
 
     Send_Email_Payment(id) {
-      // Start the progress bar.
       NProgress.start();
       NProgress.set(0.1);
       axios
@@ -769,28 +693,25 @@ Submit_Payment() {
           id: id,
         })
         .then(response => {
-          // Complete the animation of the  progress bar.
           setTimeout(() => NProgress.done(), 500);
           toastr.success('{{ __('translate.sent_in_successfully') }}');
         })
         .catch(error => {
-          // Complete the animation of the  progress bar.
           setTimeout(() => NProgress.done(), 500);
           toastr.error('{{ __('translate.There_was_something_wronge') }}');
         });
     },
+    
     //----------------------------------- New Payment Sale ------------------------------\\
     New_Payment(payment_status , id) {
       if (payment_status == "paid") {
         toastr.error('{{ __('translate.Payment_Complete') }}');
       } else {
-        // Start the progress bar.
         NProgress.start();
         NProgress.set(0.1);
         this.reset_form_payment();
         this.EditPaiementMode = false;
         this.get_data_create(id);
-       
       }
     },
     
@@ -807,19 +728,17 @@ Submit_Payment() {
           this.accounts          = response.data.accounts;
           
           setTimeout(() => {
-            // Complete the animation of the  progress bar.
             NProgress.done();
             $('#Add_Payment').modal('show');
           }, 1000);
         })
         .catch(() => {
-          // Complete the animation of the  progress bar.
           setTimeout(() => NProgress.done(), 500);
         });
     },
+    
     //------------------------------------Edit Payment ------------------------------\\
     Edit_Payment(payment) {
-      // Start the progress bar.
       NProgress.start();
       NProgress.set(0.1);
       this.reset_form_payment();
@@ -832,12 +751,10 @@ Submit_Payment() {
       this.payment.notes     = payment.notes;
       this.due               = parseFloat(this.sale_due) + payment.montant;
       setTimeout(() => {
-        // Complete the animation of the  progress bar.
         NProgress.done();
         $('#Add_Payment').modal('show');
       }, 1000);
     },
-
 
      //----------------------------------------- Get Payments  -------------------------------\\
      Get_Payments(id) {
@@ -850,21 +767,17 @@ Submit_Payment() {
           this.accounts          = response.data.accounts;
 
           setTimeout(() => {
-            // Complete the animation of the  progress bar.
             NProgress.done();
             $('#Show_payment').modal('show');
           }, 1000);
         })
         .catch(() => {
-          // Complete the animation of the  progress bar.
           setTimeout(() => NProgress.done(), 500);
         });
     },
 
-
     //-------------------------------Show All Payment with Sale ---------------------\\
     Show_Payments(id) {
-      // Start the progress bar.
       NProgress.start();
       NProgress.set(0.1);
       this.reset_form_payment();
@@ -898,6 +811,7 @@ Submit_Payment() {
             NProgress.done();
           });
     },
+    
     //---------------------------------------- Update Payment ------------------------------\\
     Update_Payment() {
       this.paymentProcessing = true;
@@ -924,6 +838,7 @@ Submit_Payment() {
             NProgress.done();
           });
     },
+    
      //--------------------------------- Remove_Payment ---------------------------\\
      Remove_Payment(id) {
         swal({
@@ -950,6 +865,7 @@ Submit_Payment() {
                     });
             });
         },
+        
          //------------------------------------------ Reset Form Payment ------------------------------\\
         reset_form_payment() {
             this.due = 0;
@@ -971,8 +887,7 @@ Submit_Payment() {
         var d1 = d.getDate();
         var d2 = d1 < 10 ? '0' + d1 : d1;
         return [d.getFullYear(), m2, d2].join('-');
-    },
-
+      },
 
      //---Validate State Fields
      getValidationState({ dirty, validated, valid = null }) {
@@ -991,12 +906,9 @@ Submit_Payment() {
             return `${value[0]}.${formated.substr(0, dec)}`;
         while (formated.length < dec) formated += "0";
         return `${value[0]}.${formated}`;
-        },
+      },
 
-   
-
-    SendEmail(id) {
-        // Start the progress bar.
+      SendEmail(id) {
         NProgress.start();
         NProgress.set(0.1);
         axios
@@ -1004,26 +916,23 @@ Submit_Payment() {
                 id: id,
             })
             .then(response => {
-            // Complete the animation of the  progress bar.
             setTimeout(() => NProgress.done(), 500);
             toastr.success('{{ __('translate.sent_in_successfully') }}');
             })
             .catch(error => {
-                // Complete the animation of the  progress bar.
                 setTimeout(() => NProgress.done(), 500);
                 toastr.error('{{ __('translate.There_was_something_wronge') }}');
             });
-    },
+      },
 
-        //----------------------------------- Print Quotation -------------------------\\
+      //----------------------------------- Print Quotation -------------------------\\
       sale_PDF(Ref , id) {
-        // Start the progress bar.
         NProgress.start();
         NProgress.set(0.1);
         
         axios
             .get('/Sale_PDF/'+ id, {
-            responseType: "blob", // important
+            responseType: "blob",
             headers: {
                 "Content-Type": "application/json"
             }
@@ -1035,56 +944,45 @@ Submit_Payment() {
             link.setAttribute("download", "Sale_" + Ref + ".pdf");
             document.body.appendChild(link);
             link.click();
-            // Complete the animation of the  progress bar.
             setTimeout(() => NProgress.done(), 500);
             })
             .catch(() => {
-            // Complete the animation of the  progress bar.
             setTimeout(() => NProgress.done(), 500);
         });
-    },
+      },
 
-
-             //--------------------------------- Remove_sale ---------------------------\\
-             Remove_sale(id) {
-              
-                swal({
-                    title: '{{ __('translate.Are_you_sure') }}',
-                    text: '{{ __('translate.You_wont_be_able_to_revert_this') }}',
-                    type: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#0CC27E',
-                    cancelButtonColor: '#FF586B',
-                    confirmButtonText: '{{ __('translate.Yes_delete_it') }}',
-                    cancelButtonText: '{{ __('translate.No_cancel') }}',
-                    confirmButtonClass: 'btn btn-primary me-5',
-                    cancelButtonClass: 'btn btn-danger',
-                    buttonsStyling: false
-                }).then(function () {
-                        axios
-                            .delete("/sale/sales/" + id)
-                            .then(() => {
-                                toastr.success('{{ __('translate.Deleted_in_successfully') }}');
-                                setTimeout(() => {
-                                  $.event.trigger('event_sale');
-                                }, 500);
-
-                            })
-                            .catch(() => {
-                                toastr.error('{{ __('translate.There_was_something_wronge') }}');
-                            });
-                    });
-                },
-
-         
-
+      //--------------------------------- Remove_sale ---------------------------\\
+      Remove_sale(id) {
+          swal({
+              title: '{{ __('translate.Are_you_sure') }}',
+              text: '{{ __('translate.You_wont_be_able_to_revert_this') }}',
+              type: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#0CC27E',
+              cancelButtonColor: '#FF586B',
+              confirmButtonText: '{{ __('translate.Yes_delete_it') }}',
+              cancelButtonText: '{{ __('translate.No_cancel') }}',
+              confirmButtonClass: 'btn btn-primary me-5',
+              cancelButtonClass: 'btn btn-danger',
+              buttonsStyling: false
+          }).then(function () {
+                  axios
+                      .delete("/sale/sales/" + id)
+                      .then(() => {
+                          toastr.success('{{ __('translate.Deleted_in_successfully') }}');
+                          setTimeout(() => {
+                            $.event.trigger('event_sale');
+                          }, 500);
+                      })
+                      .catch(() => {
+                          toastr.error('{{ __('translate.There_was_something_wronge') }}');
+                      });
+              });
+          },
         },
         //-----------------------------Autoload function-------------------
         created() {
         }
-
     })
-
 </script>
-
 @endsection

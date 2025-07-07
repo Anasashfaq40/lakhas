@@ -2,79 +2,88 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\SubCategory;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Storage;
 
 class SubCategoriesController extends Controller
 {
-    // Get All SubCategories
-    public function index()
+    public function index(Request $request)
     {
-        $sub_categories = SubCategory::orderBy('id', 'desc')->get();
-        return view('products.sub_categories', compact('sub_categories'));
+        if ($request->ajax()) {
+            $data = SubCategory::with('category')->latest()->get();
+            return datatables()->of($data)
+                ->addColumn('category', fn($row) => $row->category->name ?? '')
+                ->addColumn('image', fn($row) => $row->image
+                    ? '<img src="' . asset("storage/{$row->image}") . '" width="50">'
+                    : '<span class="badge bg-secondary">No Image</span>')
+                ->addColumn('action', function ($row) {
+                    return '
+                        <button class="btn btn-sm btn-primary edit-btn" data-id="' . $row->id . '"><i class="i-Edit"></i></button>
+                        <button class="btn btn-sm btn-danger delete-btn" data-id="' . $row->id . '"><i class="i-Close"></i></button>
+                    ';
+                })
+                ->rawColumns(['image', 'action'])
+                ->make(true);
+        }
+
+        $categories = Category::all();
+        return view('products.sub_categories', compact('categories'));
     }
 
-    // Store New SubCategory
-  public function store(Request $request)
-{
-    $request->validate([
-        'name' => 'required|unique:sub_categories,name',
-        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-    ]);
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|unique:sub_categories,name',
+            'category_id' => 'required|exists:categories,id',
+            'image' => 'nullable|image',
+        ]);
 
-    $imagePath = null;
-    if ($request->hasFile('image')) {
-        $imagePath = $request->file('image')->store('sub_categories', 'public');
+        if ($request->hasFile('image')) {
+            $validated['image'] = $request->file('image')->store('sub_categories', 'public');
+        }
+
+        SubCategory::create($validated);
+
+        return response()->json(['success' => true]);
     }
 
-    SubCategory::create([
-        'name' => $request->name,
-        'image' => $imagePath,
-    ]);
-
-    return response()->json(['success' => true]);
-}
-    // Edit SubCategory
     public function edit($id)
     {
-        $sub_category = SubCategory::findOrFail($id);
-        return response()->json([
-            'sub_category' => $sub_category,
+        $sub = SubCategory::findOrFail($id);
+        return response()->json(['sub_category' => $sub]);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $sub = SubCategory::findOrFail($id);
+        $validated = $request->validate([
+            'name' => 'required|unique:sub_categories,name,' . $id,
+            'category_id' => 'required|exists:categories,id',
+            'image' => 'nullable|image',
         ]);
-    }
 
-    // Update SubCategory
-     
-// Update the update method
-public function update(Request $request, $id)
-{
-    $request->validate([
-        'name' => 'required|unique:sub_categories,name,' . $id,
-        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-    ]);
-
-    $subCategory = SubCategory::findOrFail($id);
-    $data = ['name' => $request->name];
-
-    if ($request->hasFile('image')) {
-    
-        if ($subCategory->image) {
-            Storage::disk('public')->delete($subCategory->image);
+        if ($request->hasFile('image')) {
+            if ($sub->image) {
+                Storage::disk('public')->delete($sub->image);
+            }
+            $validated['image'] = $request->file('image')->store('sub_categories', 'public');
         }
-        $data['image'] = $request->file('image')->store('sub_categories', 'public');
+
+        $sub->update($validated);
+
+        return response()->json(['success' => true]);
     }
 
-    $subCategory->update($data);
-
-    return response()->json(['success' => true]);
-}
-
-    // Delete SubCategory
     public function destroy($id)
     {
-        SubCategory::findOrFail($id)->delete();
+        $sub = SubCategory::findOrFail($id);
+        if ($sub->image) {
+            Storage::disk('public')->delete($sub->image);
+        }
+        $sub->delete();
+
         return response()->json(['success' => true]);
     }
 }

@@ -184,7 +184,7 @@ class PurchasesController extends Controller
             $limit = $totalRows;
 
             $purchases = $purchase_Filtred
-            ->with('provider', 'warehouse')
+            ->with('provider', 'warehouse','details')
             ->offset($start)
             ->limit($limit)
             ->orderBy($order, $dir)
@@ -197,6 +197,9 @@ class PurchasesController extends Controller
                 $item['id']             = $purchase->id;
                 $item['date']           = Carbon::parse($purchase->date)->format('d-m-Y H:i');
                 $item['warehouse_name'] = $purchase->warehouse->name;
+                $item['quantity'] = $purchase->details->sum('quantity');
+                $item['cost'] = $purchase->details->pluck('cost')->toArray();
+
                 $item['provider_name']  = $purchase->provider->name;
                 $item['GrandTotal']     = $this->render_price_with_symbol_placement(number_format($purchase->GrandTotal, 2, '.', ','));
                 $item['paid_amount']    = $this->render_price_with_symbol_placement(number_format($purchase->paid_amount, 2, '.', ','));

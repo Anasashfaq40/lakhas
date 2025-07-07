@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ProductLedgerController;
 use App\Http\Controllers\ProviderLedgerController;
 use App\Http\Controllers\AccountLedgerController;
+use App\Http\Controllers\ClientController;
 
 Route::get('/fix-laravel', function () {
     Artisan::call('config:clear');
@@ -124,9 +125,12 @@ if ($installed === true) {
                     Route::post('import_products', 'ProductsController@import_products');
                     Route::get('{productId}/ledger', [ProductLedgerController::class, 'index'])->name('product.ledger.index');
                     Route::get('{productId}/ledger/download', [ProductLedgerController::class, 'downloadExcel'])->name('product.ledger.download');
+                    Route::get('products/view/{id}', 'ProductsController@showdetail')->name('products.view');
+
 
                     //------------------------------- categories--------------------------\\
                     Route::resource('categories', 'CategoriesController');
+                    Route::get('/categories/parents', 'CategoriesController@parentCategories')->name('categories.parents');
             
                     //------------------------------- brands--------------------------\\
                     Route::resource('brands', 'BrandsController');
@@ -262,6 +266,8 @@ Route::get('providers/{id}/ledger', [ProviderLedgerController::class, 'index'])-
 
                  Route::get('import_clients', 'ClientController@import_clients_page')->name('import_clients');
                  Route::post('import_clients', 'ClientController@import_clients');
+                Route::get('clients/sales/{id}', [ClientController::class, 'clientdetailshow'])->name('clients.sales.details');
+
 
                  //------------------------------- users & permissions --------------------------\\
               Route::middleware(['web', 'auth'])->prefix('user-management')->group(function() {

@@ -6,32 +6,21 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateCategoriesTable extends Migration {
 
-	/**
-	 * Run the migrations.
-	 *
-	 * @return void
-	 */
-	public function up()
-	{
-		Schema::create('categories', function(Blueprint $table)
-		{
-			$table->integer('id', true);
-			$table->string('code', 192);
-			$table->string('name', 192);
-			$table->timestamps(6);
-			$table->softDeletes();
-		});
-	}
+    public function up()
+    {
+        Schema::create('categories', function(Blueprint $table)
+        {
+            $table->increments('id'); // auto-incrementing primary key
+            $table->string('code', 192);
+            $table->string('name', 192);
+            $table->string('image')->nullable(); // optional image field
+            $table->timestamps(6);
+            $table->softDeletes();
+        });
+    }
 
-
-	/**
-	 * Reverse the migrations.
-	 *
-	 * @return void
-	 */
-	public function down()
-	{
-		Schema::drop('categories');
-	}
-
+    public function down()
+    {
+        Schema::drop('categories');
+    }
 }

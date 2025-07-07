@@ -306,7 +306,7 @@ public function create()
      * @param Request $request
      * @return Renderable
      */
-  public function store(Request $request)
+public function store(Request $request)
 {
     $user_auth = auth()->user();
 
@@ -328,16 +328,13 @@ public function create()
             $order->shipping = $request->shipping;
             $order->statut = 'completed';
             $order->payment_statut = 'unpaid';
-            $order->assigned_driver = $request->assigned_driver;
             $order->notes = $request->notes;
             $order->user_id = Auth::user()->id;
 
-            // Save to get the ID
+            // Save to get ID for Ref
             $order->save();
-
-            // Now generate the correct Ref using the ID
             $order->Ref = 'SO-' . date("Ymd") . '-' . $order->id;
-            $order->save(); // Update only the Ref
+            $order->save();
 
             // Log client ledger
             \App\Services\ClientLedgerService::log(
@@ -349,16 +346,17 @@ public function create()
             );
 
             $client = Client::find($request->client_id);
-
             $data = $request['details'];
-            $orderDetails = []; // Initialize the array
+            $orderDetails = [];
 
             foreach ($data as $key => $value) {
-                $unit = Unit::where('id', $value['sale_unit_id'])->first();
 
-                $convertedQty = $value['quantity'];
+                // Unit conversion logic
+                $unit = Unit::find($value['sale_unit_id'] ?? null);
+
+                $convertedQty = $value['quantity']; // default fallback
                 if ($unit) {
-                    $convertedQty = $unit->operator == '/'
+                    $convertedQty = $unit->operator === '/'
                         ? $value['quantity'] / $unit->operator_value
                         : $value['quantity'] * $unit->operator_value;
                 }
@@ -366,7 +364,7 @@ public function create()
                 $orderDetails[] = [
                     'date' => $request->date,
                     'sale_id' => $order->id,
-                    'sale_unit_id' => $value['sale_unit_id'] ?? NULL,
+                    'sale_unit_id' => $value['sale_unit_id'] ?? null,
                     'quantity' => $value['quantity'],
                     'price' => $value['Unit_price'],
                     'TaxNet' => $value['tax_percent'],
@@ -374,29 +372,27 @@ public function create()
                     'discount' => $value['discount'],
                     'discount_method' => $value['discount_Method'],
                     'product_id' => $value['product_id'],
-                    'product_variant_id' => !empty($value['product_variant_id']) ? $value['product_variant_id'] : NULL,
+                    'product_variant_id' => $value['product_variant_id'] ?? null,
                     'total' => $value['subtotal'],
                     'imei_number' => $value['imei_number'],
                 ];
 
-                if (!empty($value['product_variant_id'])) {
-                    $product_warehouse = product_warehouse::where('deleted_at', '=', null)
-                        ->where('warehouse_id', $order->warehouse_id)
-                        ->where('product_id', $value['product_id'])
-                        ->where('product_variant_id', $value['product_variant_id'])
-                        ->first();
-                } else {
-                    $product_warehouse = product_warehouse::where('deleted_at', '=', null)
-                        ->where('warehouse_id', $order->warehouse_id)
-                        ->where('product_id', $value['product_id'])
-                        ->first();
-                }
+                // Find stock record
+                $product_warehouse = product_warehouse::where('deleted_at', null)
+                    ->where('warehouse_id', $order->warehouse_id)
+                    ->where('product_id', $value['product_id'])
+                    ->when(!empty($value['product_variant_id']), function ($query) use ($value) {
+                        return $query->where('product_variant_id', $value['product_variant_id']);
+                    })
+                    ->first();
 
-                if ($product_warehouse && $unit) {
+                // Update stock
+                if ($product_warehouse) {
                     $product_warehouse->qte -= $convertedQty;
                     $product_warehouse->save();
                 }
 
+                // Log product stock movement
                 \App\Services\LedgerService::log(
                     $value['product_id'],
                     'sale',
@@ -416,6 +412,8 @@ public function create()
 
     return abort('403', __('You are not authorized'));
 }
+
+
 
     /**
      * Show the specified resource.
