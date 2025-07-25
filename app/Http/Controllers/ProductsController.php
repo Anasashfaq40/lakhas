@@ -1652,5 +1652,20 @@ public function showdetail($id)
     return abort('403', __('You are not authorized'));
 }
 
+public function showProducts()
+{
+   $products = Product::latest()->get(); 
+    return view('frontend.home', compact('products'));
+}
+
+public function showdetails($id)
+{
+    $product = Product::with(['category', 'brand', 'images'])->findOrFail($id);
+
+    return view('frontend.shop-details', compact('product'));
+}
+
+
+
 
 }

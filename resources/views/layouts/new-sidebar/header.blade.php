@@ -5,14 +5,15 @@
             @include('components.icons.toggle2', ['class'=>'width_20'])
         </button>
 
-        <div class="dropdown layouts_add_new">
-            <button
-                class="btn btn-light d-none d-lg-flex align-items-center px-3 py-2 fw-semibold" 
-                type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false"
-            >
-                @include('components.icons.plus', ['class'=>'me-2 width_14'])
-                <span>{{ __('translate.Add_new') }}</span>
-            </button>
+        @if(auth()->user()->role_users_id == 1)
+            <div class="dropdown layouts_add_new">
+                <button
+                    class="btn btn-light d-none d-lg-flex align-items-center px-3 py-2 fw-semibold" 
+                    type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false"
+                >
+                    @include('components.icons.plus', ['class'=>'me-2 width_14'])
+                    <span>{{ __('translate.Add_new') }}</span>
+                </button>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                     @can('user_add')
                         <li><a class="dropdown-item" href="/user-management/users"> <i class="i-Administrator text-20 me-2 "></i> {{ __('translate.Add user') }}</a></li>
@@ -41,23 +42,26 @@
                     @can('quotations_add')
                         <li><a class="dropdown-item" href="/quotation/quotations/create"> <i class="i-Checkout-Basket text-20 me-2 "></i> {{ __('translate.Add_Quotation') }}</a></li>
                     @endcan
-                  
                 </ul>
-        </div>
+            </div>
+        @endif
     </div>
 
     <div class="d-flex align-items-center button_pos">
+        {{-- POS Button (Based on Permission) --}}
         @can('pos')
             <a href="/pos" class="btn btn-outline-primary fw-bolder">
-            {{ __('translate.POS') }}
+                {{ __('translate.POS') }}
             </a>
         @endcan
+
+        {{-- Fullscreen Button --}}
         <button class="btn p-2 ms-4" data-fullscreen>
             @include('components.icons.expand', ['class'=>'width_20'])
         </button>
 
+        {{-- Language Switcher --}}
         <div class="button_language dropdown p-2 ms-2">
-            
             <i class="i-Globe"
                 type="button"
                 data-bs-toggle="dropdown" aria-expanded="false"
@@ -67,10 +71,10 @@
                 <li><a class="dropdown-item" href="{{route('language.switch','en')}}"> <img class="flag-icon" src="{{asset('assets/flags/gb.svg')}}">  {{ __('translate.English') }}</a></li>
                 <li><a class="dropdown-item" href="{{route('language.switch','fr')}}"><img class="flag-icon" src="{{asset('assets/flags/fr.svg')}}">  {{ __('translate.Frensh') }}</a></li>
                 <li><a class="dropdown-item" href="{{route('language.switch','ar')}}"><img class="flag-icon" src="{{asset('assets/flags/sa.svg')}}">  {{ __('translate.Arabic') }}</a></li>
-                
             </ul>
         </div>
-        
+
+        {{-- Profile / Settings / Logout --}}
         <div class="dropdown button_settings">
             <img 
                 alt="" 
@@ -83,13 +87,17 @@
             >
             <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="/profile">{{ __('translate.profil') }}</a></li>
-                @can('settings')
+                
+                {{-- Settings Only for Admin --}}
+                @if(auth()->user()->role_users_id == 1 && auth()->user()->can('settings'))
                     <li><a class="dropdown-item" href="/settings/system_settings">{{ __('translate.Settings') }}</a></li>
-                @endcan
-                <li><a class="dropdown-item" href="{{ route('logout') }}"
+                @endif
+
+                <li>
+                    <a class="dropdown-item" href="{{ route('logout') }}"
                         onclick="event.preventDefault();
-                                        document.getElementById('logout-form').submit();">
-                    {{ __('translate.logout') }}
+                                     document.getElementById('logout-form').submit();">
+                        {{ __('translate.logout') }}
                     </a>
 
                     <form id="logout-form" action="{{ route('logout') }}" method="POST">

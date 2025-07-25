@@ -1012,11 +1012,11 @@ public function clientdetailshow($id)
         $sale_details['due']                    = $this->render_price_with_symbol_placement(number_format($sale_data->GrandTotal - $sale_data->paid_amount, 2, '.', ','));
         $sale_details['payment_status']         = $sale_data->payment_statut;
         $sale_details['assigned_driver']        = $sale_data->assigned_driver;
-
-        $sale_details['sale_has_return'] = SaleReturn::where('sale_id', $id)->where('deleted_at', '=', null)->exists() ? 'yes' : 'no';
+        $sale_details['sale_has_return']        = SaleReturn::where('sale_id', $id)->where('deleted_at', '=', null)->exists() ? 'yes' : 'no';
 
         foreach ($sale_data['details'] as $detail) {
             $unit = Unit::where('id', $detail->sale_unit_id)->first();
+            $product = $detail['product'];
 
             if ($detail->product_variant_id) {
                 $productsVariants = ProductVariant::where('product_id', $detail->product_id)
@@ -1025,13 +1025,13 @@ public function clientdetailshow($id)
                 $data['code'] = $productsVariants->code;
                 $variant_name = '['.$productsVariants->name . '] ';
             } else {
-                $data['code'] = $detail['product']['code'];
+                $data['code'] = $product['code'];
                 $variant_name = '';
             }
 
-            $category_name = $detail['product']['category'] ? $detail['product']['category']->name : '';
-            $brand_name = $detail['product']['brand'] ? $detail['product']['brand']->name : '';
-            $product_name = $detail['product']['name'];
+            $category_name = $product['category'] ? $product['category']->name : '';
+            $brand_name = $product['brand'] ? $product['brand']->name : '';
+            $product_name = $product['name'];
             $name_parts = array_filter([$category_name, $brand_name, $product_name]);
             $data['name'] = $variant_name . implode(' - ', $name_parts);
 
@@ -1040,14 +1040,12 @@ public function clientdetailshow($id)
             $data['price'] = $detail->price;
             $data['unit_sale'] = $unit ? $unit->ShortName : '';
 
-            // Handle discount
             if ($detail->discount_method == '2') {
                 $data['DiscountNet'] = $detail->discount;
             } else {
                 $data['DiscountNet'] = $detail->price * $detail->discount / 100;
             }
 
-            // Sum product discount
             $total_product_discount += $data['DiscountNet'] * $detail->quantity;
 
             $tax_price = $detail->TaxNet * (($detail->price - $data['DiscountNet']) / 100);
@@ -1062,50 +1060,92 @@ public function clientdetailshow($id)
                 $data['taxe'] = $detail->price - $data['Net_price'] - $data['DiscountNet'];
             }
 
-            $data['is_imei'] = $detail['product']['is_imei'];
+            $data['is_imei'] = $product['is_imei'];
             $data['imei_number'] = $detail->imei_number;
+            
+            // Add all measurement fields
+            $data['garment_type'] = $product->garment_type;
+            $data['stitched_garment'] = $product->stitched_garment;
+            
+            // Kameez/Shirt measurements
+            $data['kameez_length'] = $product->kameez_length;
+            $data['kameez_shoulder'] = $product->kameez_shoulder;
+            $data['kameez_sleeves'] = $product->kameez_sleeves;
+            $data['kameez_chest'] = $product->kameez_chest;
+            $data['kameez_upper_waist'] = $product->kameez_upper_waist;
+            $data['kameez_lower_waist'] = $product->kameez_lower_waist;
+            $data['kameez_hip'] = $product->kameez_hip;
+            $data['kameez_neck'] = $product->kameez_neck;
+            $data['kameez_arms'] = $product->kameez_arms;
+            $data['kameez_cuff'] = $product->kameez_cuff;
+            $data['kameez_biceps'] = $product->kameez_biceps;
+            
+            // Shalwar/Pant measurements
+            $data['shalwar_length'] = $product->shalwar_length;
+            $data['shalwar_waist'] = $product->shalwar_waist;
+            $data['shalwar_bottom'] = $product->shalwar_bottom;
+            
+            // Pant/Shirt measurements
+            $data['pant_length'] = $product->pant_length;
+            $data['pant_waist'] = $product->pant_waist;
+            $data['pant_hip'] = $product->pant_hip;
+            $data['pant_thigh'] = $product->pant_thai;
+            $data['pant_knee'] = $product->pant_knee;
+            $data['pant_bottom'] = $product->pant_bottom;
+            $data['pant_fly'] = $product->pant_fly;
+            
+            // Collar types
+            $data['collar_shirt'] = $product->collar_shirt;
+            $data['collar_sherwani'] = $product->collar_sherwani;
+            $data['collar_damian'] = $product->collar_damian;
+            $data['collar_round'] = $product->collar_round;
+            $data['collar_square'] = $product->collar_square;
+            
+            // Additional measurements
+            $data['pshirt_length'] = $product->pshirt_length;
+            $data['pshirt_shoulder'] = $product->pshirt_shoulder;
+            $data['pshirt_sleeves'] = $product->pshirt_sleeves;
+            $data['pshirt_chest'] = $product->pshirt_chest;
+            $data['pshirt_neck'] = $product->pshirt_neck;
+            $data['pshirt_collar_shirt'] = $product->pshirt_collar_shirt;
+            $data['pshirt_collar_round'] = $product->pshirt_collar_round;
+            $data['pshirt_collar_square'] = $product->pshirt_collar_square;
+            $data['thaan_length'] = $product->thaan_length;
+            $data['suit_length'] = $product->suit_length;
+            $data['available_sizes'] = $product->available_sizes;
 
             $details[] = $data;
             $total_quantity += $detail->quantity;
         }
 
         $sale_details['total_quantity'] = number_format($total_quantity, 2, '.', ',');
-
-        // 🎯 Add total product discount to the final result
         $sale_details['product_discount_total'] = $this->render_price_with_symbol_placement(number_format($total_product_discount, 2, '.', ','));
 
         $company = Setting::where('deleted_at', '=', null)->first();
 
-        // ➕ Previous balance logic
+        // Previous balance logic
         $client_id = $sale_data->client_id;
         
         $total_amount_prev = DB::table('sales')
             ->where('deleted_at', '=', null)
             ->where('client_id', $client_id)
-            ->where('id', '!=', $sale_data->id) // exclude this sale
+            ->where('id', '!=', $sale_data->id)
             ->sum('GrandTotal');
         
         $total_paid_prev = DB::table('sales')
             ->where('deleted_at', '=', null)
             ->where('client_id', $client_id)
-            ->where('id', '!=', $sale_data->id) // exclude this sale
+            ->where('id', '!=', $sale_data->id)
             ->sum('paid_amount');
         
         $previous_balance = $total_amount_prev - $total_paid_prev;
+        $sale_details['previous_balance'] = $this->render_price_with_symbol_placement(number_format($previous_balance, 2, '.', ','));
         
-        $sale_details['previous_balance'] = $this->render_price_with_symbol_placement(
-            number_format($previous_balance, 2, '.', ',')
-        );
-        
-        // ➕ Updated balance after this sale
+        // Updated balance after this sale
         $total_amount_now = $total_amount_prev + $sale_data->GrandTotal;
         $total_paid_now = $total_paid_prev + $sale_data->paid_amount;
-        
         $updated_balance = $total_amount_now - $total_paid_now;
-        
-        $sale_details['updated_balance'] = $this->render_price_with_symbol_placement(
-            number_format($updated_balance, 2, '.', ',')
-        );
+        $sale_details['updated_balance'] = $this->render_price_with_symbol_placement(number_format($updated_balance, 2, '.', ','));
 
         return view('sales.details_sale', [
             'sale' => $sale_details,

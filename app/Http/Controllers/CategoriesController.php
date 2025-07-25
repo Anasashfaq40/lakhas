@@ -153,4 +153,6 @@ class CategoriesController extends Controller
 
         return abort(403, __('You are not authorized'));
     }
+
+
 }

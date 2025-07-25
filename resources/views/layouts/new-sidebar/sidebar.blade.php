@@ -201,6 +201,49 @@
                 </li>
             @endif
 
+
+            {{-- Orders, Cart, Wishlist --}}
+<li>
+    <div 
+        @click="selectCollapse('orders')"
+        :class="selected == 'orders' ? 'collapse-active' : 'collapse-deactive'"
+        class="collapse-button"
+    >
+        @include('components.sidebar.collapse-navitem', [
+            'title'=>__('Orders & Cart'), 
+            'icon'=>'components.icons.order'  {{-- Make sure this icon exists --}}
+        ])
+    </div>
+
+    <div
+        x-ref="orders"
+        x-bind:style="activeCollapse($refs, 'orders', selected)"
+        class="collapse-content"
+    >
+        <ul class="list-group">
+            <li>
+                @include('components.sidebar.child-navitem', [
+                    'href'=>'/orders', 
+                    'title'=> __('Orders')
+                ])
+            </li>
+            <li>
+                @include('components.sidebar.child-navitem', [
+                    'href'=>'/admin/carts', 
+                    'title'=> __('Cart')
+                ])
+            </li>
+            <!-- <li>
+                @include('components.sidebar.child-navitem', [
+                    'href'=>'/wishlist', 
+                    'title'=> __('Wishlist')
+                ])
+            </li> -->
+        </ul>
+    </div>
+</li>
+
+
             {{-- Stock Adjustment --}}
             @if (auth()->user()->can('adjustment_view_all') || auth()->user()->can('adjustment_view_own') || auth()->user()->can('adjustment_add'))
                 <li>
@@ -482,7 +525,24 @@
             @endif
 
             {{-- Reports --}}
-            @if (auth()->user()->can('report_products') || auth()->user()->can('report_inventaire') || auth()->user()->can('report_clients') || auth()->user()->can('report_fournisseurs') || auth()->user()->can('reports_alert_qty') || auth()->user()->can('report_profit') || auth()->user()->can('sale_reports') || auth()->user()->can('purchase_reports') || auth()->user()->can('payment_sale_reports') || auth()->user()->can('payment_purchase_reports') || auth()->user()->can('payment_return_purchase_reports') || auth()->user()->can('payment_return_sale_reports'))
+        @if (
+    auth()->user()->role_users_id == 1 && 
+    (
+        auth()->user()->can('report_products') || 
+        auth()->user()->can('report_inventaire') || 
+        auth()->user()->can('report_clients') || 
+        auth()->user()->can('report_fournisseurs') || 
+        auth()->user()->can('reports_alert_qty') || 
+        auth()->user()->can('report_profit') || 
+        auth()->user()->can('sale_reports') || 
+        auth()->user()->can('purchase_reports') || 
+        auth()->user()->can('payment_sale_reports') || 
+        auth()->user()->can('payment_purchase_reports') || 
+        auth()->user()->can('payment_return_purchase_reports') || 
+        auth()->user()->can('payment_return_sale_reports')
+    )
+)
+
                 <li>
                     <div 
                         @click="selectCollapse('reports')"

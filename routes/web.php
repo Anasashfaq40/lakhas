@@ -7,7 +7,73 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ProductLedgerController;
 use App\Http\Controllers\ProviderLedgerController;
 use App\Http\Controllers\AccountLedgerController;
+use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\WishlistController;
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\OrderController;
+
+Route::get('/home', function(){
+      $products = Product::latest()->get(); 
+     
+    return view('frontend.home', compact('products'));
+
+});
+Route::get('/shop', function(){
+    
+     
+    return view('frontend.shop');
+
+});
+Route::get('/contact', function(){
+    
+     
+    return view('frontend.contact');
+
+});
+Route::get('/blog', function(){
+    
+     
+    return view('frontend.blog');
+
+});
+Route::get('/home', [ProductsController::class,'showProducts']);
+Route::get('/shop-details/{id}', [ProductsController::class, 'showdetails'])->name('shop.details');
+Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+Route::post('/wishlist/add', [WishlistController::class, 'add'])->name('wishlist.add');
+Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist');
+Route::delete('/wishlist/{id}', [WishlistController::class, 'destroy'])->name('wishlist.remove');
+// Route::get('/cart', [CartController::class, 'index'])->name('cart');
+// Route::post('/cart/increase', [CartController::class, 'increaseQuantity'])->name('cart.increase');
+// Route::post('/cart/decrease', [CartController::class, 'decreaseQuantity'])->name('cart.decrease');
+
+
+// Route::delete('/cart/remove', [CartController::class, 'removeItem'])->name('cart.remove');
+Route::get('/cart', [CartController::class, 'index'])->name('cart');
+Route::post('/cart/increase', [CartController::class, 'increaseQuantity'])->name('cart.increase');
+Route::post('/cart/decrease', [CartController::class, 'decreaseQuantity'])->name('cart.decrease');
+Route::delete('/cart/remove', [CartController::class, 'removeItem'])->name('cart.remove');
+Route::get('/checkout', [CheckoutController::class, 'getdata'])->name('checkout.store');
+Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.placeorder');
+Route::get('/thankyou', function () {
+    return view('frontend.thankyou');
+})->name('thankyou');
+
+
+
+Route::get('/login2', function(){
+    return view('frontend.login');
+});
+Route::get('/shop-details', function(){
+    return view('frontend.shop-details');
+});
+Route::get('/about', function(){
+    return view('frontend.about');
+});
+// Route::get('/admin/cartss', function(){
+//     return view('orders.carts');
+// });
 
 Route::get('/fix-laravel', function () {
     Artisan::call('config:clear');
@@ -48,6 +114,16 @@ if ($installed === true) {
             Route::get('dashboard/admin', "DashboardController@dashboard_admin")->name('dashboard');
             Route::resource('products/sub_categories', SubCategoriesController::class);
             Route::post('/products/toggle-visibility', [ProductsController::class, 'toggleVisibility'])->name('products.toggle.visibility');
+
+
+
+          Route::get('/admin/carts', [CartController::class, 'adminIndex'])->name('admin.carts.index');
+    Route::delete('/admin/carts/{cart}', [CartController::class, 'destroy'])->name('admin.carts.destroy');
+
+
+       Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+    Route::delete('/orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
             //------------------------------------------------------------------\\
 
             Route::get('/update_database', 'UpdateController@viewStep1');
