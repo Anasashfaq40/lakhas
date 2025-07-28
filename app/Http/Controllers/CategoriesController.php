@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use DataTables;
@@ -154,5 +155,19 @@ class CategoriesController extends Controller
         return abort(403, __('You are not authorized'));
     }
 
+public function showCategoryProducts(Request $request)
+{
 
+    $products = Product::query()
+        ->where('is_visible', true)
+        ->where('is_active', true);
+
+    if ($request->has('category')) {
+        $products->where('category_id', $request->category);
+    }
+
+    $products = $products->latest()->paginate(9);
+
+    return view('frontend.categoryshop', compact('products'));
+}
 }

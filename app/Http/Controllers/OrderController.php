@@ -22,4 +22,10 @@ public function show(Order $order)
     $order->load(['items', 'items.product']);
     return view('orders.show', compact('order'));
 }
+public function track($orderId)
+{
+    $order = Order::where('id', $orderId)->first();
+    return view('frontend.ordertracking', compact('order'));
+}
+
 }

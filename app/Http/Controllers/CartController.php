@@ -5,43 +5,51 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Cart;
+use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
-    public function add(Request $request)
-    {
-        $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'quantity' => 'required|integer|min:1',
-        ]);
-
-        $product = Product::findOrFail($request->product_id);
-
-        // Check if product already in cart
-        $existingCart = Cart::where('user_id', auth()->id())
-                            ->where('product_id', $request->product_id)
-                            ->first();
-
-        if ($existingCart) {
-            $existingCart->quantity += $request->quantity;
-            $existingCart->save();
-        } else {
-            Cart::create([
-                'user_id' => auth()->id(),
-                'product_id' => $request->product_id,
-                'quantity' => $request->quantity,
-                'size' => $request->size,
-                'color' => $request->color,
-                'price' => $product->is_promo ? $product->promo_price : $product->price
-            ]);
-        }
-
+   public function add(Request $request)
+{
+    if (!Auth::check()) {
         return response()->json([
-            'success' => true,
-            'cart_count' => Cart::where('user_id', auth()->id())->count(),
-            'message' => 'Product added to cart successfully'
+            'success' => false,
+            'message' => 'Please login first to add items to cart.'
+        ], 401); // 401 Unauthorized
+    }
+
+    $request->validate([
+        'product_id' => 'required|exists:products,id',
+        'quantity' => 'required|integer|min:1',
+    ]);
+
+    $product = Product::findOrFail($request->product_id);
+
+    // Check if product already in cart
+    $existingCart = Cart::where('user_id', auth()->id())
+                        ->where('product_id', $request->product_id)
+                        ->first();
+
+    if ($existingCart) {
+        $existingCart->quantity += $request->quantity;
+        $existingCart->save();
+    } else {
+        Cart::create([
+            'user_id' => auth()->id(),
+            'product_id' => $request->product_id,
+            'quantity' => $request->quantity,
+            'size' => $request->size,
+            'color' => $request->color,
+            'price' => $product->is_promo ? $product->promo_price : $product->price
         ]);
     }
+
+    return response()->json([
+        'success' => true,
+        'cart_count' => Cart::where('user_id', auth()->id())->count(),
+        'message' => 'Product added to cart successfully'
+    ]);
+}
     public function index()
 {
     $cartItems = Cart::with('product')

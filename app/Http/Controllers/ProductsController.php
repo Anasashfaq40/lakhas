@@ -1654,7 +1654,7 @@ public function showdetail($id)
 
 public function showProducts()
 {
-   $products = Product::latest()->get(); 
+  $products = Product::latest()->paginate(9); 
     return view('frontend.home', compact('products'));
 }
 

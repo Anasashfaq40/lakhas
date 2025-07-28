@@ -16,6 +16,28 @@
         <p><strong>Email:</strong> {{ $order->email }}</p>
         <p><strong>Phone:</strong> {{ $order->phone }}</p>
         <p><strong>Company:</strong> {{ $order->company_name ?? 'N/A' }}</p>
+   <p><strong>Order Status:</strong>
+  @if($order->status === 'pending')
+    <span class="badge badge-warning">Pending</span>
+    <form action="{{ route('admin.orders.updateStatus', [$order->id, 'Shipped']) }}" method="POST" class="mt-2">
+      @csrf
+      @method('PUT')
+      <button type="submit" class="btn btn-primary btn-sm">Mark as Shipped</button>
+    </form>
+  @elseif($order->status === 'Shipped')
+    <span class="badge badge-info">Shipped</span>
+    <form action="{{ route('admin.orders.updateStatus', [$order->id, 'Delivered']) }}" method="POST" class="mt-2">
+      @csrf
+      @method('PUT')
+      <button type="submit" class="btn btn-success btn-sm">Mark as Delivered</button>
+    </form>
+  @elseif($order->status === 'Delivered')
+    <span class="badge badge-success">Delivered</span>
+  @endif
+</p>
+
+
+        
       </div>
     </div>
     
@@ -38,7 +60,7 @@
         <h4 class="card-title">Order Details</h4>
         <p><strong>Order Date:</strong> {{ $order->created_at->format('F j, Y') }}</p>
         <p><strong>Payment Method:</strong> {{ $order->payment_method }}</p>
-        <p><strong>Order Status:</strong> <span class="badge badge-primary">Processing</span></p>
+        <p><strong>Order Status:</strong> <span class="badge badge-primary">{{$order->status}}</span></p>
       </div>
     </div>
     

@@ -20,4 +20,11 @@ class Cart extends Model
     {
         return $this->belongsTo(Product::class);
     }
+       public static function getCount()
+    {
+        if (auth()->check()) {
+            return self::where('user_id', auth()->id())->count();
+        }
+        return 0;
+    }
 }

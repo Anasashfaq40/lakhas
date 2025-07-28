@@ -202,6 +202,8 @@
                     <!-- right products container -->
                     <div class="col-lg-9 col-md-8">
                         <div class="row ul-bs-row row-cols-lg-3 row-cols-2 row-cols-xxs-1">
+                          
+
                        @foreach($products as $product)
     <div class="col">
         <div class="ul-product">
@@ -260,20 +262,6 @@
     {{ $products->links('pagination::bootstrap-4') }}
 </div>
 
-                        <!-- pagination -->
-                        <!-- <div class="ul-pagination">
-                            <ul>
-                                <li><a href="shop.html#"><i class="flaticon-left-arrow"></i></a></li>
-                                <li class="pages">
-                                    <a href="shop.html#" class="active">01</a>
-                                    <a href="shop.html#">02</a>
-                                    <a href="shop.html#">03</a>
-                                    <a href="shop.html#">04</a>
-                                    <a href="shop.html#">05</a>
-                                </li>
-                                <li><a href="shop.html#"><i class="flaticon-arrow-point-to-right"></i></a></li>
-                            </ul>
-                        </div> -->
                     </div>
                 </div>
             </div>

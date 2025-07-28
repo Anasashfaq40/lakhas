@@ -15,7 +15,7 @@
             </div>
         @endif
 
-        <a href="{{ route('home') }}" class="btn btn-primary mt-4">Go Back to Home</a>
+        <a href="/home" class="btn btn-primary mt-4">Go Back to Home</a>
     </div>
 </div>
 @endsection

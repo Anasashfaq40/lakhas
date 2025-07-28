@@ -4,7 +4,9 @@
         <div class="ul-sidebar-header">
             <div class="ul-sidebar-header-logo">
                 <a href="index.html">
-                    <img src="assets/img/logo.svg" alt="logo" class="logo">
+     <img src="{{ asset('assets/img/logo.svg') }}" alt="logo" class="logo">
+
+
                 </a>
             </div>
             <!-- sidebar closer -->
@@ -184,26 +186,27 @@
                     <!-- header left -->
                     <div class="header-bottom-left">
                         <div class="logo-container">
-                            <a href="index.html" class="d-inline-block"><img src="assets/img/logo.svg" alt="logo" class="logo"></a>
+                            <a href="index.html" class="d-inline-block"><img src="{{ asset('assets/img/logo.svg') }}" alt="logo" class="logo">
+</a>
                         </div>
 
                         <!-- search form -->
                         <div class="ul-header-search-form-wrapper flex-grow-1 flex-shrink-0">
-                            <form action="index.html#" class="ul-header-search-form">
+                            <!-- <form action="index.html#" class="ul-header-search-form"> -->
                                 <div class="dropdown-wrapper">
-            <select name="search-category" id="ul-header-search-category">
+            <!-- <select name="search-category" id="ul-header-search-category">
     <option value="" disabled selected>Select Category</option>
     @foreach ($categories as $category)
         <option value="{{ $category->id }}">{{ $category->name }}</option>
     @endforeach
-</select>
+</select> -->
 
 
                                 </div>
-                                <div class="ul-header-search-form-right">
+                                <!-- <div class="ul-header-search-form-right">
                                     <input type="search" name="header-search" id="ul-header-search" placeholder="Search Here">
                                     <button type="submit"><span class="icon"><i class="flaticon-search-interface-symbol"></i></span></button>
-                                </div>
+                                </div> -->
                             </form>
 
                             <button class="ul-header-mobile-search-closer d-xxl-none"><i class="flaticon-close"></i></button>
@@ -213,12 +216,38 @@
                     <!-- header nav -->
                     <div class="ul-header-nav-wrapper">
                         <div class="to-go-to-sidebar-in-mobile">
-                            <nav class="ul-header-nav">
-                                <a href="/home">Home</a>
-                                <a href="/shop">Shop</a>
-                                <a href="/about">About</a>
-                                <a href="/contact">Contact</a>
-                                <a href="/blog">Blogs</a>
+            <nav class="ul-header-nav">
+    <a href="/home">Home</a>
+    <a href="/shop">Shop</a>
+    <a href="/about">About</a>
+    <a href="/contact">Contact</a>
+    <a href="/blog">Blogs</a>
+
+    @php
+    $orderId = session('order_id');
+@endphp
+
+@if($orderId)
+    <a href="{{ route('order.track', ['id' => $orderId]) }}">Track Your Order</a>
+@endif
+
+
+
+   <form action="{{ route('shop') }}" method="GET" class="ul-category-dropdown-form">
+    <select 
+        name="category" 
+        onchange="this.form.submit()" 
+        style="border: none; outline: none; box-shadow: none;  font-size: 16px;  cursor: pointer;"
+    >
+        <option value="" disabled selected>Select Category</option>
+        @foreach ($categories as $category)
+            <option value="{{ $category->id }}">{{ $category->name }}</option>
+        @endforeach
+    </select>
+</form>
+
+
+
 
                                 <div class="has-sub-menu has-mega-menu">
                                     <!-- <a role="button">Pages</a> -->
@@ -331,8 +360,14 @@
 <a href="/login2"><i class="flaticon-user"></i></a>
 @endauth
 
-                        <a href="/wishlist"><i class="flaticon-heart"></i></a>
-                        <a href="/cart"><i class="flaticon-shopping-bag"></i></a>
+                     <a href="/wishlist" class="wishlist-link">
+    <i class="flaticon-heart"></i>
+    <span class="wishlist-count">{{ \App\Models\Wishlist::getCount() }}</span>
+</a>
+<a href="/cart" class="cart-link">
+    <i class="flaticon-shopping-bag"></i>
+    <span class="cart-count">{{ \App\Models\Cart::getCount() }}</span>
+</a>
                     </div>
 
                     <!-- sidebar opener -->

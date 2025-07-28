@@ -29,6 +29,7 @@ class CreateOrdersTable extends Migration
         $table->text('different_address')->nullable();
         $table->string('payment_method');
         $table->decimal('total', 10, 2);
+        $table->string('status')->default('pending');
         $table->timestamps();
         });
     }

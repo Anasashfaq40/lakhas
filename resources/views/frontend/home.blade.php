@@ -97,135 +97,35 @@
         <!-- BANNER SECTION END -->
 
 
-        <!-- CATEGORY SECTION START -->
-        <div class="ul-container">
-            <section class="ul-categories">
-                <div class="ul-inner-container">
-                    <div class="row row-cols-lg-4 row-cols-md-3 row-cols-2 row-cols-xxs-1 ul-bs-row">
-                        <!-- single category -->
-                        <div class="col">
-                            <a class="ul-category" href="shop.html">
-                                <div class="ul-category-img">
-                                    <img src="assets/img/category-1.jpg" alt="Category Image">
-                                </div>
-                                <div class="ul-category-txt">
-                                    <span>Men</span>
-                                </div>
-                                <div class="ul-category-btn">
-                                    <span><i class="flaticon-arrow-point-to-right"></i></span>
-                                </div>
-                            </a>
-                        </div>
+       <!-- CATEGORY SECTION START -->
+<div class="ul-container">
+    <section class="ul-categories">
+        <div class="ul-inner-container">
+            <div class="row row-cols-lg-4 row-cols-md-3 row-cols-2 row-cols-xxs-1 ul-bs-row">
+                  @php $activeCategory = request('category'); @endphp
+                @foreach($categories as $category)
+                    <div class="col">
+                       <a class="ul-category {{ $activeCategory == $category->id ? 'active' : '' }}" href="{{ route('category', ['category' => $category->id]) }}">
 
-                        <!-- single category -->
-                        <div class="col">
-                            <a class="ul-category" href="shop.html">
-                                <div class="ul-category-img">
-                                    <img src="assets/img/category-2.jpg" alt="Category Image">
-                                </div>
-                                <div class="ul-category-txt">
-                                    <span>Kids</span>
-                                </div>
-                                <div class="ul-category-btn">
-                                    <span><i class="flaticon-arrow-point-to-right"></i></span>
-                                </div>
-                            </a>
-                        </div>
+                            <div class="ul-category-img">
+                             <img src="{{ asset('storage/images/categories/' . $category->image) }}" alt="{{ $category->name }}">
 
-                        <!-- single category -->
-                        <div class="col">
-                            <a class="ul-category" href="shop.html">
-                                <div class="ul-category-img">
-                                    <img src="assets/img/category-3.jpg" alt="Category Image">
-                                </div>
-                                <div class="ul-category-txt">
-                                    <span>Pants</span>
-                                </div>
-                                <div class="ul-category-btn">
-                                    <span><i class="flaticon-arrow-point-to-right"></i></span>
-                                </div>
-                            </a>
-                        </div>
-
-                        <!-- single category -->
-                        <div class="col">
-                            <a class="ul-category" href="shop.html">
-                                <div class="ul-category-img">
-                                    <img src="assets/img/category-1.jpg" alt="Category Image">
-                                </div>
-                                <div class="ul-category-txt">
-                                    <span>Men</span>
-                                </div>
-                                <div class="ul-category-btn">
-                                    <span><i class="flaticon-arrow-point-to-right"></i></span>
-                                </div>
-                            </a>
-                        </div>
-
-                        <!-- single category -->
-                        <div class="col">
-                            <a class="ul-category" href="shop.html">
-                                <div class="ul-category-img">
-                                    <img src="assets/img/category-4.jpg" alt="Category Image">
-                                </div>
-                                <div class="ul-category-txt">
-                                    <span>Women</span>
-                                </div>
-                                <div class="ul-category-btn">
-                                    <span><i class="flaticon-arrow-point-to-right"></i></span>
-                                </div>
-                            </a>
-                        </div>
-
-                        <!-- single category -->
-                        <div class="col">
-                            <a class="ul-category" href="shop.html">
-                                <div class="ul-category-img">
-                                    <img src="assets/img/category-5.jpg" alt="Category Image">
-                                </div>
-                                <div class="ul-category-txt">
-                                    <span>Jeans</span>
-                                </div>
-                                <div class="ul-category-btn">
-                                    <span><i class="flaticon-arrow-point-to-right"></i></span>
-                                </div>
-                            </a>
-                        </div>
-
-                        <!-- single category -->
-                        <div class="col">
-                            <a class="ul-category" href="shop.html">
-                                <div class="ul-category-img">
-                                    <img src="assets/img/category-6.jpg" alt="Category Image">
-                                </div>
-                                <div class="ul-category-txt">
-                                    <span>Sweater</span>
-                                </div>
-                                <div class="ul-category-btn">
-                                    <span><i class="flaticon-arrow-point-to-right"></i></span>
-                                </div>
-                            </a>
-                        </div>
-
-                        <!-- single category -->
-                        <div class="col">
-                            <a class="ul-category" href="shop.html">
-                                <div class="ul-category-img">
-                                    <img src="assets/img/category-7.jpg" alt="Category Image">
-                                </div>
-                                <div class="ul-category-txt">
-                                    <span>Shoe</span>
-                                </div>
-                                <div class="ul-category-btn">
-                                    <span><i class="flaticon-arrow-point-to-right"></i></span>
-                                </div>
-                            </a>
-                        </div>
+                            </div>
+                            <div class="ul-category-txt">
+                                <span>{{ $category->name }}</span>
+                            </div>
+                            <div class="ul-category-btn">
+                                <span><i class="flaticon-arrow-point-to-right"></i></span>
+                            </div>
+                        </a>
                     </div>
-                </div>
-            </section>
+                @endforeach
+            </div>
         </div>
-        <!-- CATEGORY SECTION END -->
+    </section>
+</div>
+<!-- CATEGORY SECTION END -->
+
 
 
  <!-- PRODUCTS SECTION START -->
@@ -256,7 +156,7 @@
                     </div>
                 </div>
 
-                <!-- Dynamic Products -->
+           
                 <div class="col-lg-9 col-md-8 col-12">
                     <div class="swiper ul-products-slider-1">
                         <div class="swiper-wrapper">
@@ -276,9 +176,15 @@
                                             </a>
 
                                             <div class="ul-product-actions">
-                                                <button><i class="flaticon-shopping-bag"></i></button>
+                                             <button class="add-to-cart" data-product-id="{{ $product->id }}">
+    <span class="icon"><i class="flaticon-shopping-bag"></i></span>
+    <span class="text"></span>
+</button>
                                                 <a href="{{ route('shop.details', $product->id) }}"><i class="flaticon-hide"></i></a>
-                                                <button><i class="flaticon-heart"></i></button>
+              <button class="add-to-wishlist" data-product-id="{{ $product->id }}">
+    <span class="icon"><i class="flaticon-heart"></i></span>
+</button>
+
                                             </div>
                                         </div>
 
@@ -293,8 +199,14 @@
                                     </div>
                                 </div>
                             @endforeach
+
+         
                         </div>
+     
                     </div>
+                                                          <div class="pagination-wrapper">
+    {{ $products->links('pagination::bootstrap-4') }}
+</div>
 
                     <!-- Slider Navigation -->
                     <div class="ul-products-slider-nav ul-products-slider-1-nav">
@@ -1272,6 +1184,7 @@
         </div>
         <!-- GALLERY SECTION END -->
     </main>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         // Slider 1
@@ -1395,6 +1308,98 @@
             }
         });
     });
+</script>
+
+<script>
+$(document).ready(function() {
+    // Initialize Toastr (if not already initialized elsewhere)
+    toastr.options = {
+        "closeButton": true,
+        "progressBar": true,
+        "positionClass": "toast-top-right",
+        "timeOut": "3000"
+    };
+
+    // Add to Cart AJAX - Better with loading states and error handling
+    $(document).on('click', '.add-to-cart', function(e) {
+        e.preventDefault();
+        var button = $(this);
+        var productId = button.data('product-id');
+        var quantity = $('#ul-product-details-quantity').val() || 1; // Default to 1 if empty
+        var size = $('input[name="product-size"]:checked').next('.size-btn').text();
+        var color = $('input[name="product-color"]:checked').next('.color-btn').attr('class')?.split(' ')[1] || null;
+
+        // Disable button during AJAX call
+        button.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Adding...');
+
+        $.ajax({
+            url: '{{ route("cart.add") }}',
+            type: 'POST',
+            data: {
+                product_id: productId,
+                quantity: quantity,
+                size: size,
+                color: color,
+                _token: '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                if(response.success) {
+                    $('.cart-count').text(response.cart_count).fadeOut(100).fadeIn(100);
+                    toastr.success(response.message || 'Product added to cart!');
+                } else {
+                    toastr.warning(response.message || 'Could not add to cart');
+                }
+            },
+            error: function(xhr) {
+                let errorMsg = xhr.responseJSON?.message || 'Something went wrong!';
+                toastr.error(errorMsg);
+            },
+            complete: function() {
+                button.prop('disabled', false).html('Add to Cart <i class="flaticon-cart"></i>');
+            }
+        });
+    });
+
+$(document).on('click', '.add-to-wishlist', function(e) {
+    e.preventDefault();
+    console.log('Wishlist button clicked'); // Check if event fires
+    
+    var button = $(this);
+    var productId = button.data('product-id');
+    console.log('Product ID:', productId); // Verify product ID
+    
+    // Show loading state
+    button.find('i').removeClass('flaticon-heart').addClass('fa fa-spinner fa-spin');
+    console.log('Button state changed'); // Check if DOM manipulation works
+
+    $.ajax({
+        url: '{{ route("wishlist.add") }}',
+        type: 'POST',
+        data: {
+            product_id: productId,
+            _token: '{{ csrf_token() }}'
+        },
+        success: function(response) {
+            console.log('AJAX Success:', response); // Inspect response
+            if(response.success) {
+                $('.wishlist-count').text(response.wishlist_count).fadeOut(100).fadeIn(100);
+                toastr.success(response.message || 'Added to wishlist!');
+                button.find('i').removeClass('fa-spinner fa-spin').addClass('flaticon-heart text-danger');
+            } else {
+                toastr.warning(response.message || 'Could not add to wishlist');
+                button.find('i').removeClass('fa-spinner fa-spin').addClass('flaticon-heart');
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('AJAX Error:', status, error); // Detailed error logging
+            console.error('Response:', xhr.responseJSON);
+            let errorMsg = xhr.responseJSON?.message || 'Error processing request';
+            toastr.error(errorMsg);
+            button.find('i').removeClass('fa-spinner fa-spin').addClass('flaticon-heart');
+        }
+    });
+});
+});
 </script>
 
 

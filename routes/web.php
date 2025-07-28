@@ -13,11 +13,16 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ShopController;
+use App\Http\Controllers\CategoriesController;
 
 Route::get('/home', function(){
-      $products = Product::latest()->get(); 
+$products = Product::latest()->paginate(9); 
+       $categories = Category::latest()->get();
+
+ 
      
-    return view('frontend.home', compact('products'));
+    return view('frontend.home', compact('products','categories'));
 
 });
 Route::get('/shop', function(){
@@ -43,7 +48,9 @@ Route::get('/shop-details/{id}', [ProductsController::class, 'showdetails'])->na
 Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
 Route::post('/wishlist/add', [WishlistController::class, 'add'])->name('wishlist.add');
 Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist');
-Route::delete('/wishlist/{id}', [WishlistController::class, 'destroy'])->name('wishlist.remove');
+Route::delete('/wishlist/{wishlist}', [WishlistController::class, 'destroy'])
+    ->name('wishlist.destroy');
+
 // Route::get('/cart', [CartController::class, 'index'])->name('cart');
 // Route::post('/cart/increase', [CartController::class, 'increaseQuantity'])->name('cart.increase');
 // Route::post('/cart/decrease', [CartController::class, 'decreaseQuantity'])->name('cart.decrease');
@@ -59,6 +66,14 @@ Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.p
 Route::get('/thankyou', function () {
     return view('frontend.thankyou');
 })->name('thankyou');
+Route::get('/shop', [ShopController::class, 'index'])->name('shop');
+Route::get('/category', [CategoriesController::class, 'showCategoryProducts'])->name('category');
+Route::put('/admin/orders/{id}/update-status/{status}', [CheckoutController::class, 'updateStatus'])->name('admin.orders.updateStatus');
+Route::get('/track-order/{id}', [OrderController::class, 'track'])->name('order.track');
+
+
+
+
 
 
 

@@ -63,6 +63,7 @@ class CheckoutController extends Controller
             'different_address' => $request->input('different-address'),
             'payment_method' => $request->input('payment-methods'),
             'total' => $total,
+            'status' => 'pending',
         ]);
 
         foreach ($cartItems as $item) {
@@ -75,8 +76,25 @@ class CheckoutController extends Controller
         }
 
         session()->forget('cart');
+        session(['order_id' => $order->id]);
 
        return redirect()->route('thankyou')->with('success', 'Order placed successfully!');
 
     }
+public function updateStatus($id, $status)
+{
+    $validStatuses = ['Shipped', 'Delivered'];
+
+    if (!in_array($status, $validStatuses)) {
+        return redirect()->back()->with('error', 'Invalid status.');
+    }
+
+    $order = Order::findOrFail($id);
+    $order->status = $status;
+    $order->save();
+
+    return redirect()->back()->with('success', "Order marked as {$status}.");
+}
+
+
 }

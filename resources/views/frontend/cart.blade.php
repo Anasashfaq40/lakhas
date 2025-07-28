@@ -166,10 +166,10 @@ $(document).ready(function () {
 
 <script>
 $(document).ready(function () {
- 
     $('.removeCartItemForm').submit(function (e) {
         e.preventDefault();
         let id = $(this).data('id');
+
         $.ajax({
             url: '{{ route('cart.remove') }}',
             type: 'DELETE',
@@ -178,15 +178,19 @@ $(document).ready(function () {
                 id: id
             },
             success: function () {
-                location.reload();
+                toastr.success('Item removed from cart!');
+                setTimeout(() => {
+                    location.reload();
+                }, 1500);
             },
             error: function () {
-                alert('Failed to remove item.');
+                toastr.error('Failed to remove item.');
             }
         });
     });
 });
 </script>
+
 
 
 @endsection
