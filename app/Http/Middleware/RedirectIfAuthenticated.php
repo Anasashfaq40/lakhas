@@ -2,7 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Providers\RouteServiceProvider;
 use Closure;
 use Illuminate\Support\Facades\Auth;
 
@@ -16,11 +15,23 @@ class RedirectIfAuthenticated
      * @param  string|null  $guard
      * @return mixed
      */
-    public function handle($request, Closure $next, $guard=null)
+    public function handle($request, Closure $next, $guard = null)
     {
+        if (Auth::guard($guard)->check() && Auth::user()->status) {
+            $roleId = Auth::user()->role_users_id;
 
-        if (Auth::guard($guard)->check() && Auth::User()->status) {
-            return redirect('/dashboard/admin');
+            switch ($roleId) {
+                case 1:
+                    return redirect('/dashboard/admin');
+                case 2:
+                    return redirect('/dashboard/admin');
+                case 3:
+                    return redirect('/dashboard/admin');
+                case 4:
+                    return redirect('/home');
+                default:
+                    return redirect('/login'); // fallback
+            }
         }
 
         return $next($request);

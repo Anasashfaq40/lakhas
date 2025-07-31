@@ -14,13 +14,24 @@ class Is_Admin
      * @param  \Closure  $next
      * @return mixed
      */
+    // public function handle($request, Closure $next)
+    // {
+	// 	if(Auth::check() && Auth::user()->role_users_id == 1){
+
+	// 		return $next($request);
+	// 	}
+
+    //     return redirect("/dashboard/admin");
+    // }
     public function handle($request, Closure $next)
-    {
-		if(Auth::check() && Auth::user()->role_users_id == 1){
-
-			return $next($request);
-		}
-
-        return redirect("/dashboard/admin");
+{
+    //  dd(Auth::user());
+    if (Auth::check() && Auth::user()->role_users_id != 4) {
+        return $next($request);
     }
+
+    // Agar user ka role 4 hai to usay redirect kar do
+    return redirect('/home')->with('error', 'Unauthorized access');
+}
+
 }

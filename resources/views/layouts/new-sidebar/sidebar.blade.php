@@ -39,45 +39,42 @@
                 </a>
             </li>            
 
-            {{-- User Management --}}
-            {{-- @if (auth()->user()->can('user_view') || auth()->user()->can('group_permission'))
-                <li>
-                    <div 
-                        @click="selectCollapse('user-management')"
-                        :class="selected == 'user-management' ? 'collapse-active' : 'collapse-deactive'"
-                        class="collapse-button"
-                    >
-                        @include('components.sidebar.collapse-navitem', [
-                            'title'=>__('translate.UserManagement'), 
-                            'icon'=>'components.icons.user'
-                        ])
-                    </div>
-                    <div
-                        x-ref="user-management"
-                        x-bind:style="activeCollapse($refs, 'user-management', selected)"
-                        class="collapse-content"
-                    >
-                        <ul class="list-group">
-                            @can('user_view')
-                                <li class="">
-                                    @include('components.sidebar.child-navitem', [
-                                        'href'=>'/user-management/users', 
-                                        'title'=> __('translate.Users')
-                                    ])
-                                </li>
-                            @endcan
-                            @can('group_permission')
-                                <li class="">
-                                    @include('components.sidebar.child-navitem', [
-                                        'href'=>'/user-management/permissions', 
-                                        'title'=> __('translate.Roles')
-                                    ])
-                                </li>
-                            @endcan
-                        </ul>
-                    </div>
+        {{-- User Management --}}
+@if (auth()->user()->role_users_id == 1)
+    <li>
+        <div 
+            @click="selectCollapse('user-management')"
+            :class="selected == 'user-management' ? 'collapse-active' : 'collapse-deactive'"
+            class="collapse-button"
+        >
+            @include('components.sidebar.collapse-navitem', [
+                'title'=>__('translate.UserManagement'), 
+                'icon'=>'components.icons.user'
+            ])
+        </div>
+        <div
+            x-ref="user-management"
+            x-bind:style="activeCollapse($refs, 'user-management', selected)"
+            class="collapse-content"
+        >
+            <ul class="list-group">
+                <li class="">
+                    @include('components.sidebar.child-navitem', [
+                        'href'=>'/user-management/users', 
+                        'title'=> __('translate.Users')
+                    ])
                 </li>
-            @endif --}}
+                <li class="">
+                    @include('components.sidebar.child-navitem', [
+                        'href'=>'/user-management/permissions', 
+                        'title'=> __('translate.Roles')
+                    ])
+                </li>
+            </ul>
+        </div>
+    </li>
+@endif
+
 
             {{-- People --}}
             @if (auth()->user()->can('client_view_all') || auth()->user()->can('client_view_own') || auth()->user()->can('suppliers_view_all') || auth()->user()->can('suppliers_view_own'))
@@ -119,87 +116,97 @@
                 </li>
             @endif
 
-            {{-- Products --}}
-            @if (auth()->user()->can('products_add') || auth()->user()->can('products_view') || auth()->user()->can('category') || auth()->user()->can('brand') || auth()->user()->can('unit') || auth()->user()->can('warehouse') || auth()->user()->can('print_labels'))
-                <li>
-                    <div 
-                        @click="selectCollapse('products')"
-                        :class="selected == 'products' ? 'collapse-active' : 'collapse-deactive'"
-                        class="collapse-button"
-                    >
-                        @include('components.sidebar.collapse-navitem', [
-                            'title'=>__('translate.Products'), 
-                            'icon'=>'components.icons.product'
+         {{-- Products --}}
+@if (auth()->user()->can('products_add') || auth()->user()->can('products_view') || auth()->user()->can('category') || auth()->user()->can('brand') || auth()->user()->can('unit') || auth()->user()->can('warehouse') || auth()->user()->can('print_labels'))
+    <li>
+        <div 
+            @click="selectCollapse('products')"
+            :class="selected == 'products' ? 'collapse-active' : 'collapse-deactive'"
+            class="collapse-button"
+        >
+            @include('components.sidebar.collapse-navitem', [
+                'title'=>__('translate.Products'), 
+                'icon'=>'components.icons.product'
+            ])
+        </div>
+
+        <div
+            x-ref="products"
+            x-bind:style="activeCollapse($refs, 'products', selected)"
+            class="collapse-content"
+        >
+            <ul class="list-group">
+                @can('products_view')
+                    <li>
+                        @include('components.sidebar.child-navitem', [
+                            'href'=>'/products/products', 
+                            'title'=> __('translate.productsList')
                         ])
-                    </div>
+                    </li>
+                @endcan
+                @can('products_add')
+                    <li>
+                        @include('components.sidebar.child-navitem', [
+                            'href'=>'/products/products/create', 
+                            'title'=> __('translate.AddProduct')
+                        ])
+                    </li>
+                @endcan
 
-                    <div
-                        x-ref="products"
-                        x-bind:style="activeCollapse($refs, 'products', selected)"
-                        class="collapse-content"
-                    >
-                        <ul class="list-group">
-                            @can('products_view')
-                                <li>
-                                    @include('components.sidebar.child-navitem', [
-                                        'href'=>'/products/products', 
-                                        'title'=> __('translate.productsList')
-                                    ])
-                                </li>
-                            @endcan
-                            @can('products_add')
-                                <li>
-                                    @include('components.sidebar.child-navitem', [
-                                        'href'=>'/products/products/create', 
-                                        'title'=> __('translate.AddProduct')
-                                    ])
-                                </li>
-                            @endcan
-                            <li>
-                                    @include('components.sidebar.child-navitem', [
-                                        'href'=>'/products/sub_categories', 
-                                        'title'=> __('Subcategories')
-                                    ])
-                                </li>
-                            @can('print_labels')
-
-                            @endcan
-                            @can('category')
-                                <li>
-                                    @include('components.sidebar.child-navitem', [
-                                        'href'=>'/products/categories', 
-                                        'title'=> __('translate.Categories')
-                                    ])
-                                </li>
-                            @endcan
-                            @can('unit')
-                                <li>
-                                    @include('components.sidebar.child-navitem', [
-                                        'href'=>'/products/units', 
-                                        'title'=> __('translate.Units')
-                                    ])
-                                </li>
-                            @endcan
-                            @can('brand')
-                                <li>
-                                    @include('components.sidebar.child-navitem', [
-                                        'href'=>'/products/brands', 
-                                        'title'=> __('translate.Brand')
-                                    ])
-                                </li>
-                            @endcan
-                            
-                                <li>
-                                    @include('components.sidebar.child-navitem', [
-                                        'href'=>'/products/warehouses', 
-                                        'title'=> __('Warehouse')
-                                    ])
-                                </li>
-                            
-                        </ul>
-                    </div>
+                {{--  Subcategories --}}
+                <li>
+                    @include('components.sidebar.child-navitem', [
+                        'href'=>'/products/sub_categories', 
+                        'title'=> __('Subcategories')
+                    ])
                 </li>
-            @endif
+
+                {{--  Review Tab --}}
+                <li>
+                    @include('components.sidebar.child-navitem', [
+                        'href'=>'/reviews',
+                        'title'=> __('Reviews')
+                    ])
+                </li>
+
+                @can('category')
+                    <li>
+                        @include('components.sidebar.child-navitem', [
+                            'href'=>'/products/categories', 
+                            'title'=> __('translate.Categories')
+                        ])
+                    </li>
+                @endcan
+                @can('unit')
+                    <li>
+                        @include('components.sidebar.child-navitem', [
+                            'href'=>'/products/units', 
+                            'title'=> __('translate.Units')
+                        ])
+                    </li>
+                @endcan
+                @can('brand')
+                    <li>
+                        @include('components.sidebar.child-navitem', [
+                            'href'=>'/products/brands', 
+                            'title'=> __('translate.Brand')
+                        ])
+                    </li>
+                @endcan
+
+                {{-- ✅ Warehouse --}}
+                <li>
+                    @include('components.sidebar.child-navitem', [
+                        'href'=>'/products/warehouses', 
+                        'title'=> __('Warehouse')
+                    ])
+                </li>
+
+            </ul>
+        </div>
+    </li>
+@endif
+
 
 
             {{-- Orders, Cart, Wishlist --}}

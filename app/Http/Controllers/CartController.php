@@ -103,12 +103,16 @@ public function adminIndex()
 
 public function destroy(Cart $cart)
 {
-    if (!auth()->user()->hasRole(['admin', 'worker'])) {
-        abort(403);
+    $allowedRoles = [1, 2]; // 1 = admin, 2 = worker
+
+    if (!in_array(auth()->user()->role_users_id, $allowedRoles)) {
+        abort(403); // Unauthorized
     }
 
     $cart->delete();
+
     return response()->json(['success' => true]);
 }
+
 
 }

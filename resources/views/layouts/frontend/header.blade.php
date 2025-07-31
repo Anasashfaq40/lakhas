@@ -357,7 +357,7 @@
     </ul>
 </div>
 @else
-<a href="/login2"><i class="flaticon-user"></i></a>
+<a href="/login"><i class="flaticon-user"></i></a>
 @endauth
 
                      <a href="/wishlist" class="wishlist-link">

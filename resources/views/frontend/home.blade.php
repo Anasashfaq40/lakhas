@@ -2,6 +2,50 @@
 @extends('layouts.frontendlinks')
 @section('title', 'Home')
 @section('content')
+<style>
+    .ul-review {
+    overflow: hidden;
+    word-wrap: break-word;
+    max-width: 100%;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    height: 100%; /* ensure equal height for all */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.ul-review-descr {
+    font-size: 14px;
+    color: #333;
+    margin: 15px 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    white-space: normal;
+}
+.swiper-slide {
+    display: flex;
+    height: auto;
+}
+
+.ul-review-rating i {
+    color: #f5b50a;
+}
+
+
+.badge-success {
+    background-color: #28a745;
+    color: white;
+    padding: 3px 10px;
+    font-size: 12px;
+    border-radius: 5px;
+}
+
+
+
+</style>
  <main>
         <!-- BANNER SECTION START -->
         <div class="overflow-hidden">
@@ -144,7 +188,7 @@
 
             <div class="row ul-bs-row">
                 <!-- Left Sub-Banner -->
-                <div class="col-lg-3 col-md-4 col-12">
+                <!-- <div class="col-lg-3 col-md-4 col-12">
                     <div class="ul-products-sub-banner">
                         <div class="ul-products-sub-banner-img">
                             <img src="{{ asset('assets/img/delivery/Gemini_Generated_Image_3bxfmv3bxfmv3bxf.png') }}" alt="Sub Banner Image">
@@ -154,51 +198,56 @@
                             <a href="#" class="ul-btn">Explore Collection<i class="flaticon-up-right-arrow"></i></a>
                         </div>
                     </div>
-                </div>
+                </div> -->
 
            
                 <div class="col-lg-9 col-md-8 col-12">
                     <div class="swiper ul-products-slider-1">
                         <div class="swiper-wrapper">
-                            @foreach($products as $product)
-                                <div class="swiper-slide">
-                                    <div class="ul-product">
-                                        <div class="ul-product-heading">
-                                            <span class="ul-product-price">${{ $product->sale_price ?? $product->price }}</span>
-                                            @if($product->discount_percentage)
-                                                <span class="ul-product-discount-tag">{{ $product->discount_percentage }}% Off</span>
-                                            @endif
-                                        </div>
+                        @foreach($products as $product)
+    @if($product->stock_alert > 0) {{-- Sirf stock wale products show karo --}}
+        <div class="swiper-slide">
+            <div class="ul-product">
+                <div class="ul-product-heading">
+                    <span class="ul-product-price">Rs{{ $product->sale_price ?? $product->price }}</span>
+                    @if($product->discount_percentage)
+                        <span class="ul-product-discount-tag">{{ $product->discount_percentage }}% Off</span>
+                    @endif
+                </div>
 
-                                        <div class="ul-product-img">
-                                            <a href="{{ route('shop.details', $product->id) }}">
-                                                <img src="{{ asset('images/products/' . $product->image) }}" alt="{{ $product->name }}">
-                                            </a>
+                <div class="ul-product-img">
+                    <a href="{{ route('shop.details', $product->id) }}">
+                        <img src="{{ asset('images/products/' . $product->image) }}" alt="{{ $product->name }}">
+                    </a>
 
-                                            <div class="ul-product-actions">
-                                             <button class="add-to-cart" data-product-id="{{ $product->id }}">
-    <span class="icon"><i class="flaticon-shopping-bag"></i></span>
-    <span class="text"></span>
-</button>
-                                                <a href="{{ route('shop.details', $product->id) }}"><i class="flaticon-hide"></i></a>
-              <button class="add-to-wishlist" data-product-id="{{ $product->id }}">
-    <span class="icon"><i class="flaticon-heart"></i></span>
-</button>
+                    <div class="ul-product-actions">
+                        <button class="add-to-cart" data-product-id="{{ $product->id }}">
+                            <span class="icon"><i class="flaticon-shopping-bag"></i></span>
+                            <span class="text"></span>
+                        </button>
+                        <a href="{{ route('shop.details', $product->id) }}"><i class="flaticon-hide"></i></a>
+                        <button class="add-to-wishlist" data-product-id="{{ $product->id }}">
+                            <span class="icon"><i class="flaticon-heart"></i></span>
+                        </button>
+                    </div>
+                </div>
 
-                                            </div>
-                                        </div>
+                <div class="ul-product-txt">
+                    <h4 class="ul-product-title">
+                        <a href="{{ route('shop.details', $product->id) }}">{{ $product->name }}</a>
+                    </h4>
+                    <h5 class="ul-product-category">
+                        <a href="#">{{ $product->category->name ?? 'Uncategorized' }}</a>
+                    </h5>
+                    <div class="ul-stock-status" style="margin-top: 5px;">
+                        <span class="badge badge-success">In Stock</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+@endforeach
 
-                                        <div class="ul-product-txt">
-                                            <h4 class="ul-product-title">
-                                                <a href="{{ route('shop.details', $product->id) }}">{{ $product->name }}</a>
-                                            </h4>
-                                            <h5 class="ul-product-category">
-                                                <a href="#">{{ $product->category->name ?? 'Uncategorized' }}</a>
-                                            </h5>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
 
          
                         </div>
@@ -263,10 +312,12 @@
 
                         <div class="right">
                             <div class="ul-most-sell-filter-navs">
-                                <button type="button" data-filter="all">All Products</button>
-                                <button type="button" data-filter=".best-selling">Best Selling</button>
-                                <button type="button" data-filter=".on-selling">On Selling</button>
-                                <button type="button" data-filter=".top-rating">Top Rating</button>
+                                    @php $activeCategory = request('category'); @endphp
+             @foreach($categories as $category)
+    <button type="button" data-filter=".category-{{ $category->id }}">{{ $category->name }}</button>
+@endforeach
+
+                           
                             </div>
                         </div>
                     </div>
@@ -275,268 +326,35 @@
                     <!-- products grid -->
                     <div class="ul-bs-row row row-cols-xl-4 row-cols-lg-3 row-cols-sm-2 row-cols-1 ul-filter-products-wrapper">
                         <!-- product card -->
-                        <div class="mix col best-selling">
-                            <div class="ul-product-horizontal">
-                                <div class="ul-product-horizontal-img">
-                                    <img src="assets/img/product-img-sm-1.jpg" alt="Product Image">
-                                </div>
+                     @foreach ($products as $product)
+    <div class="mix col category-{{ $product->category_id }}">
+        <div class="ul-product-horizontal">
+            <div class="ul-product-horizontal-img">
+                <img src="{{ asset('images/products/' . $product->image) }}" alt="{{ $product->name }}">
+            </div>
+            <div class="ul-product-horizontal-txt">
+                <span class="ul-product-price">Rs{{ $product->price }}</span>
+                <h4 class="ul-product-title"><a href="{{ route('shop.details', $product->id) }}">{{ $product->name }}</a></h4>
+                <h5 class="ul-product-category"><a href="{{ route('shop.details', $product->id) }}">{{ $product->category->name }}</a></h5>
+             <div class="ul-product-rating">
+    @php
+        $averageRating = round($product->reviews_avg_rating);
+    @endphp
 
-                                <div class="ul-product-horizontal-txt">
-                                    <span class="ul-product-price">$99.00</span>
-                                    <h4 class="ul-product-title"><a href="shop-details.html">Orange Airsuit</a></h4>
-                                    <h5 class="ul-product-category"><a href="shop.html">Fashion Bag</a></h5>
-                                    <div class="ul-product-rating">
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+    @for ($i = 1; $i <= 5; $i++)
+        <i class="{{ $i <= $averageRating ? 'flaticon-star' : 'flaticon-star-3' }}" style="color: #f5b50a;"></i>
+    @endfor
+</div>
 
-                        <!-- product card -->
-                        <div class="mix col on-selling">
-                            <div class="ul-product-horizontal">
-                                <div class="ul-product-horizontal-img">
-                                    <img src="assets/img/product-img-sm-2.jpg" alt="Product Image">
-                                </div>
+            </div>
+        </div>
+    </div>
+@endforeach
 
-                                <div class="ul-product-horizontal-txt">
-                                    <span class="ul-product-price">$99.00</span>
-                                    <h4 class="ul-product-title"><a href="shop-details.html">Orange Airsuit</a></h4>
-                                    <h5 class="ul-product-category"><a href="shop.html">Fashion Bag</a></h5>
-                                    <div class="ul-product-rating">
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
-                        <!-- product card -->
-                        <div class="mix col top-rating">
-                            <div class="ul-product-horizontal">
-                                <div class="ul-product-horizontal-img">
-                                    <img src="assets/img/product-img-sm-3.jpg" alt="Product Image">
-                                </div>
+             
 
-                                <div class="ul-product-horizontal-txt">
-                                    <span class="ul-product-price">$99.00</span>
-                                    <h4 class="ul-product-title"><a href="shop-details.html">Orange Airsuit</a></h4>
-                                    <h5 class="ul-product-category"><a href="shop.html">Fashion Bag</a></h5>
-                                    <div class="ul-product-rating">
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- product card -->
-                        <div class="mix col top-rating">
-                            <div class="ul-product-horizontal">
-                                <div class="ul-product-horizontal-img">
-                                    <img src="assets/img/product-img-sm-4.jpg" alt="Product Image">
-                                </div>
-
-                                <div class="ul-product-horizontal-txt">
-                                    <span class="ul-product-price">$99.00</span>
-                                    <h4 class="ul-product-title"><a href="shop-details.html">Orange Airsuit</a></h4>
-                                    <h5 class="ul-product-category"><a href="shop.html">Fashion Bag</a></h5>
-                                    <div class="ul-product-rating">
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- product card -->
-                        <div class="mix col on-selling">
-                            <div class="ul-product-horizontal">
-                                <div class="ul-product-horizontal-img">
-                                    <img src="assets/img/product-img-sm-5.jpg" alt="Product Image">
-                                </div>
-
-                                <div class="ul-product-horizontal-txt">
-                                    <span class="ul-product-price">$99.00</span>
-                                    <h4 class="ul-product-title"><a href="shop-details.html">Orange Airsuit</a></h4>
-                                    <h5 class="ul-product-category"><a href="shop.html">Fashion Bag</a></h5>
-                                    <div class="ul-product-rating">
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- product card -->
-                        <div class="mix col best-selling">
-                            <div class="ul-product-horizontal">
-                                <div class="ul-product-horizontal-img">
-                                    <img src="assets/img/product-img-sm-6.jpg" alt="Product Image">
-                                </div>
-
-                                <div class="ul-product-horizontal-txt">
-                                    <span class="ul-product-price">$99.00</span>
-                                    <h4 class="ul-product-title"><a href="shop-details.html">Orange Airsuit</a></h4>
-                                    <h5 class="ul-product-category"><a href="shop.html">Fashion Bag</a></h5>
-                                    <div class="ul-product-rating">
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- product card -->
-                        <div class="mix col on-selling">
-                            <div class="ul-product-horizontal">
-                                <div class="ul-product-horizontal-img">
-                                    <img src="assets/img/product-img-sm-7.jpg" alt="Product Image">
-                                </div>
-
-                                <div class="ul-product-horizontal-txt">
-                                    <span class="ul-product-price">$99.00</span>
-                                    <h4 class="ul-product-title"><a href="shop-details.html">Orange Airsuit</a></h4>
-                                    <h5 class="ul-product-category"><a href="shop.html">Fashion Bag</a></h5>
-                                    <div class="ul-product-rating">
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- product card -->
-                        <div class="mix col top-rating">
-                            <div class="ul-product-horizontal">
-                                <div class="ul-product-horizontal-img">
-                                    <img src="assets/img/product-img-sm-8.jpg" alt="Product Image">
-                                </div>
-
-                                <div class="ul-product-horizontal-txt">
-                                    <span class="ul-product-price">$99.00</span>
-                                    <h4 class="ul-product-title"><a href="shop-details.html">Orange Airsuit</a></h4>
-                                    <h5 class="ul-product-category"><a href="shop.html">Fashion Bag</a></h5>
-                                    <div class="ul-product-rating">
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- product card -->
-                        <div class="mix col on-selling">
-                            <div class="ul-product-horizontal">
-                                <div class="ul-product-horizontal-img">
-                                    <img src="assets/img/product-img-sm-9.jpg" alt="Product Image">
-                                </div>
-
-                                <div class="ul-product-horizontal-txt">
-                                    <span class="ul-product-price">$99.00</span>
-                                    <h4 class="ul-product-title"><a href="shop-details.html">Orange Airsuit</a></h4>
-                                    <h5 class="ul-product-category"><a href="shop.html">Fashion Bag</a></h5>
-                                    <div class="ul-product-rating">
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- product card -->
-                        <div class="mix col best-selling">
-                            <div class="ul-product-horizontal">
-                                <div class="ul-product-horizontal-img">
-                                    <img src="assets/img/product-img-sm-10.jpg" alt="Product Image">
-                                </div>
-
-                                <div class="ul-product-horizontal-txt">
-                                    <span class="ul-product-price">$99.00</span>
-                                    <h4 class="ul-product-title"><a href="shop-details.html">Orange Airsuit</a></h4>
-                                    <h5 class="ul-product-category"><a href="shop.html">Fashion Bag</a></h5>
-                                    <div class="ul-product-rating">
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- product card -->
-                        <div class="mix col best-selling">
-                            <div class="ul-product-horizontal">
-                                <div class="ul-product-horizontal-img">
-                                    <img src="assets/img/product-img-sm-11.jpg" alt="Product Image">
-                                </div>
-
-                                <div class="ul-product-horizontal-txt">
-                                    <span class="ul-product-price">$99.00</span>
-                                    <h4 class="ul-product-title"><a href="shop-details.html">Orange Airsuit</a></h4>
-                                    <h5 class="ul-product-category"><a href="shop.html">Fashion Bag</a></h5>
-                                    <div class="ul-product-rating">
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- product card -->
-                        <div class="mix col on-selling">
-                            <div class="ul-product-horizontal">
-                                <div class="ul-product-horizontal-img">
-                                    <img src="assets/img/product-img-sm-12.jpg" alt="Product Image">
-                                </div>
-
-                                <div class="ul-product-horizontal-txt">
-                                    <span class="ul-product-price">$99.00</span>
-                                    <h4 class="ul-product-title"><a href="shop-details.html">Orange Airsuit</a></h4>
-                                    <h5 class="ul-product-category"><a href="shop.html">Fashion Bag</a></h5>
-                                    <div class="ul-product-rating">
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                        <span class="star"><i class="flaticon-star"></i></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                     
                     </div>
                 </div>
             </section>
@@ -572,7 +390,7 @@
                                     </div>
 
                                     <div class="bottom">
-                                        <a href="shop.html" class="ul-sub-banner-btn1">Shop Now <i class="flaticon-up-right-arrow"></i></a>
+                                        <a href="{{ route('shop.stitched') }}" class="ul-sub-banner-btn1">Shop Now <i class="flaticon-up-right-arrow"></i></a>
                                     </div>
                                 </div>
 
@@ -593,7 +411,7 @@
                                     </div>
 
                                     <div class="bottom">
-                                        <a href="shop.html" class="ul-sub-banner-btn">Explore Fabrics <i class="flaticon-up-right-arrow"></i></a>
+                                        <a href="{{ route('shop.unstitched') }}" class="ul-sub-banner-btn">Explore Fabrics <i class="flaticon-up-right-arrow"></i></a>
                                     </div>
                                 </div>
 
@@ -609,12 +427,12 @@
                                 <div class="ul-sub-banner-txt">
                                     <div class="top">
                                         <span class="ul-ad-sub-title">Tailored Just for You</span>
-                                        <h3 class="ul-sub-banner-title">Stitching Services</h3>
+                                        <h3 class="ul-sub-banner-title">All Items</h3>
                                         <p class="ul-sub-banner-descr">Custom Fits | Fast Delivery</p>
                                     </div>
 
                                     <div class="bottom">
-                                        <a href="shop.html" class="ul-sub-banner-btn1">Get Stitched <i class="flaticon-up-right-arrow"></i></a>
+                                        <a href="/shop" class="ul-sub-banner-btn1">Get Items <i class="flaticon-up-right-arrow"></i></a>
                                     </div>
                                 </div>
 
@@ -841,134 +659,38 @@
             <div class="ul-reviews-slider swiper">
                 <div class="swiper-wrapper">
                     <!-- single review -->
-                    <div class="swiper-slide">
-                        <div class="ul-review">
-                            <div class="ul-review-rating">
-                                <i class="flaticon-star"></i>
-                                <i class="flaticon-star"></i>
-                                <i class="flaticon-star"></i>
-                                <i class="flaticon-star"></i>
-                                <i class="flaticon-star-3"></i>
-                            </div>
-                            <p class="ul-review-descr">The stitched shalwar kameez I received from The Lakhas was absolutely perfect! Quality fabric, great fitting, and fast delivery. Highly recommended.</p>
-                            <div class="ul-review-bottom">
-                                <div class="ul-review-reviewer">
-                                    <div class="reviewer-image"><img src="assets/img/review-author-1.png" alt="reviewer image"></div>
-                                    <div>
-                                        <h3 class="reviewer-name">Ahmed Raza</h3>
-                                        <span class="reviewer-role">Karachi</span>
-                                    </div>
-                                </div>
+                     @foreach ($reviews as $review)
+        <div class="swiper-slide">
+            <div class="ul-review">
+                <!-- Stars -->
+                <div class="ul-review-rating">
+                    @for ($i = 1; $i <= 5; $i++)
+                        <i class="{{ $i <= $review->rating ? 'flaticon-star' : 'flaticon-star-3' }}"></i>
+                    @endfor
+                </div>
 
-                                <!-- icon -->
-                                <div class="ul-review-icon"><i class="flaticon-left"></i></div>
-                            </div>
+                <!-- Review Text -->
+                <p class="ul-review-descr">{{ $review->comment }}</p>
+
+                <!-- Reviewer Info -->
+                <div class="ul-review-bottom">
+                    <div class="ul-review-reviewer">
+                        <div class="reviewer-image">
+                              <i class="fas fa-user-circle" style="font-size: 40px; color: #999;"></i>
+                        </div>
+                        <div>
+                            <h3 class="reviewer-name">{{ $review->user->username ?? 'Anonymous' }}</h3>
+                            <span class="reviewer-role">{{ $review->user->city ?? 'Costemer' }}</span>
                         </div>
                     </div>
 
-                    <!-- single review -->
-                    <div class="swiper-slide">
-                        <div class="ul-review">
-                            <div class="ul-review-rating">
-                                <i class="flaticon-star"></i>
-                                <i class="flaticon-star"></i>
-                                <i class="flaticon-star"></i>
-                                <i class="flaticon-star"></i>
-                                <i class="flaticon-star-3"></i>
-                            </div>
-                            <p class="ul-review-descr">I ordered an unstitched suit and got it stitched through their tailoring service. The measurements were on point and the look turned out classy!</p>
-                            <div class="ul-review-bottom">
-                                <div class="ul-review-reviewer">
-                                    <div class="reviewer-image"><img src="assets/img/review-author-2.png" alt="reviewer image"></div>
-                                    <div>
-                                        <h3 class="reviewer-name">Bilal Khan</h3>
-                                        <span class="reviewer-role">Karachi</span>
-                                    </div>
-                                </div>
+                    <div class="ul-review-icon"><i class="flaticon-left"></i></div>
+                </div>
+            </div>
+        </div>
+    @endforeach
 
-                                <!-- icon -->
-                                <div class="ul-review-icon"><i class="flaticon-left"></i></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- single review -->
-                    <div class="swiper-slide">
-                        <div class="ul-review">
-                            <div class="ul-review-rating">
-                                <i class="flaticon-star"></i>
-                                <i class="flaticon-star"></i>
-                                <i class="flaticon-star"></i>
-                                <i class="flaticon-star"></i>
-                                <i class="flaticon-star-3"></i>
-                            </div>
-                            <p class="ul-review-descr"> Loved the fabric and neat stitching! I also got a traditional Islamic cap and it completed the outfit perfectly. Great service by The Lakhas.</p>
-                            <div class="ul-review-bottom">
-                                <div class="ul-review-reviewer">
-                                    <div class="reviewer-image"><img src="assets/img/review-author-3.png" alt="reviewer image"></div>
-                                    <div>
-                                        <h3 class="reviewer-name">Saad Mehmood</h3>
-                                        <span class="reviewer-role">Online Buyer</span>
-                                    </div>
-                                </div>
-
-                                <!-- icon -->
-                                <div class="ul-review-icon"><i class="flaticon-left"></i></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- single review -->
-                    <div class="swiper-slide">
-                        <div class="ul-review">
-                            <div class="ul-review-rating">
-                                <i class="flaticon-star"></i>
-                                <i class="flaticon-star"></i>
-                                <i class="flaticon-star"></i>
-                                <i class="flaticon-star"></i>
-                                <i class="flaticon-star-3"></i>
-                            </div>
-                            <p class="ul-review-descr">The Lakhas delivers what it promises — stylish designs, comfortable fit, and top-tier tailoring. Will definitely shop again for Eid outfits!</p>
-                            <div class="ul-review-bottom">
-                                <div class="ul-review-reviewer">
-                                    <div class="reviewer-image"><img src="assets/img/review-author-4.png" alt="reviewer image"></div>
-                                    <div>
-                                        <h3 class="reviewer-name">Usman Tariq</h3>
-                                        <span class="reviewer-role">Karachi</span>
-                                    </div>
-                                </div>
-
-                                <!-- icon -->
-                                <div class="ul-review-icon"><i class="flaticon-left"></i></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- single review -->
-                    <div class="swiper-slide">
-                        <div class="ul-review">
-                            <div class="ul-review-rating">
-                                <i class="flaticon-star"></i>
-                                <i class="flaticon-star"></i>
-                                <i class="flaticon-star"></i>
-                                <i class="flaticon-star"></i>
-                                <i class="flaticon-star-3"></i>
-                            </div>
-                            <p class="ul-review-descr"> The fabric quality and detailing are excellent. I got a custom pant coat stitched and it exceeded expectations. Great customer service too!</p>
-                            <div class="ul-review-bottom">
-                                <div class="ul-review-reviewer">
-                                    <div class="reviewer-image"><img src="assets/img/review-author-2.png" alt="reviewer image"></div>
-                                    <div>
-                                        <h3 class="reviewer-name">Fahad Sheikh</h3>
-                                        <span class="reviewer-role">Sales Executive</span>
-                                    </div>
-                                </div>
-
-                                <!-- icon -->
-                                <div class="ul-review-icon"><i class="flaticon-left"></i></div>
-                            </div>
-                        </div>
-                    </div>
+               
                 </div>
             </div>
         </section>
@@ -990,10 +712,16 @@
                     <!-- form -->
                     <div class="ul-nwsltr-subs-form-wrapper">
                         <div class="icon"><i class="flaticon-airplane"></i></div>
-                        <form action="index.html#" class="ul-nwsltr-subs-form">
-                            <input type="email" name="nwsltr-subs-email" id="nwsltr-subs-email" placeholder="Enter Your Email">
-                            <button type="submit">Subscribe Now <i class="flaticon-up-right-arrow"></i></button>
-                        </form>
+                      <form action="{{ route('newsletter.subscribe') }}" method="POST" class="ul-nwsltr-subs-form">
+    @csrf
+    <input type="email" name="email" id="nwsltr-subs-email" placeholder="Enter Your Email" required>
+    <button type="submit">Subscribe Now <i class="flaticon-up-right-arrow"></i></button>
+</form>
+
+@if(session('success'))
+    <p style="color: #28a745; text-align:center;">{{ session('success') }}</p>
+@endif
+
                     </div>
                 </div>
             </section>
@@ -1400,6 +1128,13 @@ $(document).on('click', '.add-to-wishlist', function(e) {
     });
 });
 });
+</script>
+
+    <script src="https://cdn.jsdelivr.net/npm/mixitup/dist/mixitup.min.js"></script>
+<script>
+    var containerEl = document.querySelector('.ul-filter-products-wrapper');
+    var mixer = mixitup(containerEl);
+
 </script>
 
 

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Jul 07, 2025 at 09:37 AM
+-- Generation Time: Jul 31, 2025 at 07:42 PM
 -- Server version: 8.0.31
 -- PHP Version: 8.2.0
 
@@ -144,6 +144,36 @@ CREATE TABLE IF NOT EXISTS `brands` (
 
 INSERT INTO `brands` (`id`, `name`, `description`, `image`, `created_at`, `updated_at`, `deleted_at`) VALUES
 (1, 'Fabrics', 'hjhhghhghghghghgh', '1751466382.png', '2025-07-02 04:26:22.000000', '2025-07-02 04:26:22.000000', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `carts`
+--
+
+DROP TABLE IF EXISTS `carts`;
+CREATE TABLE IF NOT EXISTS `carts` (
+  `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_id` bigint UNSIGNED NOT NULL,
+  `product_id` bigint UNSIGNED NOT NULL,
+  `quantity` int NOT NULL DEFAULT '1',
+  `size` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `color` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `price` decimal(10,2) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `carts_user_id_product_id_size_color_unique` (`user_id`,`product_id`,`size`,`color`),
+  KEY `carts_product_id_foreign` (`product_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `carts`
+--
+
+INSERT INTO `carts` (`id`, `user_id`, `product_id`, `quantity`, `size`, `color`, `price`, `created_at`, `updated_at`) VALUES
+(12, 1, 3, 2, NULL, NULL, '2500.00', '2025-07-29 18:04:41', '2025-07-29 18:04:41'),
+(13, 18, 1, 2, 'M', 'green', '1500.00', '2025-07-31 18:59:19', '2025-07-31 18:59:19');
 
 -- --------------------------------------------------------
 
@@ -387,7 +417,7 @@ CREATE TABLE IF NOT EXISTS `migrations` (
   `migration` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=353 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=359 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `migrations`
@@ -484,7 +514,13 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (349, '2025_06_24_201823_add_is_visible_to_products_table', 1),
 (350, '2025_06_28_135246_add_shirt_and_pant_size_in_sales_table', 1),
 (351, '2025_06_28_161745_create_product_images_table', 1),
-(352, '2025_06_30_214621_add_product_type_to_products_table', 1);
+(352, '2025_06_30_214621_add_product_type_to_products_table', 1),
+(353, '2025_07_20_163006_create_wishlists_table', 2),
+(354, '2025_07_20_163205_create_carts_table', 3),
+(355, '2025_07_23_002720_create_orders_table', 4),
+(356, '2025_07_23_002911_create_order_items_table', 4),
+(357, '2025_07_29_225645_create_reviews_table', 5),
+(358, '2025_07_30_194309_create_newsletters_table', 6);
 
 -- --------------------------------------------------------
 
@@ -526,12 +562,118 @@ INSERT INTO `model_has_roles` (`role_id`, `model_type`, `model_id`) VALUES
 (1, 'App\\Models\\User', 10),
 (1, 'App\\Models\\User', 11),
 (2, 'App\\Models\\User', 2),
+(2, 'App\\Models\\User', 12),
 (3, 'App\\Models\\User', 3),
+(3, 'App\\Models\\User', 16),
+(4, 'App\\Models\\User', 15),
 (5, 'App\\Models\\User', 4),
 (5, 'App\\Models\\User', 6),
 (5, 'App\\Models\\User', 7),
 (5, 'App\\Models\\User', 8),
-(6, 'App\\Models\\User', 12);
+(6, 'App\\Models\\User', 12),
+(6, 'App\\Models\\User', 14),
+(6, 'App\\Models\\User', 15);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `newsletters`
+--
+
+DROP TABLE IF EXISTS `newsletters`;
+CREATE TABLE IF NOT EXISTS `newsletters` (
+  `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT,
+  `email` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `newsletters_email_unique` (`email`)
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `newsletters`
+--
+
+INSERT INTO `newsletters` (`id`, `email`, `created_at`, `updated_at`) VALUES
+(1, 'admin@birdcoders.com', '2025-07-30 14:48:05', '2025-07-30 14:48:05');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `orders`
+--
+
+DROP TABLE IF EXISTS `orders`;
+CREATE TABLE IF NOT EXISTS `orders` (
+  `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT,
+  `first_name` varchar(255) NOT NULL,
+  `last_name` varchar(255) NOT NULL,
+  `company_name` varchar(255) DEFAULT NULL,
+  `country` varchar(255) NOT NULL,
+  `address1` varchar(255) NOT NULL,
+  `address2` varchar(255) DEFAULT NULL,
+  `city` varchar(255) NOT NULL,
+  `state` varchar(255) NOT NULL,
+  `zipcode` varchar(255) NOT NULL,
+  `phone` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `different_address` text,
+  `payment_method` varchar(255) NOT NULL,
+  `total` decimal(10,2) NOT NULL,
+  `status` varchar(255) NOT NULL DEFAULT 'pending',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `orders`
+--
+
+INSERT INTO `orders` (`id`, `first_name`, `last_name`, `company_name`, `country`, `address1`, `address2`, `city`, `state`, `zipcode`, `phone`, `email`, `different_address`, `payment_method`, `total`, `status`, `created_at`, `updated_at`) VALUES
+(4, 'Sudais', 'Ahmed', NULL, '2', 'mehrab khan essa khan road', NULL, 'Karachi', 'Sindh', '75660', '0302 6861279', 'admin@birdcoders.com', 'ehuhuw', 'on', '3000.00', 'Delivered', '2025-07-29 15:02:39', '2025-07-29 15:04:39'),
+(2, 'Sudais', 'Ahmed', NULL, '2', 'mehrab khan essa khan road', NULL, 'Karachi', 'Garden', '75660', '0302 6861279', 'sudais2201a@aptechgdn.net', 'jgjghjgj', 'on', '5000.00', 'pending', '2025-07-28 14:57:22', '2025-07-28 14:57:22'),
+(3, 'Sudais', 'Ahmed', NULL, '2', 'mehrab khan essa khan road', NULL, 'Karachi', 'Sindh', '75660', '0302 6861279', 'admin@birdcoders.com', 'kajkhfjhjkad', 'on', '12500.00', 'Shipped', '2025-07-29 14:36:28', '2025-07-29 14:58:55'),
+(5, 'Sudais', 'Ahmed', NULL, '2', 'mehrab khan essa khan road', NULL, 'Karachi', 'Sindh', '75660', '0302 6861279', 'admin@birdcoders.com', 'jkdkjshkjhdjhsajk', 'on', '5000.00', 'Delivered', '2025-07-29 18:05:41', '2025-07-29 18:06:54'),
+(6, 'Sudais', 'Ahmed', NULL, '2', 'mehrab khan essa khan road', NULL, 'Karachi', 'Sindh', '75660', '0302 6861279', 'sudais2201a@aptechgdn.net', 'shsghgs', 'on', '5000.00', 'Delivered', '2025-07-30 13:19:17', '2025-07-30 13:20:15'),
+(7, 'Sudais', 'Ahmed', NULL, '2', 'mehrab khan essa khan road', NULL, 'Karachi', 'Sindh', '75660', '0302 6861279', 'sudais2201a@aptechgdn.net', 'jhjkhjhjkhk', 'on', '3000.00', 'pending', '2025-07-31 19:00:07', '2025-07-31 19:00:07');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `order_items`
+--
+
+DROP TABLE IF EXISTS `order_items`;
+CREATE TABLE IF NOT EXISTS `order_items` (
+  `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT,
+  `order_id` bigint UNSIGNED NOT NULL,
+  `product_id` bigint UNSIGNED NOT NULL,
+  `quantity` int NOT NULL,
+  `price` decimal(10,2) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `order_items_order_id_foreign` (`order_id`),
+  KEY `order_items_product_id_foreign` (`product_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `order_items`
+--
+
+INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `quantity`, `price`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, 2, '1500.00', '2025-07-23 11:31:22', '2025-07-23 11:31:22'),
+(2, 1, 3, 2, '2500.00', '2025-07-23 11:31:22', '2025-07-23 11:31:22'),
+(3, 2, 2, 2, '1500.00', '2025-07-23 11:48:11', '2025-07-23 11:48:11'),
+(4, 3, 2, 2, '1500.00', '2025-07-23 19:17:50', '2025-07-23 19:17:50'),
+(5, 1, 3, 2, '2500.00', '2025-07-28 13:27:27', '2025-07-28 13:27:27'),
+(6, 2, 3, 2, '2500.00', '2025-07-28 14:57:22', '2025-07-28 14:57:22'),
+(7, 3, 3, 5, '2500.00', '2025-07-29 14:36:28', '2025-07-29 14:36:28'),
+(8, 4, 2, 2, '1500.00', '2025-07-29 15:02:39', '2025-07-29 15:02:39'),
+(9, 5, 3, 2, '2500.00', '2025-07-29 18:05:41', '2025-07-29 18:05:41'),
+(10, 6, 3, 2, '2500.00', '2025-07-30 13:19:17', '2025-07-30 13:19:17'),
+(11, 7, 1, 2, '1500.00', '2025-07-31 19:00:07', '2025-07-31 19:00:07');
 
 -- --------------------------------------------------------
 
@@ -988,7 +1130,7 @@ CREATE TABLE IF NOT EXISTS `products` (
   KEY `unit_id_products` (`unit_id`),
   KEY `unit_id_sales` (`unit_sale_id`),
   KEY `unit_purchase_products` (`unit_purchase_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `products`
@@ -996,7 +1138,8 @@ CREATE TABLE IF NOT EXISTS `products` (
 
 INSERT INTO `products` (`id`, `type`, `garment_type`, `code`, `Type_barcode`, `name`, `cost`, `price`, `category_id`, `sub_category_id`, `brand_id`, `unit_id`, `unit_sale_id`, `unit_purchase_id`, `TaxNet`, `tax_method`, `image`, `note`, `stock_alert`, `qty_min`, `is_promo`, `promo_price`, `promo_start_date`, `promo_end_date`, `is_variant`, `is_imei`, `not_selling`, `is_active`, `is_visible`, `kameez_length`, `kameez_shoulder`, `kameez_sleeves`, `kameez_chest`, `kameez_upper_waist`, `kameez_lower_waist`, `kameez_hip`, `kameez_neck`, `kameez_arms`, `kameez_cuff`, `kameez_biceps`, `shalwar_length`, `shalwar_waist`, `shalwar_bottom`, `collar_shirt`, `collar_sherwani`, `collar_damian`, `collar_round`, `collar_square`, `pshirt_length`, `pshirt_shoulder`, `pshirt_sleeves`, `pshirt_chest`, `pshirt_neck`, `pshirt_collar_shirt`, `pshirt_collar_round`, `pshirt_collar_square`, `pant_length`, `pant_waist`, `pant_hip`, `pant_thai`, `pant_knee`, `pant_bottom`, `pant_fly`, `thaan_length`, `suit_length`, `available_sizes`, `created_at`, `updated_at`, `deleted_at`, `product_type`) VALUES
 (1, 'unstitched_garment', NULL, '62427561', '', 'Fabrics', '1000.00', '1500.00', 1, 1, 1, 1, 3, 2, '0.00', '1', '1751880452.png', '', '450.00', '1.00', 0, '0.00', NULL, NULL, 0, 1, 0, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '22.50', '4.50', '\"[\\\"S\\\",\\\"M\\\",\\\"L\\\",\\\"XL\\\"]\"', '2025-07-07 09:27:32.000000', '2025-07-07 09:27:32.000000', NULL, 'stitched'),
-(2, 'stitched_garment', 'shalwar_suit', '80585975', '', 'shalwar/kameez', '1000.00', '1500.00', 1, 2, 1, 1, 1, 2, '0.00', '1', '1751880788.png', 'dnjdsjksdkjbvks', '100.00', '1.00', 0, '0.00', NULL, NULL, 0, 1, 0, 1, 1, '22.00', '22.00', '22.00', '22.00', '22.00', '22.00', '22.00', '22.00', '22.00', '22.00', '22.00', '22.00', '22.00', '22.00', 0, 1, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '22.50', '4.50', NULL, '2025-07-07 09:33:08.000000', '2025-07-07 09:33:08.000000', NULL, 'stitched');
+(2, 'stitched_garment', 'shalwar_suit', '80585975', '', 'shalwar/kameez', '1000.00', '1500.00', 1, 2, 1, 1, 1, 2, '0.00', '1', '1751880788.png', 'dnjdsjksdkjbvks', '100.00', '1.00', 0, '0.00', NULL, NULL, 0, 1, 0, 1, 1, '22.00', '22.00', '22.00', '22.00', '22.00', '22.00', '22.00', '22.00', '22.00', '22.00', '22.00', '22.00', '22.00', '22.00', 0, 1, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '22.50', '4.50', NULL, '2025-07-07 09:33:08.000000', '2025-07-07 09:33:08.000000', NULL, 'stitched'),
+(3, 'is_single', NULL, '24236515', '', 'Fabrics', '2000.00', '2500.00', 1, 2, 1, 1, 3, 1, '10.00', '1', '1753006869.png', 'kdjdsndsn', '100.00', '1.00', 0, '0.00', NULL, NULL, 0, 1, 0, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '22.50', '4.50', NULL, '2025-07-20 10:21:09.000000', '2025-07-20 10:21:09.000000', NULL, 'stitched');
 
 -- --------------------------------------------------------
 
@@ -1012,7 +1155,7 @@ CREATE TABLE IF NOT EXISTS `product_images` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `product_images`
@@ -1020,7 +1163,8 @@ CREATE TABLE IF NOT EXISTS `product_images` (
 
 INSERT INTO `product_images` (`id`, `product_id`, `image`, `created_at`, `updated_at`) VALUES
 (1, 1, '1751880452_686b9304ee058.png', '2025-07-07 09:27:32', '2025-07-07 09:27:32'),
-(2, 2, '1751880788_686b94540b453.png', '2025-07-07 09:33:08', '2025-07-07 09:33:08');
+(2, 2, '1751880788_686b94540b453.png', '2025-07-07 09:33:08', '2025-07-07 09:33:08'),
+(3, 3, '1753006869_687cc31524437.png', '2025-07-20 10:21:09', '2025-07-20 10:21:09');
 
 -- --------------------------------------------------------
 
@@ -1097,7 +1241,7 @@ CREATE TABLE IF NOT EXISTS `product_warehouse` (
   KEY `product_warehouse_id` (`product_id`),
   KEY `warehouse_id` (`warehouse_id`),
   KEY `product_variant_id` (`product_variant_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `product_warehouse`
@@ -1105,7 +1249,8 @@ CREATE TABLE IF NOT EXISTS `product_warehouse` (
 
 INSERT INTO `product_warehouse` (`id`, `product_id`, `warehouse_id`, `product_variant_id`, `qte`, `manage_stock`, `created_at`, `updated_at`, `deleted_at`) VALUES
 (1, 1, 1, NULL, 445.5, 1, '2025-07-07 09:27:32.000000', '2025-07-07 09:28:53.000000', NULL),
-(2, 2, 1, NULL, 98, 1, '2025-07-07 09:33:08.000000', '2025-07-07 09:33:55.000000', NULL);
+(2, 2, 1, NULL, 98, 1, '2025-07-07 09:33:08.000000', '2025-07-07 09:33:55.000000', NULL),
+(3, 3, 1, NULL, 100, 1, '2025-07-20 10:21:09.000000', '2025-07-20 10:21:09.000000', NULL);
 
 -- --------------------------------------------------------
 
@@ -1358,6 +1503,33 @@ CREATE TABLE IF NOT EXISTS `quotation_details` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `reviews`
+--
+
+DROP TABLE IF EXISTS `reviews`;
+CREATE TABLE IF NOT EXISTS `reviews` (
+  `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_id` bigint UNSIGNED NOT NULL,
+  `product_id` bigint UNSIGNED NOT NULL,
+  `rating` tinyint NOT NULL COMMENT '1 to 5',
+  `comment` text COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `reviews_user_id_foreign` (`user_id`),
+  KEY `reviews_product_id_foreign` (`product_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `reviews`
+--
+
+INSERT INTO `reviews` (`id`, `user_id`, `product_id`, `rating`, `comment`, `created_at`, `updated_at`) VALUES
+(2, 1, 3, 4, 'mdkfksdgjfjjsgsfhgjhsjgskjghjshgjkehuhjdhgjhkghdjghugehjhgdjkhuehguehuhguurghuhgur', '2025-07-30 13:20:50', '2025-07-30 13:20:50');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `roles`
 --
 
@@ -1379,8 +1551,9 @@ CREATE TABLE IF NOT EXISTS `roles` (
 
 INSERT INTO `roles` (`id`, `name`, `description`, `guard_name`, `created_at`, `updated_at`, `deleted_at`) VALUES
 (1, 'Super Admin', 'Super Admin', 'web', NULL, NULL, NULL),
-(5, 'Sales man', 'Generate Sales leads , Delivering goods and  collect payment.', 'web', '2025-05-17 19:13:57.000000', '2025-05-22 00:31:05.000000', NULL),
-(6, 'Pos\'s operator', 'RECORD SALES', 'web', '2025-06-12 06:39:06.000000', '2025-06-12 06:39:06.000000', NULL);
+(2, 'Sales man', 'Generate Sales leads , Delivering goods and  collect payment.', 'web', '2025-05-17 19:13:57.000000', '2025-05-22 00:31:05.000000', NULL),
+(3, 'Pos\'s operator', 'RECORD SALES', 'web', '2025-06-12 06:39:06.000000', '2025-06-12 06:39:06.000000', NULL),
+(4, 'Customer', 'Customer who purchases items', 'web', '2025-07-31 10:13:18.000000', '2025-07-31 10:13:18.000000', NULL);
 
 -- --------------------------------------------------------
 
@@ -1985,7 +2158,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `users_role_users_id` (`role_users_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `users`
@@ -1993,12 +2166,15 @@ CREATE TABLE IF NOT EXISTS `users` (
 
 INSERT INTO `users` (`id`, `username`, `email`, `email_verified_at`, `avatar`, `status`, `role_users_id`, `is_all_warehouses`, `password`, `remember_token`, `created_at`, `updated_at`, `deleted_at`) VALUES
 (1, 'Usama Shaikh', 'admin@birdcoders.com', '2025-06-11 15:20:53', 'no_avatar.png', 1, 1, 1, '$2y$10$IFj6SwqC0Sxrsiv4YkCt.OJv1UV4mZrWuyLoRG7qt47mseP9mJ58u', NULL, '2025-05-31 03:41:50.000000', '2025-05-31 03:41:50.000000', NULL),
-(4, 'Demo Driver', 'driver@gmail.com', '2025-06-11 15:21:05', 'no_avatar.png', 1, 5, 1, '$2y$10$Bp.wlndcyU5SU8ej0Zikz.w4QeDFenMEn27q7UV2Cn.FtsffMyPBu', NULL, '2025-05-17 19:14:47.000000', '2025-06-01 03:01:38.000000', NULL),
-(5, 'HASSAN', 'hasan@db.com', '2025-06-11 15:21:09', 'no_avatar.png', 1, 1, 0, '$2y$10$EOZ9LVuz8/4EEPdtuw7cSOQKjb8lPHBMeCzvjXVjUeTlKehvhI4Dq', NULL, '2025-05-21 03:52:09.000000', '2025-06-12 06:30:57.000000', NULL),
+(4, 'Demo Driver', 'driver@gmail.com', '2025-06-11 15:21:05', 'no_avatar.png', 1, 2, 1, '$2y$10$Bp.wlndcyU5SU8ej0Zikz.w4QeDFenMEn27q7UV2Cn.FtsffMyPBu', NULL, '2025-05-17 19:14:47.000000', '2025-07-14 18:25:59.000000', NULL),
+(5, 'HASSAN', 'hasan@db.com', '2025-06-11 15:21:09', 'no_avatar.png', 0, 1, 0, '$2y$10$EOZ9LVuz8/4EEPdtuw7cSOQKjb8lPHBMeCzvjXVjUeTlKehvhI4Dq', NULL, '2025-05-21 03:52:09.000000', '2025-07-31 09:53:56.000000', '2025-07-31 09:53:56'),
 (6, 'saqib', 'saqib@db.com', '2025-06-11 15:21:09', '1748264712.jpg', 0, 5, 1, '$2y$10$uNAz5l36jQ.tk70NHUuhAu1i8YNaLloG40QkyfDi2U3HWwBNHwX.y', NULL, '2025-05-22 00:35:29.000000', '2025-06-11 21:37:38.000000', '2025-06-11 21:37:38'),
 (7, 'aqib', 'aqib@db.com', '2025-06-11 15:21:09', 'no_avatar.png', 0, 5, 0, '$2y$10$Fa6wZJr.oYNOSu4pOdV5sOMi1vLbORvZGDx6lfbBGqBBbzhe33AEK', NULL, '2025-05-22 00:38:29.000000', '2025-06-11 21:37:33.000000', '2025-06-11 21:37:33'),
 (8, 'saif', 'saif@db.com', '2025-06-11 15:21:09', 'no_avatar.png', 0, 5, 0, '$2y$10$AC87B7jOpLOHnXYXsm8qfe7GDY1O8brp9uD.ADvm91iIb37aKveAq', NULL, '2025-05-22 01:22:02.000000', '2025-06-11 21:37:27.000000', '2025-06-11 21:37:27'),
-(12, 'Point of sales', 'pos@db.com', NULL, 'no_avatar.png', 1, 6, 1, '$2y$10$tsWRzRv7yJqZBR3V8NrGA.5m37RUlppbh//nLP2P9b9qP5KL2jxHS', NULL, '2025-06-12 06:34:41.000000', '2025-06-12 06:39:26.000000', NULL);
+(12, 'Point of sales', 'pos@db.com', NULL, 'no_avatar.png', 1, 2, 1, '$2y$10$tsWRzRv7yJqZBR3V8NrGA.5m37RUlppbh//nLP2P9b9qP5KL2jxHS', NULL, '2025-06-12 06:34:41.000000', '2025-07-31 10:09:06.000000', NULL),
+(13, 'Sudais Ahmed', 'sudais@example.com', NULL, NULL, 1, 0, 0, '$2y$10$al.IMmKyqBz35tFQA6Vi9.XU5NycEEJimzNqHU3sHBQZSwlv7RDFG', NULL, '2025-07-30 19:08:27.000000', '2025-07-30 19:16:28.000000', NULL),
+(16, 'Sudais Ahmed', 'sudaisahmad2514@gmail.com', '2025-07-01 15:23:59', NULL, 1, 4, 1, '$2y$10$/vvZsIyceERoQjefi1t85e7meJAtkYd9GpgfILHZuN7/umn2w1WJC', NULL, '2025-07-31 10:21:23.000000', '2025-07-31 10:57:40.000000', NULL),
+(18, 'Sudais Ahmed', 'sudais2201a@aptechgdn.net', '2025-07-01 23:51:27', NULL, 1, 4, 0, '$2y$10$fyACNneHxemOREycerqFD.hQkDrQSIfMNX6Vt0ofypOu2nX6MZYje', 'GyyVUrleF7X0eQNNFJ7j6f2c01YhSyoiK9I6LMyamwpiBBbzr3vQosFkCsWn', '2025-07-31 18:45:36.000000', '2025-07-31 18:45:36.000000', NULL);
 
 -- --------------------------------------------------------
 
@@ -2041,6 +2217,32 @@ CREATE TABLE IF NOT EXISTS `warehouses` (
 
 INSERT INTO `warehouses` (`id`, `name`, `city`, `mobile`, `zip`, `email`, `country`, `created_at`, `updated_at`, `deleted_at`) VALUES
 (1, 'Fabrics', 'Karachi', '0399999900090', '75660', 'admin@birdcoders.com', 'Pakistan', '2025-07-02 04:26:55.000000', '2025-07-02 04:26:55.000000', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `wishlists`
+--
+
+DROP TABLE IF EXISTS `wishlists`;
+CREATE TABLE IF NOT EXISTS `wishlists` (
+  `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_id` bigint UNSIGNED NOT NULL,
+  `product_id` bigint UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `wishlists_user_id_product_id_unique` (`user_id`,`product_id`),
+  KEY `wishlists_product_id_foreign` (`product_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `wishlists`
+--
+
+INSERT INTO `wishlists` (`id`, `user_id`, `product_id`, `created_at`, `updated_at`) VALUES
+(9, 1, 3, '2025-07-29 14:31:30', '2025-07-29 14:31:30'),
+(10, 1, 2, '2025-07-30 14:39:30', '2025-07-30 14:39:30');
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

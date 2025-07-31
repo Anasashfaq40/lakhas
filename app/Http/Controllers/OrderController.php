@@ -24,8 +24,25 @@ public function show(Order $order)
 }
 public function track($orderId)
 {
-    $order = Order::where('id', $orderId)->first();
+    $order = Order::with(['items.product'])->where('id', $orderId)->first();
     return view('frontend.ordertracking', compact('order'));
 }
+
+
+
+
+public function destroy(Order $order)
+{
+    $allowedRoles = [1, 2]; // 1 = admin, 2 = worker
+
+    if (!in_array(auth()->user()->role_users_id, $allowedRoles)) {
+        abort(403); // Unauthorized
+    }
+
+    $order->delete();
+
+    return response()->json(['success' => true]);
+}
+
 
 }

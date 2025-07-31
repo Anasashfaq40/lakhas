@@ -15,9 +15,16 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\CategoriesController;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\NewsletterController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\Auth\LoginController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
+
 
 Route::get('/home', function(){
-$products = Product::latest()->paginate(9); 
+    $products = Product::withAvg('reviews', 'rating')->latest()->paginate(9);
        $categories = Category::latest()->get();
 
  
@@ -25,6 +32,10 @@ $products = Product::latest()->paginate(9);
     return view('frontend.home', compact('products','categories'));
 
 });
+
+
+Route::post('login', [LoginController::class, 'authenticate'])->name('login');
+
 Route::get('/shop', function(){
     
      
@@ -43,6 +54,18 @@ Route::get('/blog', function(){
     return view('frontend.blog');
 
 });
+Route::get('/register', function(){
+    
+     
+    return view('frontend.signup');
+
+});
+Route::get('/shop-no-sidebar', function(){
+    
+     
+    return view('frontend.shop-no-sidebar');
+
+});
 Route::get('/home', [ProductsController::class,'showProducts']);
 Route::get('/shop-details/{id}', [ProductsController::class, 'showdetails'])->name('shop.details');
 Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
@@ -50,6 +73,7 @@ Route::post('/wishlist/add', [WishlistController::class, 'add'])->name('wishlist
 Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist');
 Route::delete('/wishlist/{wishlist}', [WishlistController::class, 'destroy'])
     ->name('wishlist.destroy');
+    Route::post('/review/store', [ReviewController::class, 'store'])->name('review.store');
 
 // Route::get('/cart', [CartController::class, 'index'])->name('cart');
 // Route::post('/cart/increase', [CartController::class, 'increaseQuantity'])->name('cart.increase');
@@ -68,8 +92,12 @@ Route::get('/thankyou', function () {
 })->name('thankyou');
 Route::get('/shop', [ShopController::class, 'index'])->name('shop');
 Route::get('/category', [CategoriesController::class, 'showCategoryProducts'])->name('category');
-Route::put('/admin/orders/{id}/update-status/{status}', [CheckoutController::class, 'updateStatus'])->name('admin.orders.updateStatus');
+
 Route::get('/track-order/{id}', [OrderController::class, 'track'])->name('order.track');
+Route::post('/subscribe-newsletter', [NewsletterController::class, 'store'])->name('newsletter.subscribe');
+Route::post('/signup', [UserController::class, 'newUser'])->name('signup.store');
+Route::get('/stitched-garments', [ProductsController::class, 'stitched_garment'])->name('shop.stitched');
+Route::get('/unstitched-garments', [ProductsController::class, 'unstitched_garment'])->name('shop.unstitched');
 
 
 
@@ -77,6 +105,29 @@ Route::get('/track-order/{id}', [OrderController::class, 'track'])->name('order.
 
 
 
+
+Route::get('/email/verify', function () {
+    return view('auth.verify');
+})->middleware('auth')->name('verification.notice');
+
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill(); // Mark email as verified
+
+    return redirect('/dashboard'); // Redirect after verification
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+Route::post('/email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+
+    return back()->with('message', 'Verification link sent!');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+
+
+
+Route::post('/email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+    return back()->with('message', 'Verification link sent!');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 Route::get('/login2', function(){
     return view('frontend.login');
 });
@@ -125,7 +176,7 @@ if ($installed === true) {
         Route::get('switch/language/{lang}', 'LocalController@languageSwitch')->name('language.switch');
 
         //------------------------------- dashboard Admin--------------------------\\
-        Route::group(['middleware'=>'auth','Is_Admin' , 'Is_Active'],function(){
+      Route::group(['middleware' => ['auth', 'Is_Admin', 'Is_Active']], function () {
             Route::get('dashboard/admin', "DashboardController@dashboard_admin")->name('dashboard');
             Route::resource('products/sub_categories', SubCategoriesController::class);
             Route::post('/products/toggle-visibility', [ProductsController::class, 'toggleVisibility'])->name('products.toggle.visibility');
@@ -134,11 +185,15 @@ if ($installed === true) {
 
           Route::get('/admin/carts', [CartController::class, 'adminIndex'])->name('admin.carts.index');
     Route::delete('/admin/carts/{cart}', [CartController::class, 'destroy'])->name('admin.carts.destroy');
+      Route::delete('/admin/orders/{order}', [OrderController::class, 'destroy'])->name('admin.carts.destroy');
 
 
        Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
     Route::delete('/orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
+    Route::put('/admin/orders/{id}/update-status/{status}', [CheckoutController::class, 'updateStatus'])->name('admin.orders.updateStatus');
+    Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
+    Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
             //------------------------------------------------------------------\\
 
             Route::get('/update_database', 'UpdateController@viewStep1');

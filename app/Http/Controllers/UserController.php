@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\UserWarehouse;
 use App\Models\Warehouse;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Facades\Auth;
 use DataTables;
 use Carbon\Carbon;
 use Spatie\Permission\Models\Role;
@@ -305,5 +307,38 @@ class UserController extends Controller
         return abort('403', __('You are not authorized'));
     }
 
+
+public function newUser(Request $request)
+{
+    $request->validate([
+        'firstname' => 'required|string|max:255',
+        'lastname' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255',
+        'password' => 'required|string|min:6|confirmed',
+    ]);
+
+    // Check if email already exists
+    if (User::where('email', $request->email)->exists()) {
+        return redirect()->back()->withErrors(['email' => 'This email is already registered.'])->withInput();
+    }
+
+    // Create user
+    $user = User::create([
+        'username' => $request->firstname . ' ' . $request->lastname,
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+        'status' => 1,
+        'role_users_id' => 4,
+        'avatar' => null,
+    ]);
+
+    // Fire email verification notification
+    event(new Registered($user));
+
+    // Optional: auto-login the user if needed
+    Auth::login($user);
+
+    return redirect()->route('verification.notice')->with('success', 'Signup successful! Please verify your email.');
+}
  
 }

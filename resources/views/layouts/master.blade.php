@@ -25,6 +25,9 @@
         <link rel="stylesheet" href="{{asset('assets/styles/vendor/vue-select.css')}}">
         <link rel="stylesheet" href="{{asset('assets/styles/vendor/sweetalert2.min.css')}}">
         <link rel="stylesheet" href="{{asset('assets/styles/vendor/nprogress.css')}}"> 
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+        
         
         {{-- axios js --}}
         <script src="{{ asset('assets/js/axios.js') }}"></script>

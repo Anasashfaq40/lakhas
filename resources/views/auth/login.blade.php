@@ -1,94 +1,110 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.frontendlinks')
+@section('title', __('translate.Sign_in'))
+@section('content')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel=icon href={{ asset('images/logo.svg') }}>
+<main>
+    <!-- BREADCRUMB SECTION START -->
+    <div class="ul-container">
+        <div class="ul-breadcrumb">
+            <h2 class="ul-breadcrumb-title">{{ __('translate.Sign_in') }}</h2>
+            <div class="ul-breadcrumb-nav">
+                <a href="{{ url('/') }}"><i class="flaticon-home"></i> Home</a>
+                <i class="flaticon-arrow-point-to-right"></i>
+                <span class="current-page">{{ __('translate.Sign_in') }}</span>
+            </div>
+        </div>
+    </div>
+    <!-- BREADCRUMB SECTION END -->
 
-    <title>{{ __('translate.Sign_in') }}</title>
-    <link href="https://fonts.googleapis.com/css?family=Nunito:300,400,400i,600,700,800,900" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('assets/styles/css/themes/lite-purple.min.css') }}">
-    <link rel="stylesheet" href="{{asset('assets/styles/vendor/login_page.css')}}">
-
-</head>
-
-
-<body class="login-page">
-    <div id="main-wrapper" class="show">
-
-        <div class="login-posly">
-            <div>
-               
-                <div class="login-main">
-                   <form class="theme-form" id="form_login" method="POST" action="{{ route('login') }}">
-                        @csrf
-                        <h4>{{ __('translate.Sign_in_to_account') }}</h4>
-                        <p>{{ __('translate.Enter_your_email_password_to_login') }}</p>
-                        <div class="form-group m-b-10">
-                            <label class="col-form-label">{{ __('translate.Email_Address') }}</label>
-                            <input class="form-control" type="email" placeholder="Example@Example.com" @error('email') is-invalid @enderror"
-                                        name="email" value="{{ old('email') }}"  autocomplete="email" autofocus>
-                              @if ($errors->has('email'))
-                                <span class="text-danger">{{ $errors->first('email') }}</span>
-                              @elseif ($errors->has('status'))
-                                <span class="text-danger">{{ $errors->first('status') }}</span>
-                              @endif
+    <!-- LOGIN SECTION -->
+    <div class="ul-container">
+        <div class="ul-login">
+            <div class="ul-inner-page-container">
+                <div class="row justify-content-evenly align-items-center flex-column-reverse flex-md-row">
+                    <div class="col-md-5">
+                        <div class="ul-login-img text-center">
+                            <img src="{{ asset('assets/img/delivery/login.jpg') }}" alt="Login Image">
                         </div>
-                        <div class="form-group m-b-10">
-                            <label class="col-form-label">{{ __('translate.Password') }}</label>
-                            <div class="form-input position-relative">
-                                <input class="form-control" type="password" placeholder="*********" @error('password') is-invalid @enderror"
-                                        name="password" required autocomplete="current-password">
-                                @if ($errors->has('password'))
-                                <span class="text-danger">{{ $errors->first('password') }}</span>
+                    </div>
+
+                    <div class="col-xl-4 col-md-7">
+                        <form class="theme-form ul-contact-form" id="form_login" method="POST" action="{{ route('login') }}">
+                            @csrf
+                            <h4>{{ __('translate.Sign_in_to_account') }}</h4>
+                            <p>{{ __('translate.Enter_your_email_password_to_login') }}</p>
+
+                            <!-- Email -->
+                            <div class="form-group m-b-10">
+                                <label class="col-form-label">{{ __('translate.Email_Address') }}</label>
+                                <input class="form-control @error('email') is-invalid @enderror" type="email" placeholder="Example@Example.com"
+                                       name="email" value="{{ old('email') }}" autocomplete="email" autofocus>
+                                @if ($errors->has('email'))
+                                    <span class="text-danger">{{ $errors->first('email') }}</span>
+                                @elseif ($errors->has('status'))
+                                    <span class="text-danger">{{ $errors->first('status') }}</span>
                                 @endif
                             </div>
-                        </div>
-                        
-                        <div class="form-group mb-0">
-                            <div class="checkbox p-0">
-                                <input id="checkbox1" type="checkbox">
-                                <label class="text-muted" for="checkbox1">{{ __('translate.Remember_password') }}</label>
+
+                            <!-- Password -->
+                            <div class="form-group m-b-10">
+                                <label class="col-form-label">{{ __('translate.Password') }}</label>
+                                <div class="form-input position-relative">
+                                    <input class="form-control @error('password') is-invalid @enderror" type="password" placeholder="*********"
+                                           name="password" required autocomplete="current-password">
+                                    @if ($errors->has('password'))
+                                        <span class="text-danger">{{ $errors->first('password') }}</span>
+                                    @endif
+                                </div>
                             </div>
-                            <!--@if (Route::has('password.request'))-->
 
-                            <!--    <div class="mt-3 text-center">-->
+                            <!-- Remember Me -->
+                            <div class="form-group mb-0">
+                                <div class="checkbox p-0">
+                                    <input id="checkbox1" type="checkbox" name="remember">
+                                    <label class="text-muted" for="checkbox1">{{ __('translate.Remember_password') }}</label>
+                                </div>
 
-                            <!--        <a href="{{ route('password.request') }}" class="link text-danger">{{ __('translate.Forgot_Password') }}</a>-->
-                            <!--    </div>-->
-                            <!--@endif-->
+                                <!-- Submit Button -->
+                                <div class="mt-3">
+                                    <button id="btn_submit" class="btn btn-primary w-100">{{ __('translate.Sign_in') }}</button>
+                                </div>
 
-                            <div class="mt-3">
-                            <button id="btn_submit" class="btn btn-primary w-100">{{ __('translate.Sign_in') }}</button>
+                                <!-- Forgot & Register Links -->
+                                <div class="mt-3 text-center">
+                                    <a href="{{ route('password.request') }}" class="link text-danger">{{ __('translate.Forgot_Password') }}</a>
+                                </div>
+
+                                <p class="text-center mt-2">
+                                    <a href="/register">Create Account</a>
+                                </p>
+
+                                <div class="mt-5 text-center">
+                                    <h5 class="fw-bold text-primary">© Copyright by Driestech</h5>
+                                </div>
                             </div>
-                          <div class="mt-5 text-center">
-  <h5 class="fw-bold text-primary">© Copyright by Driestech</h5>
-</div>
-
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-
     </div>
+</main>
 
-      <!-- JS Libraies -->
-  <script src="{{ asset('/assets/js/jquery.js') }}"></script>
-  <script src="{{ asset('/assets/js/popper.min.js') }}"></script>
-  <script src="{{ asset('/assets/js/bootstrap.min.js') }}"></script>
-  <script src="{{ asset('/assets/js/scripts.js') }}"></script>
-  <script src="{{ asset('/assets/js/custom.js') }}"></script>
+<!-- Scripts -->
+@push('scripts')
+<script src="{{ asset('/assets/js/jquery.js') }}"></script>
+<script src="{{ asset('/assets/js/popper.min.js') }}"></script>
+<script src="{{ asset('/assets/js/bootstrap.min.js') }}"></script>
+<script src="{{ asset('/assets/js/scripts.js') }}"></script>
+<script src="{{ asset('/assets/js/custom.js') }}"></script>
 
-  <script>
+<script>
     $(function () {
-      $("#form_login").one("submit", function () {
-      //enter your submit code
-      $("#btn_submit").prop('disabled', true);
-      });
+        $("#form_login").one("submit", function () {
+            $("#btn_submit").prop('disabled', true);
+        });
     });
-  </script>
-</body>
-</html>
+</script>
+@endpush
+
+@endsection

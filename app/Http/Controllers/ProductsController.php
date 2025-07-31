@@ -9,6 +9,7 @@ use App\Imports\ProductImport;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Review;
 use App\Models\ProductVariant;
 use App\Models\product_warehouse;
 use App\Models\Unit;
@@ -1654,16 +1655,36 @@ public function showdetail($id)
 
 public function showProducts()
 {
-  $products = Product::latest()->paginate(9); 
-    return view('frontend.home', compact('products'));
+    $products = Product::withAvg('reviews', 'rating')->latest()->paginate(9);
+
+    $reviews = Review::with('user') 
+        ->latest()
+        ->take(10)
+        ->get();
+
+    return view('frontend.home', compact('products', 'reviews'));
 }
+
 
 public function showdetails($id)
 {
-    $product = Product::with(['category', 'brand', 'images'])->findOrFail($id);
+    $product = Product::with(['category', 'brand', 'images', 'reviews.user'])->findOrFail($id);
 
     return view('frontend.shop-details', compact('product'));
 }
+
+public function stitched_garment(){
+    $products = Product::where('type', 'stitched_garment')->get();
+return view('frontend.stitched-garment', compact('products'));
+}
+
+public function unstitched_garment() {
+    $products = Product::where('type', 'unstitched_garment')->get();
+    return view('frontend.unstitched-garment', compact('products'));
+}
+
+
+
 
 
 

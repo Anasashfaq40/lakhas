@@ -8,7 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use Notifiable , HasRoles;
     protected $dates = ['deleted_at'];
@@ -54,4 +54,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany('App\Models\Warehouse');
     }
+    public function reviews()
+{
+    return $this->hasMany(Review::class);
+}
+
 }

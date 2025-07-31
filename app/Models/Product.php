@@ -316,4 +316,15 @@ class Product extends Model
     {
         return in_array($this->type, ['stitched_garment', 'unstitched_garment']);
     }
+    public function reviews()
+{
+    return $this->hasMany(Review::class);
+}
+
+
+public function averageRating()
+{
+    return $this->reviews()->avg('rating');
+}
+
 }

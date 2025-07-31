@@ -60,7 +60,7 @@
                                     <i class="flaticon-star"></i>
                                     <i class="flaticon-star"></i>
                                 </span>
-                                <span class="review-number">(2 Customer Reviews)</span>
+                                <span class="review-number">{{ $product->reviews->count() }} Customer Reviews</span>
                             </div>
 
                             <!-- price with data attributes -->
@@ -200,38 +200,42 @@
 
                 <!-- reviews -->
                 <div class="ul-product-details-reviews">
-                    <h3 class="ul-product-details-inner-title">02 Customer Reviews</h3>
+           <h3 class="ul-product-details-inner-title">
+    {{ $product->reviews->count() }} Customer Reviews
+</h3>
 
-                    <!-- single review -->
-                    <div class="ul-product-details-review">
-                        <!-- reviewer image -->
-                        <div class="ul-product-details-review-reviewer-img">
-                            <img src="assets/img/reviewer-img-1.png" alt="Reviewer Image">
-                        </div>
+@forelse($product->reviews as $review)
+    <div class="ul-product-details-review">
+        <div class="ul-product-details-review-reviewer-img">
+          <i class="fas fa-user-circle" style="font-size: 40px; color: #999;"></i>
 
-                        <div class="ul-product-details-review-txt">
-                            <div class="header">
-                                <div class="left">
-                                    <h4 class="reviewer-name">Waleed Asghar</h4>
-                                    <h5 class="review-date">June 10, 2025 at 4:20 PM</h5>
-                                </div>
 
-                                <div class="right">
-                                    <div class="rating">
-                                        <i class="flaticon-star"></i>
-                                        <i class="flaticon-star"></i>
-                                        <i class="flaticon-star"></i>
-                                        <i class="flaticon-star"></i>
-                                        <i class="flaticon-star-3"></i>
-                                    </div>
-                                </div>
-                            </div>
+        </div>
 
-                            <p>Ordered a stitched shalwar kameez and I must say the fitting was perfect! The fabric quality was top-notch and delivery was right on time. Will definitely order again!</p>
-
-                            <button class="ul-product-details-review-reply-btn">Reply</button>
-                        </div>
+        <div class="ul-product-details-review-txt">
+            <div class="header">
+                <div class="left">
+                    <h4 class="reviewer-name">{{ $review->user->username ?? 'Anonymous' }}</h4>
+                    <h5 class="review-date">{{ $review->created_at->format('F d, Y \a\t h:i A') }}</h5>
+                </div>
+                <div class="right">
+                    <div class="rating">
+                        @for ($i = 1; $i <= 5; $i++)
+                            <i class="{{ $i <= $review->rating ? 'flaticon-star' : 'flaticon-star-3' }}"></i>
+                        @endfor
                     </div>
+                </div>
+            </div>
+
+            <p>{{ $review->comment }}</p>
+
+            <!-- <button class="ul-product-details-review-reply-btn">Reply</button> -->
+        </div>
+    </div>
+@empty
+    <p>No reviews yet. Be the first to review this product!</p>
+@endforelse
+
 
                     <!-- review form -->
                     <div class="ul-product-details-review-form-wrapper">
@@ -250,51 +254,48 @@
 </main>
 
 <!-- JavaScript Section -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
 <script>
 $(document).ready(function() {
     // Initialize price on page load
+    // updateTotalPrice();
+
+$(document).off('click', '.quantityIncreaseButton').on('click', '.quantityIncreaseButton', function () {
+    let quantityInput = $('#ul-product-details-quantity');
+    let currentVal = parseInt(quantityInput.val()) || 1;
+    // quantityInput.val(currentVal + 1);
     updateTotalPrice();
-
-$('.quantityIncreaseButton').off().on('click', function() {
-    let quantityInput = $('#ul-product-details-quantity');
-    let currentVal = parseInt(quantityInput.val());
-    if (!isNaN(currentVal)) {
-        quantityInput.val(currentVal + 1);
-        updateTotalPrice();
-    }
 });
 
-$('.quantityDecreaseButton').off().on('click', function() {
-    let quantityInput = $('#ul-product-details-quantity');
-    let currentVal = parseInt(quantityInput.val());
-    if (!isNaN(currentVal) && currentVal > 1) {
-        quantityInput.val(currentVal - 1);
-        updateTotalPrice();
-    }
-});
-
-
+    // Quantity decrease button
+    $(document).on('click', '.quantityDecreaseButton', function() {
+        let quantityInput = $('#ul-product-details-quantity');
+        let currentVal = parseInt(quantityInput.val()) || 1;
+        if (currentVal >= 1) {
+            // quantityInput.val(currentVal - 1);
+            updateTotalPrice();
+        }
+    });
 
     // Function to update total price
-    function updateTotalPrice() {
-        const priceBox = $('#product-price');
-        const isPromo = priceBox.data('promo') === true || priceBox.data('promo') === 'true';
-        const unitPrice = isPromo ? parseFloat(priceBox.data('promo-price')) : parseFloat(priceBox.data('price'));
-        
-        let qty = parseInt($('#ul-product-details-quantity').val());
-        if (isNaN(qty)) qty = 1;
-        
-        const totalPrice = (unitPrice * qty).toFixed(2);
-        $('#price-value').text(totalPrice);
-        
-        if (isPromo) {
-            const originalTotal = (parseFloat(priceBox.data('price')) * qty).toFixed(2);
-            $('#old-price-value').text('PKR ' + originalTotal);
-        }
+function updateTotalPrice() {
+    const priceBox = $('#product-price');
+    const isPromo = priceBox.data('promo') === true || priceBox.data('promo') === 'true';
+    const unitPrice = isPromo ? parseFloat(priceBox.data('promo-price')) : parseFloat(priceBox.data('price'));
+
+    let qty = parseInt($('#ul-product-details-quantity').val()) || 1;
+
+    const totalPrice = (unitPrice * qty).toFixed(2);
+    $('#price-value').text(totalPrice);
+
+    if (isPromo) {
+        const originalTotal = (parseFloat(priceBox.data('price')) * qty).toFixed(2);
+        $('#old-price-value').text('PKR ' + originalTotal);
     }
+}
 
     // Add to Cart AJAX
     $('.add-to-cart').click(function(e) {
