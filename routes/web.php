@@ -26,6 +26,10 @@ use Illuminate\Http\Request;
 Route::get('/home', function(){
     $products = Product::withAvg('reviews', 'rating')->latest()->paginate(9);
        $categories = Category::latest()->get();
+       
+   
+
+
 
  
      
@@ -67,6 +71,7 @@ Route::get('/shop-no-sidebar', function(){
 
 });
 Route::get('/home', [ProductsController::class,'showProducts']);
+
 Route::get('/shop-details/{id}', [ProductsController::class, 'showdetails'])->name('shop.details');
 Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
 Route::post('/wishlist/add', [WishlistController::class, 'add'])->name('wishlist.add');
@@ -98,6 +103,8 @@ Route::post('/subscribe-newsletter', [NewsletterController::class, 'store'])->na
 Route::post('/signup', [UserController::class, 'newUser'])->name('signup.store');
 Route::get('/stitched-garments', [ProductsController::class, 'stitched_garment'])->name('shop.stitched');
 Route::get('/unstitched-garments', [ProductsController::class, 'unstitched_garment'])->name('shop.unstitched');
+Route::post('/cart/add-from-wishlist', [CartController::class, 'addToCart'])->name('cart.add.from.wishlist');
+
 
 
 

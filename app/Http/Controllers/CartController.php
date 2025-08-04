@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Cart;
+use App\Models\Wishlist;
 use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
@@ -112,6 +113,45 @@ public function destroy(Cart $cart)
     $cart->delete();
 
     return response()->json(['success' => true]);
+}
+
+
+public function addToCart(Request $request)
+{
+    $request->validate([
+        'product_id' => 'required|exists:products,id',
+        'quantity' => 'nullable|integer|min:1',
+    ]);
+
+    $product = Product::find($request->product_id);
+
+    // Add to cart
+    $cart = Cart::updateOrCreate(
+        [
+            'user_id' => auth()->id(),
+            'product_id' => $product->id,
+        ],
+        [
+            'quantity' => $request->quantity ?? 1,
+            'size' => $request->size,
+            'color' => $request->color,
+            'price' => $product->price ?? $product->price,
+        ]
+    );
+
+    // Remove from wishlist if wishlist_id is passed
+    if ($request->wishlist_id) {
+        Wishlist::where('id', $request->wishlist_id)->where('user_id', auth()->id())->delete();
+    }
+
+    // Count cart items
+    $cartCount = Cart::where('user_id', auth()->id())->count();
+
+    return response()->json([
+        'success' => true,
+        'cart_count' => $cartCount,
+        'message' => 'Product added to cart and removed from wishlist.',
+    ]);
 }
 
 

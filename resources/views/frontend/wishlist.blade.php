@@ -25,6 +25,7 @@
                         <div>Price</div>
                         <div>Stock</div>
                         <div>Remove</div>
+                        <div>Cart</div>
                     </div>
 
                     <!-- cart body -->
@@ -62,6 +63,17 @@
             <i class="flaticon-close"></i>
         </button>
     </form>
+
+
+</div>
+   <div class="ul-cart-item">
+    <button class="add-to-cart" 
+    data-product-id="{{ $wishlist->product->id }}" 
+    data-wishlist-id="{{ $wishlist->id }}"
+    data-price="{{ $wishlist->product->sale_price ?? $wishlist->product->price }}">
+     <span class="icon"><i class="flaticon-cart"></i></span>
+</button>
+
 </div>
         </div>
     @endif
@@ -123,6 +135,61 @@ $(document).ready(function() {
             }
         });
     });
+
+   // Add to Cart AJAX
+$('.add-to-cart').click(function(e) {
+    e.preventDefault();
+
+    var button = $(this);
+    var productId = button.data('product-id');
+    var wishlistId = button.data('wishlist-id');
+    var price = button.data('price'); // ✅ fixed line
+
+    var quantity = $('#ul-product-details-quantity').val() || 1;
+    var size = $('input[name="product-size"]:checked').next('.size-btn').text() || null;
+    var colorElement = $('input[name="product-color"]:checked').next('.color-btn');
+    var colorClass = colorElement.attr('class');
+    var color = (typeof colorClass !== 'undefined') ? colorClass.split(' ')[1] : null;
+
+    $.ajax({
+        url: '{{ route("cart.add.from.wishlist") }}',
+        type: 'POST',
+        data: {
+            product_id: productId,
+            quantity: quantity,
+            size: size,
+            color: color,
+            wishlist_id: wishlistId,
+            price: price,
+            _token: '{{ csrf_token() }}'
+        },
+        success: function(response) {
+ if (response.success) {
+    $('.cart-count').text(response.cart_count);
+    toastr.success(response.message);
+    button.closest('.ul-cart-item').fadeOut(300, function () {
+        $(this).remove();
+
+        // ✅ Delay reload so message can be seen
+        setTimeout(function () {
+            location.reload();
+        }, 1500); // 1.5 second delay
+    });
+} else {
+    toastr.warning(response.message);
+}
+
+
+        },
+        error: function(xhr) {
+            toastr.error(xhr.responseJSON?.message || 'Something went wrong!');
+        }
+    });
+});
+
+
+
+
 });
 </script>
 

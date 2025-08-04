@@ -796,10 +796,11 @@ protected function getGarmentMeasurements($product)
                 $item['pant_fly'] = $Product->pant_fly;
             }
         } elseif ($Product->type == 'unstitched_garment') {
-            $item['thaan_length'] = $Product->thaan_length;
-            $item['suit_length'] = $Product->suit_length;
-            $item['available_sizes'] = json_decode($Product->available_sizes, true);
-        }
+    $item['thaan_length'] = $Product->thaan_length;
+    $item['suit_length'] = $Product->suit_length;
+    $item['available_sizes'] = json_encode($Product['available_sizes']);
+}
+
 
         // Get existing multiple images
      $item['existing_images'] = DB::table('product_images')
@@ -1655,15 +1656,22 @@ public function showdetail($id)
 
 public function showProducts()
 {
-    $products = Product::withAvg('reviews', 'rating')->latest()->paginate(9);
+    $products = Product::withAvg('reviews', 'rating')
+                       ->latest()
+                       ->paginate(9);
 
-    $reviews = Review::with('user') 
-        ->latest()
-        ->take(10)
-        ->get();
+    $reviews = Review::with('user')
+                     ->latest()
+                     ->take(10)
+                     ->get();
 
-    return view('frontend.home', compact('products', 'reviews'));
+    $latestproduct = Product::latest()
+                            ->take(10)
+                            ->get();
+
+    return view('frontend.home', compact('products', 'reviews', 'latestproduct'));
 }
+
 
 
 public function showdetails($id)
@@ -1682,6 +1690,16 @@ public function unstitched_garment() {
     $products = Product::where('type', 'unstitched_garment')->get();
     return view('frontend.unstitched-garment', compact('products'));
 }
+
+
+// public function latestProducts()
+// {
+//     $latestproduct = Product::latest()
+//                        ->take(10)
+//                        ->get();
+
+//     return view('frontend.home', compact('latestproduct'));
+// }
 
 
 

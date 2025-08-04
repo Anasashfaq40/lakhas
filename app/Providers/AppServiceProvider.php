@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\View;
 use Config;
 use App\Models\AdjustmentDetail;
 use App\Models\Category;
+use App\Models\Product;
 use App\Observers\AdjustmentDetailObserver;
 
 class AppServiceProvider extends ServiceProvider
@@ -56,5 +57,10 @@ class AppServiceProvider extends ServiceProvider
 			App::setLocale('en');
 		}
           View::share('categories', Category::whereNull('deleted_at')->get());
+ View::composer('layouts.frontend.header', function ($view) {
+    $products = Product::latest()->take(10)->get(); 
+    $view->with('products', $products);
+});
+          
     }
 }

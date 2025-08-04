@@ -16,12 +16,12 @@
         <!-- BREADCRUMB SECTION END -->
 
         <!-- CHEKOUT SECTION START -->
-        <div class="ul-cart-container">
+        <div class="ul-cart-container" >
             <h3 class="ul-checkout-title">Billing Details</h3>
-            <form action="{{ route('checkout.placeorder') }}" method="POST" class="ul-checkout-form">
+            <form style="margin:10px auto;" action="{{ route('checkout.placeorder') }}" method="POST" class="ul-checkout-form">
     @csrf
 
-                <div class="row ul-bs-row row-cols-2 row-cols-xxs-1">
+                <div class="row ul-bs-row row-cols-1 row-cols-xxs-1">
                     <!-- left side / checkout form -->
                     <div class="col">
                         <div class="row row-cols-lg-2 row-cols-1 ul-bs-row">
@@ -48,7 +48,7 @@
                                 <label for="ul-checkout-country">Country*</label>
                                 <select name="country" id="ul-checkout-country">
                                     <option data-placeholder="true">Select Country</option>
-                                    <option value="2">Pakistan</option>
+                                    <option value="Pakistan">Pakistan</option>
                                     <!-- <option value="3">United Kingdom</option>
                                     <option value="4">Germany</option>
                                     <option value="5">France</option>
@@ -102,13 +102,13 @@
                     </div>
 
                     <!-- right side section / different address -->
-                    <div class="col">
+                    <!-- <div class="col">
                         <div class="form-group">
                             <label for="ul-checkout-different-address-field">Shift to A Different Address</label>
                             <textarea name="different-address" id="ul-checkout-different-address-field" placeholder="2801 Lafayette Blvd, Norfolk, Vermont 23509, united state"></textarea>
                         </div>
-
-                        <!-- right side section / different address checkbox -->
+ 
+                       
                         <div class="ul-checkout-payment-methods">
                             <div class="form-group">
                                 <label for="payment-option-1">
@@ -130,14 +130,16 @@
                                     </span>
                                 </label>
                             </div>
-                            <button type="submit" class="ul-checkout-form-btn">Place Your Order</button>
+                     
                         </div>
-                    </div>
+                    </div> -->
+                      <input type="radio" name="payment-methods" id="payment-option-1" hidden checked>
+                                    <span class="ul-radio-wrapper"></span>
                 </div>
-            </form>
+        
 
 <!-- bill summary -->
-<div class="row ul-bs-row row-cols-2 row-cols-xxs-1">
+<div class="row ul-bs-row row-cols-1 row-cols-xxs-1">
     <div class="ul-checkout-bill-summary">
         <h4 class="ul-checkout-bill-summary-title">Your Order</h4>
 
@@ -183,6 +185,10 @@
             <span class="left">Total</span>
             <span class="right">${{ number_format($total, 2) }}</span>
         </div>
+        <div style="padding:20px;">
+        <center>    <button style="padding:0px 100px 0px 100px;" type="submit" class="ul-checkout-form-btn">Place Your Order</button></center>
+           </div>
+               </form>
     </div>
 </div>
 

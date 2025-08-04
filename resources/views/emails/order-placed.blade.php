@@ -10,7 +10,7 @@
     <p>Thank you for your order!</p>
 
     <p><strong>Order ID:</strong> #{{ $order->id }}</p>
-    <p><strong>Total Amount:</strong> ${{ $order->total }}</p>
+    <p><strong>Total Amount:</strong> Rs{{ $order->total }}</p>
     <p><strong>Status:</strong> {{ ucfirst($order->status) }}</p>
 
     <h3>Shipping Address</h3>

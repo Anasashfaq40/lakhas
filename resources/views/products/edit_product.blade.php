@@ -802,9 +802,16 @@ var app = new Vue({
                     formData.append('pshirt_collar_round', this.product.pshirt_collar_round ? '1' : '0');
                     formData.append('pshirt_collar_square', this.product.pshirt_collar_square ? '1' : '0');
                 }
-            } else if (this.product.type === 'unstitched_garment') {
-                formData.append('available_sizes', JSON.stringify(this.product.available_sizes));
-            }
+            }else if (this.product.type === 'unstitched_garment') {
+    if (Array.isArray(this.product.available_sizes) && this.product.available_sizes.length > 0) {
+        this.product.available_sizes.forEach((size, index) => {
+            formData.append(`available_sizes[${index}]`, size);
+        });
+    } else {
+        formData.append('available_sizes[]', ''); // triggers validation error properly
+    }
+}
+
 
             // Image handling
             if (this.product.image instanceof File) {

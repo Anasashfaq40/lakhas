@@ -11,11 +11,23 @@
     border-radius: 10px;
     background-color: #fff;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    height: 100%; /* ensure equal height for all */
+    height: 100%; 
     display: flex;
     flex-direction: column;
     justify-content: space-between;
 }
+.swiper-slide {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
+    border-radius: 8px;                      
+    background-color: #fff;                   
+    transition: transform 0.3s ease, box-shadow 0.3s ease; 
+}
+
+.swiper-slide:hover {
+    transform: translateY(-5px);             
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); 
+}
+
 
 .ul-review-descr {
     font-size: 14px;
@@ -41,6 +53,9 @@
     padding: 3px 10px;
     font-size: 12px;
     border-radius: 5px;
+}
+.ul-product-img img{
+    height:100%;
 }
 
 
@@ -206,16 +221,16 @@
                         <div class="swiper-wrapper">
                         @foreach($products as $product)
     @if($product->stock_alert > 0) {{-- Sirf stock wale products show karo --}}
-        <div class="swiper-slide">
+        <div  class="swiper-slide">
             <div class="ul-product">
                 <div class="ul-product-heading">
-                    <span class="ul-product-price">Rs{{ $product->sale_price ?? $product->price }}</span>
+                       <a style="color:black; font-weight:700;" href="{{ route('shop.details', $product->id) }}">{{ $product->name }}</a>
                     @if($product->discount_percentage)
                         <span class="ul-product-discount-tag">{{ $product->discount_percentage }}% Off</span>
                     @endif
                 </div>
 
-                <div class="ul-product-img">
+                <div  class="ul-product-img">
                     <a href="{{ route('shop.details', $product->id) }}">
                         <img src="{{ asset('images/products/' . $product->image) }}" alt="{{ $product->name }}">
                     </a>
@@ -234,14 +249,37 @@
 
                 <div class="ul-product-txt">
                     <h4 class="ul-product-title">
-                        <a href="{{ route('shop.details', $product->id) }}">{{ $product->name }}</a>
+                    
+                         <span class="ul-product-price">Rs{{ $product->sale_price ?? $product->price }}</span>
                     </h4>
                     <h5 class="ul-product-category">
                         <a href="#">{{ $product->category->name ?? 'Uncategorized' }}</a>
                     </h5>
                     <div class="ul-stock-status" style="margin-top: 5px;">
-                        <span class="badge badge-success">In Stock</span>
+                        <span style="color:black" class="badge ">In Stock</span>
                     </div>
+                            <div class="ul-product-rating">
+    @php
+        $averageRating = round($product->reviews_avg_rating);
+    @endphp
+
+    @for ($i = 1; $i <= 5; $i++)
+        <i class="{{ $i <= $averageRating ? 'flaticon-star' : 'flaticon-star-3' }}" style="color: #f5b50a;"></i>
+    @endfor
+</div>
+ <div class="mt-3 d-flex justify-content-between">
+                    <!-- Add to Cart Button -->
+                 
+                        <button class="add-to-cart" data-product-id="{{ $product->id }}">
+                            <span class="icon"><i class="flaticon-shopping-bag"></i></span>
+                            <span class="text"></span>
+                        </button>
+                        <a href="{{ route('shop.details', $product->id) }}"><i class="flaticon-hide"></i></a>
+                        <button class="add-to-wishlist" data-product-id="{{ $product->id }}">
+                            <span class="icon"><i class="flaticon-heart"></i></span>
+                        </button>
+                 
+                </div>
                 </div>
             </div>
         </div>
@@ -488,154 +526,70 @@
                         <div class="ul-flash-sale-slider swiper">
                             <div class="swiper-wrapper">
                                 <!-- single product -->
-                                <div class="swiper-slide">
-                                    <div class="ul-product">
-                                        <div class="ul-product-heading">
-                                            <span class="ul-product-price">PKR 5,200<span>
-                                            <span class="ul-product-discount-tag">20% Off</span>
-                                        </div>
+                       @foreach($latestproduct as $products)
 
-                                        <div class="ul-product-img">
-                                            <img src="assets/img/product-img-1.jpg" alt="Product Image">
+    <div class="swiper-slide">
+        <div class="ul-product">
+            <div class="ul-product-heading">
+                <span class="ul-product-price">
+               PKR{{ $products->price }}
+                </span>
+                @if($products->discount_percentage)
+                    <span class="ul-product-discount-tag">
+                        {{ $products->discount_percentage }}% Off
+                    </span>
+                @endif
+            </div>
 
-                                            <div class="ul-product-actions">
-                                                <button><i class="flaticon-shopping-bag"></i></button>
-                                                <a href="index.html#"><i class="flaticon-hide"></i></a>
-                                                <button><i class="flaticon-heart"></i></button>
-                                            </div>
-                                        </div>
+            <div class="ul-product-img">
+                <img src="{{  asset('images/products/' . $products->image) }}" alt="Product Image">
+                <div class="ul-product-actions">
+               
+                         <button class="add-to-cart" data-product-id="{{ $product->id }}">
+                            <span class="icon"><i class="flaticon-shopping-bag"></i></span>
+                            <span class="text"></span>
+                        </button>
+                
+                   <a href="{{ route('shop.details', $product->id) }}"><i class="flaticon-hide"></i></a>
+                 
+                     <button class="add-to-wishlist" data-product-id="{{ $product->id }}">
+                            <span class="icon"><i class="flaticon-heart"></i></span>
+                        </button>
+                  
+                </div>
+            </div>
 
-                                        <div class="ul-product-txt">
-                                            <h4 class="ul-product-title"><a href="shop-details.html">Classic White Shalwar Kameez</a></h4>
-                                            <h5 class="ul-product-category"><a href="shop.html">Stitched Collection</a></h5>
-                                        </div>
-                                    </div>
-                                </div>
+            <div class="ul-product-txt">
+                <h4 class="ul-product-title">
+                    <a href="">
+                        {{ $products->name }}
+                    </a>
+                </h4>
+                <h5 class="ul-product-category">
+                    <a href="{{ route('category', ['category' => $products->category_id]) }}">
+                        {{ $products->category->name ?? 'Uncategorized' }}
+                    </a>
+                </h5>
+                 <div class="mt-3 d-flex justify-content-between">
+                    <!-- Add to Cart Button -->
+                 
+                        <button class="add-to-cart" data-product-id="{{ $product->id }}">
+                            <span class="icon"><i class="flaticon-shopping-bag"></i></span>
+                            <span class="text"></span>
+                        </button>
+                        <a href="{{ route('shop.details', $product->id) }}"><i class="flaticon-hide"></i></a>
+                        <button class="add-to-wishlist" data-product-id="{{ $product->id }}">
+                            <span class="icon"><i class="flaticon-heart"></i></span>
+                        </button>
+                 
+                </div>
+            </div>
+        </div>
+    </div>
+@endforeach
 
-                                <!-- single product -->
-                                <div class="swiper-slide">
-                                    <div class="ul-product">
-                                        <div class="ul-product-heading">
-                                            <span class="ul-product-price">PKR 7,800</span>
-                                            <span class="ul-product-discount-tag">15% Off</span>
-                                        </div>
 
-                                        <div class="ul-product-img">
-                                            <img src="assets/img/product-img-2.jpg" alt="Product Image">
-
-                                            <div class="ul-product-actions">
-                                                <button><i class="flaticon-shopping-bag"></i></button>
-                                                <a href="index.html#"><i class="flaticon-hide"></i></a>
-                                                <button><i class="flaticon-heart"></i></button>
-                                            </div>
-                                        </div>
-
-                                        <div class="ul-product-txt">
-                                            <h4 class="ul-product-title"><a href="shop-details.html">Formal Pant Coat Set</a></h4>
-                                            <h5 class="ul-product-category"><a href="shop.html">Winter Collection</a></h5>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- single product -->
-                                <div class="swiper-slide">
-                                    <div class="ul-product">
-                                        <div class="ul-product-heading">
-                                            <span class="ul-product-price">PKR 2,500</span>
-                                            <span class="ul-product-discount-tag">10% Off</span>
-                                        </div>
-
-                                        <div class="ul-product-img">
-                                            <img src="assets/img/product-img-3.jpg" alt="Product Image">
-
-                                            <div class="ul-product-actions">
-                                                <button><i class="flaticon-shopping-bag"></i></button>
-                                                <a href="index.html#"><i class="flaticon-hide"></i></a>
-                                                <button><i class="flaticon-heart"></i></button>
-                                            </div>
-                                        </div>
-
-                                        <div class="ul-product-txt">
-                                            <h4 class="ul-product-title"><a href="shop-details.html">Embroidered Islamic Cap</a></h4>
-                                            <h5 class="ul-product-category"><a href="shop.html">Accessories</a></h5>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- single product -->
-                                <div class="swiper-slide">
-                                    <div class="ul-product">
-                                        <div class="ul-product-heading">
-                                            <span class="ul-product-price">$99.00</span>
-                                            <span class="ul-product-discount-tag">25% Off</span>
-                                        </div>
-
-                                        <div class="ul-product-img">
-                                            <img src="assets/img/product-img-4.jpg" alt="Product Image">
-
-                                            <div class="ul-product-actions">
-                                                <button><i class="flaticon-shopping-bag"></i></button>
-                                                <a href="index.html#"><i class="flaticon-hide"></i></a>
-                                                <button><i class="flaticon-heart"></i></button>
-                                            </div>
-                                        </div>
-
-                                        <div class="ul-product-txt">
-                                            <h4 class="ul-product-title"><a href="shop-details.html">Orange Airsuit</a></h4>
-                                            <h5 class="ul-product-category"><a href="shop.html">Fashion Bag</a></h5>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- single product -->
-                                <div class="swiper-slide">
-                                    <div class="ul-product">
-                                        <div class="ul-product-heading">
-                                            <span class="ul-product-price">$99.00</span>
-                                            <span class="ul-product-discount-tag">25% Off</span>
-                                        </div>
-
-                                        <div class="ul-product-img">
-                                            <img src="assets/img/product-img-5.jpg" alt="Product Image">
-
-                                            <div class="ul-product-actions">
-                                                <button><i class="flaticon-shopping-bag"></i></button>
-                                                <a href="index.html#"><i class="flaticon-hide"></i></a>
-                                                <button><i class="flaticon-heart"></i></button>
-                                            </div>
-                                        </div>
-
-                                        <div class="ul-product-txt">
-                                            <h4 class="ul-product-title"><a href="shop-details.html">Orange Airsuit</a></h4>
-                                            <h5 class="ul-product-category"><a href="shop.html">Fashion Bag</a></h5>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- single product -->
-                                <div class="swiper-slide">
-                                    <div class="ul-product">
-                                        <div class="ul-product-heading">
-                                            <span class="ul-product-price">$99.00</span>
-                                            <span class="ul-product-discount-tag">25% Off</span>
-                                        </div>
-
-                                        <div class="ul-product-img">
-                                            <img src="assets/img/product-img-1.jpg" alt="Product Image">
-
-                                            <div class="ul-product-actions">
-                                                <button><i class="flaticon-shopping-bag"></i></button>
-                                                <a href="index.html#"><i class="flaticon-hide"></i></a>
-                                                <button><i class="flaticon-heart"></i></button>
-                                            </div>
-                                        </div>
-
-                                        <div class="ul-product-txt">
-                                            <h4 class="ul-product-title"><a href="shop-details.html">Orange Airsuit</a></h4>
-                                            <h5 class="ul-product-category"><a href="shop.html">Fashion Bag</a></h5>
-                                        </div>
-                                    </div>
-                                </div>
+     
                             </div>
                         </div>
                     </div>
@@ -661,7 +615,7 @@
                     <!-- single review -->
                      @foreach ($reviews as $review)
         <div class="swiper-slide">
-            <div class="ul-review">
+            <div style="width:100%;" class="ul-review">
                 <!-- Stars -->
                 <div class="ul-review-rating">
                     @for ($i = 1; $i <= 5; $i++)
@@ -1083,7 +1037,7 @@ $(document).ready(function() {
                 toastr.error(errorMsg);
             },
             complete: function() {
-                button.prop('disabled', false).html('Add to Cart <i class="flaticon-cart"></i>');
+                button.prop('disabled', false).html(' <i class="flaticon-cart"></i>');
             }
         });
     });

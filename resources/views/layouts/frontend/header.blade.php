@@ -28,79 +28,53 @@
             <div class="ul-sidebar-products-slider swiper">
                 <div class="swiper-wrapper">
                     <!-- product card -->
-                    <div class="swiper-slide">
-                        <div class="ul-product">
-                            <div class="ul-product-heading">
-                                <span class="ul-product-price">$99.00</span>
-                                <span class="ul-product-discount-tag">25% Off</span>
-                            </div>
+                                          @foreach($products as $product)
+    @if($product->stock_alert > 0) {{-- Sirf stock wale products show karo --}}
+        <div class="swiper-slide">
+            <div class="ul-product">
+                <div class="ul-product-heading">
+                    <span class="ul-product-price">Rs{{ $product->sale_price ?? $product->price }}</span>
+                    @if($product->discount_percentage)
+                        <span class="ul-product-discount-tag">{{ $product->discount_percentage }}% Off</span>
+                    @endif
+                </div>
 
-                            <div class="ul-product-img">
-                                <img src="assets/img/product-img-1.jpg" alt="Product Image">
+                <div class="ul-product-img">
+                    <a href="{{ route('shop.details', $product->id) }}">
+                        <img src="{{ asset('images/products/' . $product->image) }}" alt="{{ $product->name }}">
+                    </a>
 
-                                <div class="ul-product-actions">
-                                    <button><i class="flaticon-shopping-bag"></i></button>
-                                    <a href="index.html#"><i class="flaticon-hide"></i></a>
-                                    <button><i class="flaticon-heart"></i></button>
-                                </div>
-                            </div>
-
-                            <div class="ul-product-txt">
-                                <h4 class="ul-product-title"><a href="shop-details.html">Orange Airsuit</a></h4>
-                                <h5 class="ul-product-category"><a href="shop.html">Fashion Bag</a></h5>
-                            </div>
-                        </div>
+                    <div class="ul-product-actions">
+                        <button class="add-to-cart" data-product-id="{{ $product->id }}">
+                            <span class="icon"><i class="flaticon-shopping-bag"></i></span>
+                            <span class="text"></span>
+                        </button>
+                        <a href="{{ route('shop.details', $product->id) }}"><i class="flaticon-hide"></i></a>
+                        <button class="add-to-wishlist" data-product-id="{{ $product->id }}">
+                            <span class="icon"><i class="flaticon-heart"></i></span>
+                        </button>
                     </div>
+                </div>
 
-                    <!-- product card -->
-                    <div class="swiper-slide">
-                        <div class="ul-product">
-                            <div class="ul-product-heading">
-                                <span class="ul-product-price">$99.00</span>
-                                <span class="ul-product-discount-tag">25% Off</span>
-                            </div>
-
-                            <div class="ul-product-img">
-                                <img src="assets/img/product-img-2.jpg" alt="Product Image">
-
-                                <div class="ul-product-actions">
-                                    <button><i class="flaticon-shopping-bag"></i></button>
-                                    <a href="index.html#"><i class="flaticon-hide"></i></a>
-                                    <button><i class="flaticon-heart"></i></button>
-                                </div>
-                            </div>
-
-                            <div class="ul-product-txt">
-                                <h4 class="ul-product-title"><a href="shop-details.html">Orange Airsuit</a></h4>
-                                <h5 class="ul-product-category"><a href="shop.html">Fashion Bag</a></h5>
-                            </div>
-                        </div>
+                <div class="ul-product-txt">
+                    <h4 class="ul-product-title">
+                        <a href="{{ route('shop.details', $product->id) }}">{{ $product->name }}</a>
+                    </h4>
+                    <h5 class="ul-product-category">
+                        <a href="#">{{ $product->category->name ?? 'Uncategorized' }}</a>
+                    </h5>
+                    <div class="ul-stock-status" style="margin-top: 5px;">
+                        <span class="badge badge-success">In Stock</span>
                     </div>
+                </div>
+            </div>
+        </div>
+    @endif
+@endforeach
 
-                    <!-- product card -->
-                    <div class="swiper-slide">
-                        <div class="ul-product">
-                            <div class="ul-product-heading">
-                                <span class="ul-product-price">$99.00</span>
-                                <span class="ul-product-discount-tag">25% Off</span>
-                            </div>
+                 
 
-                            <div class="ul-product-img">
-                                <img src="assets/img/product-img-2.jpg" alt="Product Image">
-
-                                <div class="ul-product-actions">
-                                    <button><i class="flaticon-shopping-bag"></i></button>
-                                    <a href="index.html#"><i class="flaticon-hide"></i></a>
-                                    <button><i class="flaticon-heart"></i></button>
-                                </div>
-                            </div>
-
-                            <div class="ul-product-txt">
-                                <h4 class="ul-product-title"><a href="shop-details.html">Orange Airsuit</a></h4>
-                                <h5 class="ul-product-category"><a href="shop.html">Fashion Bag</a></h5>
-                            </div>
-                        </div>
-                    </div>
+                  
                 </div>
             </div>
 
@@ -232,19 +206,65 @@
 @endif
 
 
-
-   <form action="{{ route('shop') }}" method="GET" class="ul-category-dropdown-form">
-    <select 
-        name="category" 
-        onchange="this.form.submit()" 
-        style="border: none; outline: none; box-shadow: none;  font-size: 16px;  cursor: pointer;"
-    >
-        <option value="" disabled selected>Select Category</option>
+<div class="ul-category-dropdown">
+    <span class="dropdown-trigger">Categories</span>
+    <div class="dropdown-menu">
         @foreach ($categories as $category)
-            <option value="{{ $category->id }}">{{ $category->name }}</option>
+            <form action="{{ route('category') }}" method="GET">
+                <input type="hidden" name="category" value="{{ $category->id }}">
+                <button type="submit" class="dropdown-item">{{ $category->name }}</button>
+            </form>
         @endforeach
-    </select>
-</form>
+    </div>
+</div>
+<style>
+    .ul-category-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-trigger {
+    padding: 0px 5px 0px 0px;
+    font-size: 16px;
+    cursor: pointer;
+    display: inline-block;
+    color: black;
+    background-color: transparent;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 200px;
+    background-color: #fff;
+    /* box-shadow: 0 4px 10px rgba(0,0,0,0.1); */
+    border-radius: 5px;
+    z-index: 999;
+    padding: 0px 0;
+}
+
+.ul-category-dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+.dropdown-item {
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    padding: 0px 20px;
+    font-size: 14px;
+    cursor: pointer;
+    color: #333;
+}
+
+.dropdown-item:hover {
+    background-color: #f0f0f0;
+}
+
+</style>
 
 
 
