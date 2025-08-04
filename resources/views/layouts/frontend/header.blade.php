@@ -186,7 +186,7 @@
                     <!-- header left -->
                     <div class="header-bottom-left">
                         <div class="logo-container">
-                            <a href="index.html" class="d-inline-block"><img src="{{ asset('assets/img/logo.svg') }}" alt="logo" class="logo">
+                            <a href="index.html" class="d-inline-block"><img src="{{ asset('assets/img/newlogo.png') }}" alt="logo" class="logo">
 </a>
                         </div>
 
@@ -233,7 +233,7 @@
 
 
 
-   <form action="{{ route('shop') }}" method="GET" class="ul-category-dropdown-form">
+   <form action="{{ route('category') }}" method="GET" class="ul-category-dropdown-form">
     <select 
         name="category" 
         onchange="this.form.submit()" 

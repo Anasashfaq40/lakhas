@@ -841,7 +841,7 @@
 
 
         <!-- GALLERY SECTION START -->
-        <div class="ul-gallery overflow-hidden mx-auto">
+        <div class="ul-gallery overflow-hidden mx-auto mt-5">
             <div class="ul-gallery-slider swiper">
                 <div class="swiper-wrapper">
                     <!-- single gallery item -->

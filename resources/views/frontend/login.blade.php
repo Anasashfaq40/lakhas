@@ -59,10 +59,10 @@
 
                             <!-- Remember Me -->
                             <div class="form-group mb-0">
-                                <div class="checkbox p-0">
+                                <!-- <div class="checkbox p-0">
                                     <input id="checkbox1" type="checkbox" name="remember">
                                     <label class="text-muted" for="checkbox1">{{ __('translate.Remember_password') }}</label>
-                                </div>
+                                </div> -->
 
                                 <!-- Submit Button -->
                                 <div class="mt-3">
@@ -77,10 +77,6 @@
                                 <p class="text-center mt-2">
                                     <a href="/register">Create Account</a>
                                 </p>
-
-                                <div class="mt-5 text-center">
-                                    <h5 class="fw-bold text-primary">© Copyright by Driestech</h5>
-                                </div>
                             </div>
                         </form>
                     </div>

@@ -44,7 +44,7 @@
                     {{ $order->city }}, {{ $order->state }}, {{ $order->zipcode }}, {{ $order->country }}
                   </td>
                   <td>{{ $order->payment_method }}</td>
-                  <td>{{ format_currency($order->total) }}</td>
+                  <td>{{ $order->total }}</td>
                   <td>{{ $order->created_at->format('d M Y') }}</td>
                   <td>
                     <a href="{{ route('orders.show', $order->id) }}" class="text-primary me-2" 

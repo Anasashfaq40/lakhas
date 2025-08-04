@@ -336,7 +336,7 @@ public function newUser(Request $request)
     event(new Registered($user));
 
     // Optional: auto-login the user if needed
-    Auth::login($user);
+    // Auth::login($user);
 
     return redirect()->route('verification.notice')->with('success', 'Signup successful! Please verify your email.');
 }
