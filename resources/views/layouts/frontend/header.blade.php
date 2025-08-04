@@ -4,7 +4,7 @@
         <div class="ul-sidebar-header">
             <div class="ul-sidebar-header-logo">
                 <a href="index.html">
-     <img src="{{ asset('assets/img/logo.svg') }}" alt="logo" class="logo">
+     <img src="{{ asset('assets/img/newlogo.png') }}" alt="logo" class="logo">
 
 
                 </a>
