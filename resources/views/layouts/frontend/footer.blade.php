@@ -82,23 +82,13 @@
             </div>
 
             <div class="ul-footer-middle">
-                <!-- single widget -->
-                <div class="ul-footer-middle-widget">
-                    <h3 class="ul-footer-middle-widget-title">Download Our Apps</h3>
-                    <div class="ul-footer-middle-widget-content">
-                        <div class="app-links">
-                            <a href="index.html#"><img src="assets/img/android.png" alt="Play Store Link Image"></a>
-                            <a href="index.html#"><img src="assets/img/ios.png" alt="App Store Link Image"></a>
-                        </div>
-                    </div>
-                </div>
 
                 <!-- single widget -->
                 <div class="ul-footer-middle-widget">
                     <h3 class="ul-footer-middle-widget-title">Follow us</h3>
                     <div class="ul-footer-middle-widget-content">
                         <div class="social-links">
-                            <a href="index.html#"><i class="flaticon-facebook-app-symbol"></i></a>
+                            <a href="https://www.facebook.com/TheLakhas/"><i class="flaticon-facebook-app-symbol"></i></a>
                             <a href="index.html#"><i class="flaticon-twitter"></i></a>
                             <a href="index.html#"><i class="flaticon-linkedin-big-logo"></i></a>
                             <a href="index.html#"><i class="flaticon-youtube"></i></a>
@@ -118,13 +108,13 @@
 
                 <!-- single widget -->
                 <div class="ul-footer-middle-widget align-self-center">
-                    <a href="index.html"><img src="assets/img/logo-white.svg" alt="logo" class="logo"></a>
+                    <a href="index.html"><img src="assets/img/newlogowhite.png" alt="logo" class="logo"></a>
                 </div>
             </div>
 
             <div class="ul-footer-bottom">
-                <p class="copyright-txt">Copyright 2024 © <a href="https://temptics.com/" class="ul-footer-bottom-link">Temptics</a></p>
-                <img src="assets/img/payment-methods.png" alt="payment methods logos">
+                <p class="copyright-txt">Copyright 2025 © <a href="https://temptics.com/" class="ul-footer-bottom-link">The Lakhas</a></p>
+                <!-- <img src="assets/img/payment-methods.png" alt="payment methods logos"> -->
             </div>
         </div>
     </footer>

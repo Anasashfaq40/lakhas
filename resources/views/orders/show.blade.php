@@ -86,24 +86,24 @@
                     <span>{{ $item->product->name }}</span>
                   </div>
                 </td>
-                <td>{{ format_currency($item->price) }}</td>
+                <td>{{ $item->price }}</td>
                 <td>{{ $item->quantity }}</td>
-                <td>{{ format_currency($item->price * $item->quantity) }}</td>
+                <td>{{ $item->price * $item->quantity }}</td>
               </tr>
               @endforeach
             </tbody>
             <tfoot>
               <tr>
                 <td colspan="3" class="text-end"><strong>Subtotal:</strong></td>
-                <td>{{ format_currency($order->total) }}</td>
+                <td>{{ $order->total }}</td>
               </tr>
               <tr>
                 <td colspan="3" class="text-end"><strong>Shipping:</strong></td>
-                <td>{{ format_currency(0) }}</td>
+                <td>{{ 0 }}</td>
               </tr>
               <tr>
                 <td colspan="3" class="text-end"><strong>Total:</strong></td>
-                <td>{{ format_currency($order->total) }}</td>
+                <td>{{ $order->total }}</td>
               </tr>
             </tfoot>
           </table>

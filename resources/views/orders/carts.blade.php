@@ -47,7 +47,7 @@
                       <span>{{ $cart->product->name }}</span>
                     </div>
                   </td>
-                  <td>{{ format_currency($cart->price) }}</td>
+                  <td>{{ $cart->price }}</td>
                   <td>{{ $cart->quantity }}</td>
                   <td>{{ $cart->size ?? '-' }}</td>
                   <td>
@@ -57,7 +57,7 @@
                     -
                     @endif
                   </td>
-                  <td>{{ format_currency($cart->price * $cart->quantity) }}</td>
+                  <td>{{ $cart->price * $cart->quantity }}</td>
                   <td>
                     <a @click="Remove_CartItem({{ $cart->id }})" class="cursor-pointer text-danger ul-link-action" 
                        data-toggle="tooltip" data-placement="top" title="Remove">
@@ -70,7 +70,7 @@
               <tfoot>
                 <tr>
                   <td colspan="6" class="text-end"><strong>{{ __('translate.Grand_Total') }}:</strong></td>
-                  <td><strong>{{ format_currency($grandTotal) }}</strong></td>
+                  <td><strong>{{ $grandTotal }}</strong></td>
                   <td></td>
                 </tr>
               </tfoot>

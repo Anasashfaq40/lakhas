@@ -47,18 +47,44 @@
 
                             <!-- Password -->
                             <div class="form-group m-b-10">
-                                <label class="col-form-label">{{ __('translate.Password') }}</label>
-                                <div class="form-input position-relative">
-                                    <input class="form-control @error('password') is-invalid @enderror" type="password" placeholder="*********"
-                                           name="password" required autocomplete="current-password">
-                                    @if ($errors->has('password'))
-                                        <span class="text-danger">{{ $errors->first('password') }}</span>
-                                    @endif
-                                </div>
-                            </div>
+    <label class="col-form-label">{{ __('translate.Password') }}</label>
+    <div class="form-input position-relative">
+        <input id="passwordField" class="form-control @error('password') is-invalid @enderror" 
+               type="password" placeholder="*********" name="password" required autocomplete="current-password">
+
+        <!-- Eye Icon Button -->
+        <span class="position-absolute" onclick="togglePassword()" 
+              style="top: 50%; right: 10px; transform: translateY(-50%); cursor: pointer;">
+            <i id="eyeIcon" class="fa fa-eye"></i>
+        </span>
+
+        @if ($errors->has('password'))
+            <span class="text-danger">{{ $errors->first('password') }}</span>
+        @endif
+    </div>
+</div>
+
+<!-- JS for toggling password visibility -->
+<script>
+    function togglePassword() {
+        const passwordField = document.getElementById("passwordField");
+        const eyeIcon = document.getElementById("eyeIcon");
+
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            eyeIcon.classList.remove("fa-eye");
+            eyeIcon.classList.add("fa-eye-slash");
+        } else {
+            passwordField.type = "password";
+            eyeIcon.classList.remove("fa-eye-slash");
+            eyeIcon.classList.add("fa-eye");
+        }
+    }
+</script>
+
 
                             <!-- Remember Me -->
-                            <!-- <div class="form-group mb-0">
+                            <div class="form-group mb-0">
                                 <div class="checkbox p-0">
                                     <input id="checkbox1" type="checkbox" name="remember">
                                     <label class="text-muted" for="checkbox1">{{ __('translate.Remember_password') }}</label>

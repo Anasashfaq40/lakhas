@@ -160,7 +160,7 @@
                     <!-- header left -->
                     <div class="header-bottom-left">
                         <div class="logo-container">
-                            <a href="index.html" class="d-inline-block"><img src="{{ asset('assets/img/logo.svg') }}" alt="logo" class="logo">
+                            <a href="index.html" class="d-inline-block"><img src="{{ asset('assets/img/newlogo.png') }}" alt="logo" class="logo">
 </a>
                         </div>
 
@@ -206,9 +206,14 @@
 @endif
 
 
-<div class="ul-category-dropdown">
-    <span class="dropdown-trigger">Categories</span>
-    <div class="dropdown-menu">
+
+   <form action="{{ route('shop') }}" method="GET" class="ul-category-dropdown-form">
+    <select 
+        name="category" 
+        onchange="this.form.submit()" 
+        style="border: none; outline: none; box-shadow: none;  font-size: 16px;  cursor: pointer;"
+    >
+        <option value="" disabled selected>Select Category</option>
         @foreach ($categories as $category)
             <form action="{{ route('category') }}" method="GET">
                 <input type="hidden" name="category" value="{{ $category->id }}">
