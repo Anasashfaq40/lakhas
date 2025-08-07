@@ -98,7 +98,8 @@ Route::get('/thankyou', function () {
 Route::get('/shop', [ShopController::class, 'index'])->name('shop');
 Route::get('/category', [CategoriesController::class, 'showCategoryProducts'])->name('category');
 
-Route::get('/track-order/{id}', [OrderController::class, 'track'])->name('order.track');
+Route::get('/track-order/{id?}', [OrderController::class, 'track'])->name('order.track');
+
 Route::post('/subscribe-newsletter', [NewsletterController::class, 'store'])->name('newsletter.subscribe');
 Route::post('/signup', [UserController::class, 'newUser'])->name('signup.store');
 Route::get('/stitched-garments', [ProductsController::class, 'stitched_garment'])->name('shop.stitched');

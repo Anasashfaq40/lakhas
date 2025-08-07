@@ -27,21 +27,22 @@ public function show(Order $order)
 //     $order = Order::with(['items.product'])->where('id', $orderId)->first();
 //     return view('frontend.ordertracking', compact('order'));
 // }
-public function track()
+public function track($id = null)
 {
     if (!auth()->check()) {
         return redirect()->route('login')->with('error', 'Please login to view your orders');
     }
 
     $orders = Order::with(['items.product', 'items.review'])
-            ->whereHas('items', function($query) {
-                $query->where('user_id', auth()->id());
-            })
-            ->orderBy('created_at', 'desc')
-            ->get();
+        ->whereHas('items', function ($query) {
+            $query->where('user_id', auth()->id());
+        })
+        ->orderBy('created_at', 'desc')
+        ->get();
 
     return view('frontend.ordertracking', compact('orders'));
 }
+
 
 
 

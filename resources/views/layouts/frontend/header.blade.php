@@ -197,13 +197,24 @@
     <a href="/contact">Contact</a>
     <a href="/blog">Blogs</a>
 
-    @php
-    $orderId = session('order_id');
+  @php
+    use App\Models\Order;
+
+    $showTrackOrder = false;
+
+    if (auth()->check()) {
+        $showTrackOrder = Order::whereHas('items', function ($query) {
+            $query->where('user_id', auth()->id());
+        })->exists();
+    } elseif (session('order_id')) {
+        $showTrackOrder = true;
+    }
 @endphp
 
-@if($orderId)
-    <a href="{{ route('order.track', ['id' => $orderId]) }}">Track Your Order</a>
+@if($showTrackOrder)
+    <a href="{{ route('order.track', ['id' => session('order_id') ?? 'history']) }}">Track Your Order</a>
 @endif
+
 
 
 <div class="ul-category-dropdown">
